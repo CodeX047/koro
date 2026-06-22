@@ -2,6 +2,12 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
 import { GlobalProviders } from "~/providers/global";
+import { Lora, Oxanium } from "next/font/google";
+import { cn } from "~/lib/utils";
+
+const oxaniumHeading = Oxanium({subsets:['latin'],variable:'--font-heading'});
+
+const lora = Lora({subsets:['latin'],variable:'--font-serif'});
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -23,7 +29,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en" suppressHydrationWarning className={cn("font-serif", lora.variable, oxaniumHeading.variable)}>
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
         <GlobalProviders>{children}</GlobalProviders>
       </body>

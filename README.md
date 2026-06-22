@@ -70,7 +70,7 @@ See [.env.example](.env.example) for the full list of variables. The key ones:
 | `JWT_SECRET`          | services        | Secret for signing/verifying JWT tokens    |
 | `BASE_URL`            | api             | Public base URL of the API (OpenAPI/docs)  |
 | `NODE_ENV`            | api, cookies    | `development` \| `prod`                     |
-| `NEXT_PUBLIC_API_URL` | web             | API base URL the browser calls             |
+| `NEXT_PUBLIC_API_URL` | web             | API tRPC endpoint the browser calls (`…/trpc`) |
 
 ## Development
 
