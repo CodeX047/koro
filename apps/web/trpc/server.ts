@@ -1,11 +1,11 @@
-import type { ServerRouter } from "@repo/trpc/client";
-import { createTRPCProxyClient } from "@repo/trpc/client";
+import type { AppRouter } from "~/server/root";
+import { createTRPCProxyClient } from "@trpc/client";
 import { createTRPCHttpBatchClientClient } from "~/trpc/create-client";
 
-export const api = createTRPCProxyClient<ServerRouter>({
+export const api = createTRPCProxyClient<AppRouter>({
   links: [createTRPCHttpBatchClientClient()],
 });
 
-export const apiStreaming = createTRPCProxyClient<ServerRouter>({
+export const apiStreaming = createTRPCProxyClient<AppRouter>({
   links: [createTRPCHttpBatchClientClient({ enableStreaming: true })],
 });

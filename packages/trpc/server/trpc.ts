@@ -1,6 +1,6 @@
 import { initTRPC, TRPCError } from "@trpc/server";
 import { OpenApiMeta } from "trpc-to-openapi";
-import { AppError } from "@repo/services/user/errors";
+import { AppError } from "@repo/services/auth/errors";
 
 import type { Context } from "./context";
 

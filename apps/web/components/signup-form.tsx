@@ -24,15 +24,11 @@ export function SignupForm({ className, ...props }: SignupFormProps) {
   const { register, handleSubmit } = useForm<SignupFormValues>();
 
   const handleSignup: SubmitHandler<SignupFormValues> = async (values) => {
-    console.log("signup values:", values);
-
-    const { id } = await createUserWithEmailAndPasswordAsync({
+    await createUserWithEmailAndPasswordAsync({
       email: values.email,
       fullName: values.name,
       password: values.password,
     });
-
-    console.log(`User create with ID: ${id}`);
   };
 
   return (

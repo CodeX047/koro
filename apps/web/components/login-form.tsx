@@ -19,13 +19,10 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
   const { register, handleSubmit } = useForm<LoginFormValues>();
 
   const handleLogin: SubmitHandler<LoginFormValues> = async (values) => {
-    console.log("login values:", values);
-    const { id } = await signInUserWithEmailAndPasswordAsync({
+    await signInUserWithEmailAndPasswordAsync({
       email: values.email,
       password: values.password,
     });
-
-    console.log(`Login Success with Id: ${id}`);
   };
 
   return (

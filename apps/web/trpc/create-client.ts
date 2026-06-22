@@ -1,4 +1,4 @@
-import { httpLink, httpBatchStreamLink } from "@repo/trpc/client";
+import { httpLink, httpBatchStreamLink } from "@trpc/client";
 import { env } from "~/env.js";
 
 interface CreateTRPCHttpBatchClientClientOpts {
@@ -8,8 +8,8 @@ interface CreateTRPCHttpBatchClientClientOpts {
 export const createTRPCHttpBatchClientClient = (opts?: CreateTRPCHttpBatchClientClientOpts) => {
   const c = opts?.enableStreaming ? httpBatchStreamLink : httpLink;
   return c({
-    url: env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000/trpc",
-    fetch(url, options) {
+    url: env.NEXT_PUBLIC_API_URL ?? "/api/trpc",
+    fetch(url: any, options?: any) {
       return fetch(url, {
         ...options,
         credentials: "include",
