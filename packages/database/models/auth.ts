@@ -2,7 +2,7 @@ import { pgTable, text, timestamp, uuid } from "drizzle-orm/pg-core";
 import { usersTable } from "./user";
 
 export const sessionTable = pgTable("session", {
-  id: text("id").primaryKey(),
+  id: text("id").primaryKey().$defaultFn(() => crypto.randomUUID()),
   expiresAt: timestamp("expires_at").notNull(),
   token: text("token").notNull().unique(),
   createdAt: timestamp("created_at").notNull(),
@@ -16,7 +16,7 @@ export const sessionTable = pgTable("session", {
 });
 
 export const accountTable = pgTable("account", {
-  id: text("id").primaryKey(),
+  id: text("id").primaryKey().$defaultFn(() => crypto.randomUUID()),
   accountId: text("account_id").notNull(),
   providerId: text("provider_id").notNull(),
   userId: uuid("user_id")
@@ -34,7 +34,7 @@ export const accountTable = pgTable("account", {
 });
 
 export const verificationTable = pgTable("verification", {
-  id: text("id").primaryKey(),
+  id: text("id").primaryKey().$defaultFn(() => crypto.randomUUID()),
   identifier: text("identifier").notNull(),
   value: text("value").notNull(),
   expiresAt: timestamp("expires_at").notNull(),
@@ -43,7 +43,7 @@ export const verificationTable = pgTable("verification", {
 });
 
 export const organizationTable = pgTable("organization", {
-  id: text("id").primaryKey(),
+  id: text("id").primaryKey().$defaultFn(() => crypto.randomUUID()),
   name: text("name").notNull(),
   slug: text("slug").unique(),
   logo: text("logo"),
@@ -52,7 +52,7 @@ export const organizationTable = pgTable("organization", {
 });
 
 export const memberTable = pgTable("member", {
-  id: text("id").primaryKey(),
+  id: text("id").primaryKey().$defaultFn(() => crypto.randomUUID()),
   organizationId: text("organization_id")
     .notNull()
     .references(() => organizationTable.id, { onDelete: "cascade" }),
@@ -64,7 +64,7 @@ export const memberTable = pgTable("member", {
 });
 
 export const invitationTable = pgTable("invitation", {
-  id: text("id").primaryKey(),
+  id: text("id").primaryKey().$defaultFn(() => crypto.randomUUID()),
   organizationId: text("organization_id")
     .notNull()
     .references(() => organizationTable.id, { onDelete: "cascade" }),

@@ -23,6 +23,17 @@ export const auth = betterAuth({
       image: "profileImageUrl",
     },
   },
+  advanced: {
+    database: {
+      generateId: "uuid",
+    },
+  },
+  socialProviders: {
+    github: {
+      clientId: process.env.GITHUB_CLIENT_ID!,
+      clientSecret: process.env.GITHUB_CLIENT_SECRET!,
+    },
+  },
   plugins: [
     organization({
       allowUserToCreateOrganization: true,
