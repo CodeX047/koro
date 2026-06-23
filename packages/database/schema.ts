@@ -1,5 +1,4 @@
 export * from "./models/user";
-export * from "./models/workspace";
 export * from "./models/project";
 export * from "./models/feature";
 export * from "./models/prd";
