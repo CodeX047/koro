@@ -140,7 +140,7 @@ importers:
         version: 11.17.0(typescript@5.9.2)
       better-auth:
         specifier: ^1.1.18
-        version: 1.6.20(drizzle-kit@0.31.10)(drizzle-orm@0.45.2(@types/pg@8.20.0)(kysely@0.29.2)(pg@8.20.0))(next@16.1.0(@babel/core@7.29.7)(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(pg@8.20.0)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(vitest@4.1.9(@types/node@22.15.3)(vite@8.0.16(@types/node@22.15.3)(esbuild@0.28.0)(jiti@2.7.0)(tsx@4.22.1)(yaml@2.9.0)))
+        version: 1.6.20(drizzle-kit@0.31.10)(drizzle-orm@0.45.2(@types/pg@8.20.0)(kysely@0.29.2)(pg@8.20.0))(next@16.1.0(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(pg@8.20.0)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(vitest@4.1.9(@types/node@22.15.3)(vite@8.0.16(@types/node@22.15.3)(esbuild@0.28.0)(jiti@2.7.0)(tsx@4.22.1)(yaml@2.9.0)))
       class-variance-authority:
         specifier: ^0.7.1
         version: 0.7.1
@@ -258,7 +258,7 @@ importers:
         version: link:../database
       better-auth:
         specifier: ^1.1.18
-        version: 1.6.20(drizzle-kit@0.31.10)(drizzle-orm@0.45.2(@types/pg@8.20.0)(kysely@0.29.2)(pg@8.20.0))(next@16.1.0(@babel/core@7.29.7)(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(pg@8.20.0)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(vitest@4.1.9(@types/node@22.15.3)(vite@8.0.16(@types/node@22.15.3)(esbuild@0.28.0)(jiti@2.7.0)(tsx@4.22.1)(yaml@2.9.0)))
+        version: 1.6.20(drizzle-kit@0.31.10)(drizzle-orm@0.45.2(@types/pg@8.20.0)(kysely@0.29.2)(pg@8.20.0))(next@16.1.0(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(pg@8.20.0)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(vitest@4.1.9(@types/node@22.15.3)(vite@8.0.16(@types/node@22.15.3)(esbuild@0.28.0)(jiti@2.7.0)(tsx@4.22.1)(yaml@2.9.0)))
     devDependencies:
       '@repo/eslint-config':
         specifier: workspace:*
@@ -442,6 +442,10 @@ importers:
   packages/typescript-config: {}
 
   packages/workflows:
+    dependencies:
+      '@repo/ai':
+        specifier: workspace:*
+        version: link:../ai
     devDependencies:
       '@repo/typescript-config':
         specifier: workspace:*
@@ -7926,7 +7930,7 @@ snapshots:
 
   baseline-browser-mapping@2.10.38: {}
 
-  better-auth@1.6.20(drizzle-kit@0.31.10)(drizzle-orm@0.45.2(@types/pg@8.20.0)(kysely@0.29.2)(pg@8.20.0))(next@16.1.0(@babel/core@7.29.7)(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(pg@8.20.0)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(vitest@4.1.9(@types/node@22.15.3)(vite@8.0.16(@types/node@22.15.3)(esbuild@0.28.0)(jiti@2.7.0)(tsx@4.22.1)(yaml@2.9.0))):
+  better-auth@1.6.20(drizzle-kit@0.31.10)(drizzle-orm@0.45.2(@types/pg@8.20.0)(kysely@0.29.2)(pg@8.20.0))(next@16.1.0(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(pg@8.20.0)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(vitest@4.1.9(@types/node@22.15.3)(vite@8.0.16(@types/node@22.15.3)(esbuild@0.28.0)(jiti@2.7.0)(tsx@4.22.1)(yaml@2.9.0))):
     dependencies:
       '@better-auth/core': 1.6.20(@better-auth/utils@0.4.2)(@better-fetch/fetch@1.3.1)(better-call@1.3.6(zod@4.4.3))(jose@6.2.3)(kysely@0.29.2)(nanostores@1.3.0)
       '@better-auth/drizzle-adapter': 1.6.20(@better-auth/core@1.6.20(@better-auth/utils@0.4.2)(@better-fetch/fetch@1.3.1)(better-call@1.3.6(zod@4.4.3))(jose@6.2.3)(kysely@0.29.2)(nanostores@1.3.0))(@better-auth/utils@0.4.2)(drizzle-orm@0.45.2(@types/pg@8.20.0)(kysely@0.29.2)(pg@8.20.0))

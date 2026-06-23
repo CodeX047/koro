@@ -1,7 +1,8 @@
 import { initTRPC, TRPCError } from "@trpc/server";
-import { cookies } from "next/headers";
+import { cookies, headers } from "next/headers";
 import UserService from "@repo/services/auth";
 import { AppError } from "@repo/services/auth/errors";
+import { auth } from "@repo/auth";
 
 const userService = new UserService();
 const AUTHENTICATION_COOKIE_NAME = "authentication-cookie";
@@ -11,6 +12,8 @@ export interface TRPCContext {
   getCookie: (name: string) => string | undefined;
   clearCookie: (name: string) => void;
   user: any;
+  session: any;
+  activeOrganizationId: string | null;
 }
 
 export async function createContext(): Promise<TRPCContext> {
@@ -31,19 +34,28 @@ export async function createContext(): Promise<TRPCContext> {
     cookieStore.delete(name);
   };
 
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
+
   const ctx: TRPCContext = {
     createCookie,
     getCookie,
     clearCookie,
-    user: null,
+    user: session?.user || null,
+    session: session?.session || null,
+    activeOrganizationId: session?.session?.activeOrganizationId || null,
   };
 
-  const token = getCookie(AUTHENTICATION_COOKIE_NAME);
-  if (token) {
-    try {
-      ctx.user = await userService.verifyAndDecodeUserToken(token);
-    } catch {
-      ctx.user = null;
+  // Backwards compatibility for custom JWT if no Better Auth session exists
+  if (!ctx.user) {
+    const token = getCookie(AUTHENTICATION_COOKIE_NAME);
+    if (token) {
+      try {
+        ctx.user = await userService.verifyAndDecodeUserToken(token);
+      } catch {
+        ctx.user = null;
+      }
     }
   }
 
