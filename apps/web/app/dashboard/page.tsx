@@ -10,7 +10,10 @@ import {
   AlertTriangle,
 } from "lucide-react";
 
-export default function DashboardPage() {
+import { requireAuth } from "~/lib/auth";
+
+export default async function DashboardPage() {
+  await requireAuth();
   return (
     <div className="min-h-screen bg-[#090b11] text-slate-100 p-8 font-sans selection:bg-indigo-500 selection:text-white">
       <div className="max-w-6xl mx-auto space-y-8">
