@@ -1,5 +1,5 @@
 import type { NextRequest } from "next/server";
-import { handleAuthProxy } from "./feature/auth/auth-proxy";
+import { handleAuthProxy } from "./features/auth/utils/auth-proxy";
 
 export async function proxy(req: NextRequest) {
   return handleAuthProxy(req);
