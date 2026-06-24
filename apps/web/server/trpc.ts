@@ -1,11 +1,6 @@
 import { initTRPC, TRPCError } from "@trpc/server";
 import { cookies, headers } from "next/headers";
-import UserService from "@repo/services/auth";
-import { AppError } from "@repo/services/auth/errors";
 import { auth } from "@repo/auth";
-
-const userService = new UserService();
-const AUTHENTICATION_COOKIE_NAME = "authentication-cookie";
 
 export interface TRPCContext {
   createCookie: (name: string, value: string, opts?: any) => void;
@@ -47,18 +42,6 @@ export async function createContext(): Promise<TRPCContext> {
     activeOrganizationId: session?.session?.activeOrganizationId || null,
   };
 
-  // Backwards compatibility for custom JWT if no Better Auth session exists
-  if (!ctx.user) {
-    const token = getCookie(AUTHENTICATION_COOKIE_NAME);
-    if (token) {
-      try {
-        ctx.user = await userService.verifyAndDecodeUserToken(token);
-      } catch {
-        ctx.user = null;
-      }
-    }
-  }
-
   return ctx;
 }
 
@@ -66,18 +49,7 @@ const tRPCContext = initTRPC.context<TRPCContext>().create({});
 
 export const router = tRPCContext.router;
 
-const errorMapper = tRPCContext.middleware(async (opts) => {
-  try {
-    return await opts.next();
-  } catch (error: any) {
-    if (error instanceof AppError) {
-      throw new TRPCError({ code: error.code, message: error.message, cause: error });
-    }
-    throw error;
-  }
-});
-
-export const publicProcedure = tRPCContext.procedure.use(errorMapper);
+export const publicProcedure = tRPCContext.procedure;
 
 export const protectedProcedure = publicProcedure.use((opts) => {
   if (!opts.ctx.user) {

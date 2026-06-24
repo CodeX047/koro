@@ -34,6 +34,9 @@ export const auth = betterAuth({
       clientSecret: process.env.GITHUB_CLIENT_SECRET!,
     },
   },
+  emailAndPassword: {
+    enabled: true,
+  },
   plugins: [
     organization({
       allowUserToCreateOrganization: true,

@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import Link from "next/link";
 import { cn } from "~/lib/utils";
-import { useSignUp } from "~/hooks/api/auth";
 import { authClient } from "@repo/auth/client";
 
 export type SignupFormValues = {
@@ -19,7 +18,6 @@ export interface SignupFormProps extends React.ComponentProps<"div"> {}
 
 export function SignupForm({ className, ...props }: SignupFormProps) {
   const router = useRouter();
-  const { createUserWithEmailAndPasswordAsync } = useSignUp();
   const { register, handleSubmit, watch } = useForm<SignupFormValues>();
   
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
@@ -58,11 +56,16 @@ export function SignupForm({ className, ...props }: SignupFormProps) {
 
     setIsPending(true);
     try {
-      await createUserWithEmailAndPasswordAsync({
+      const { error } = await authClient.signUp.email({
         email: values.email,
-        fullName: values.name,
         password: values.password,
+        name: values.name,
       });
+
+      if (error) {
+        throw new Error(error.message || "Registration failed");
+      }
+
       setSuccessMsg("Account created successfully. Redirecting...");
       setTimeout(() => {
         router.push("/dashboard");

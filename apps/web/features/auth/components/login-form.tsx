@@ -6,7 +6,6 @@ import { useState } from "react";
 import Link from "next/link";
 import { authClient } from "@repo/auth/client";
 import { cn } from "~/lib/utils";
-import { useLogIn } from "../hooks/api/auth/index";
 
 export type LoginFormValues = {
   email: string;
@@ -15,7 +14,6 @@ export type LoginFormValues = {
 
 export function LoginForm({ className, ...props }: React.ComponentProps<"div">) {
   const router = useRouter();
-  const { signInUserWithEmailAndPasswordAsync } = useLogIn();
   const { register, handleSubmit } = useForm<LoginFormValues>();
 
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
@@ -28,10 +26,15 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
     setIsPending(true);
 
     try {
-      await signInUserWithEmailAndPasswordAsync({
+      const { error } = await authClient.signIn.email({
         email: values.email,
         password: values.password,
       });
+
+      if (error) {
+        throw new Error(error.message || "Invalid email or password");
+      }
+
       setSuccessMsg("Logged in successfully. Redirecting...");
       setTimeout(() => {
         router.push("/dashboard");
