@@ -131,3 +131,122 @@
     @apply font-sans;
   }
 }
+
+/* ─── Kōro Landing Page Design System ─── */
+
+.koro-landing {
+  /* Brand & Accent */
+  --koro-ink: #201d1d;
+  --koro-ink-deep: #0f0000;
+  --koro-canvas: #fdfcfc;
+  --koro-on-primary: #fdfcfc;
+
+  /* Surface */
+  --koro-surface-soft: #f8f7f7;
+  --koro-surface-card: #f1eeee;
+  --koro-surface-dark: #201d1d;
+  --koro-surface-dark-elevated: #302c2c;
+  --koro-hairline: rgba(15, 0, 0, 0.12);
+  --koro-hairline-strong: #646262;
+
+  /* Text */
+  --koro-charcoal: #302c2c;
+  --koro-body: #424245;
+  --koro-mute: #646262;
+  --koro-stone: #6e6e73;
+  --koro-ash: #9a9898;
+
+  /* Semantic (TUI only) */
+  --koro-accent: #007aff;
+  --koro-success: #30d158;
+  --koro-warning: #ff9f0a;
+  --koro-danger: #ff3b30;
+
+  /* Spacing */
+  --koro-xxs: 1px;
+  --koro-xs: 4px;
+  --koro-sm: 8px;
+  --koro-md: 12px;
+  --koro-lg: 16px;
+  --koro-xl: 24px;
+  --koro-xxl: 32px;
+  --koro-section: 96px;
+
+  /* Radius */
+  --koro-rounded-none: 0px;
+  --koro-rounded-sm: 4px;
+  --koro-rounded-full: 9999px;
+}
+
+/* Animations */
+@keyframes koro-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes koro-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes koro-cursor-blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+@keyframes koro-slide-in-right {
+  from {
+    opacity: 0;
+    transform: translateX(-12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.koro-animate-fade-up {
+  animation: koro-fade-up 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.koro-animate-fade-in {
+  animation: koro-fade-in 0.5s ease both;
+}
+
+.koro-animate-slide-in {
+  animation: koro-slide-in-right 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.koro-cursor-blink {
+  animation: koro-cursor-blink 1s step-end infinite;
+}
+
+/* Stagger delays for sequential animations */
+.koro-delay-1 { animation-delay: 0.1s; }
+.koro-delay-2 { animation-delay: 0.2s; }
+.koro-delay-3 { animation-delay: 0.3s; }
+.koro-delay-4 { animation-delay: 0.4s; }
+.koro-delay-5 { animation-delay: 0.5s; }
+.koro-delay-6 { animation-delay: 0.6s; }
+.koro-delay-7 { animation-delay: 0.7s; }
+.koro-delay-8 { animation-delay: 0.8s; }
+.koro-delay-9 { animation-delay: 0.9s; }
+.koro-delay-10 { animation-delay: 1.0s; }
+
+/* Responsive section spacing */
+@media (max-width: 850px) {
+  .koro-landing {
+    --koro-section: 64px;
+  }
+}
+@media (max-width: 640px) {
+  .koro-landing {
+    --koro-section: 48px;
+  }
+}
