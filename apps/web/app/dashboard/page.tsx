@@ -10,7 +10,7 @@ import {
   AlertTriangle,
 } from "lucide-react";
 
-import { requireAuth } from "~/lib/auth";
+import { requireAuth } from "~/feature/auth/auth";
 
 export default async function DashboardPage() {
   await requireAuth();
