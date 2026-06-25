@@ -1,4 +1,5 @@
 import React from "react";
+import { UserMenu } from "./_components/user-menu";
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -96,6 +97,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               </div>
             </div>
           </div>
+
+          <UserMenu />
         </div>
 
         {/* Main Area */}
