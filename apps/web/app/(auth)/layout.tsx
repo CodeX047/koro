@@ -1,10 +1,18 @@
 import { JetBrains_Mono } from "next/font/google";
+import Link from "next/link";
 
 const jetbrainsMono = JetBrains_Mono({
   subsets: ["latin"],
   weight: ["400", "500", "700"],
   variable: "--font-jetbrains-mono",
 });
+
+const WORDMARK = `
+██   ██  ██████  ██████   ██████
+██  ██  ██    ██ ██   ██ ██    ██
+█████   ██    ██ ██████  ██    ██
+██  ██  ██    ██ ██   ██ ██    ██
+██   ██  ██████  ██   ██  ██████`;
 
 export default function AuthLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -14,11 +22,20 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
       {/* Primary Nav header */}
       <header className="h-[56px] border-b border-[rgba(15,0,0,0.12)] flex items-center justify-between px-6 bg-[#fdfcfc] shrink-0">
         <div className="flex items-center gap-4">
-          <pre className="text-[13px] leading-tight select-none font-bold text-[#201d1d]">
-            {`█ █ █▀█ █▀█ █▀█
-█▀▄ █▄█ █▀▄ █▄█
-▀ ▀ ▀▀▀ ▀ ▀ ▀▀▀`}
-          </pre>
+          <Link href="/" className="shrink-0 flex items-center h-full pt-[2px]">
+            <pre
+              className="text-[9px] sm:text-[10px] leading-[0.8] font-black whitespace-pre select-none"
+              style={{
+                fontFamily: "monospace",
+                color: "var(--koro-ink)",
+                WebkitFontSmoothing: "none",
+                MozOsxFontSmoothing: "grayscale",
+                textRendering: "optimizeSpeed",
+              }}
+            >
+              {WORDMARK}
+            </pre>
+          </Link>
         </div>
       </header>
 
