@@ -5,6 +5,7 @@ import { db } from "@repo/database";
 import * as schema from "@repo/database/schema";
 
 export const auth = betterAuth({
+  trustedOrigins: ["https://salsa-civic-lubricate.ngrok-free.dev"],
   database: drizzleAdapter(db, {
     provider: "pg",
     schema: {
@@ -32,6 +33,11 @@ export const auth = betterAuth({
     github: {
       clientId: process.env.GITHUB_CLIENT_ID!,
       clientSecret: process.env.GITHUB_CLIENT_SECRET!,
+
+      mapProfileToUser: async (profile) => ({
+        email: profile.email ?? `${profile.id}@user.noreply.github.com`,
+        name: profile.name ?? profile.login,
+      }),
     },
   },
   emailAndPassword: {
