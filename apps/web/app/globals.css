@@ -134,7 +134,7 @@
 
 /* ─── Kōro Landing Page Design System ─── */
 
-.koro-landing {
+:root, .koro-landing {
   /* Brand & Accent */
   --koro-ink: #201d1d;
   --koro-ink-deep: #0f0000;

@@ -18,6 +18,7 @@
   "dependencies": {
     "@repo/database": "workspace:*",
     "@repo/logger": "workspace:*",
+    "octokit": "^5.0.5",
     "zod": "^4.3.5"
   }
 }
