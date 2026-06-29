@@ -1,4 +1,5 @@
 import React from "react";
+import Link from "next/link";
 import { UserMenu } from "./_components/user-menu";
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
@@ -64,18 +65,21 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               Navigation
             </div>
             <div className="flex flex-col gap-3 text-[12px]">
-              <div className="flex items-center justify-between cursor-pointer text-[var(--koro-on-primary)] font-medium">
+              <Link href="/dashboard" className="flex items-center justify-between cursor-pointer text-[var(--koro-ash)] hover:text-[var(--koro-on-primary)] transition-colors">
                 <span>Dashboard</span>
-              </div>
-              <div className="flex items-center justify-between cursor-pointer text-[var(--koro-ash)] hover:text-[var(--koro-on-primary)] transition-colors">
+              </Link>
+              <Link href="/dashboard/projects" className="flex items-center justify-between cursor-pointer text-[var(--koro-ash)] hover:text-[var(--koro-on-primary)] transition-colors">
                 <span>Projects</span>
-              </div>
-              <div className="flex items-center justify-between cursor-pointer text-[var(--koro-ash)] hover:text-[var(--koro-on-primary)] transition-colors">
+              </Link>
+              <Link href="/dashboard/team" className="flex items-center justify-between cursor-pointer text-[var(--koro-ash)] hover:text-[var(--koro-on-primary)] transition-colors">
                 <span>Team</span>
-              </div>
-              <div className="flex items-center justify-between cursor-pointer text-[var(--koro-ash)] hover:text-[var(--koro-on-primary)] transition-colors">
+              </Link>
+              <Link href="/dashboard/github" className="flex items-center justify-between cursor-pointer text-[var(--koro-ash)] hover:text-[var(--koro-on-primary)] transition-colors">
+                <span>GitHub App</span>
+              </Link>
+              <Link href="/dashboard/settings" className="flex items-center justify-between cursor-pointer text-[var(--koro-ash)] hover:text-[var(--koro-on-primary)] transition-colors">
                 <span>Settings</span>
-              </div>
+              </Link>
             </div>
           </div>
 

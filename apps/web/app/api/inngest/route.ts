@@ -1,14 +1,13 @@
-import { NextResponse } from "next/server";
+import { serve } from "inngest/next";
+import { inngest } from "~/features/inngest/client";
+import { processTask } from "~/features/inngest/functions";
+import { reviewPullRequest } from "~/features/reviews/server/review-job";
 
-export async function GET() {
-  return NextResponse.json({ message: "Inngest worker API endpoint" });
-}
-
-export async function POST(req: Request) {
-  try {
-    const payload = await req.json();
-    return NextResponse.json({ received: true, payload });
-  } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 400 });
-  }
-}
+// Create an API that serves zero functions for now
+export const { GET, POST, PUT } = serve({
+  client: inngest,
+  functions: [
+    processTask,
+    reviewPullRequest,
+  ],
+});
