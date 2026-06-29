@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { githubService } from "~/features/github/utils/service";
 import { savePullRequest, PullRequestWebhookPayload } from "@repo/services/github/webhook";
+import { inngest } from "~/features/inngest/client";
 
 const REVIEWABLE_ACTIONS = ["opened", "synchronize", "reopened"];
 
@@ -38,6 +39,13 @@ export async function POST(request: NextRequest) {
   }
 
   const pullRequest = await savePullRequest(event);
+
+  if (pullRequest) {
+    await inngest.send({
+      name: "github/pr.received",
+      data: { pullRequestId: pullRequest.id },
+    });
+  }
 
   return NextResponse.json({ received: true, prId: pullRequest?.id });
 }
