@@ -1,4 +1,4 @@
-import { inngest } from "~/features/inngest/client";
+import { inngest } from "../client";
 import { db, eq } from "@repo/database";
 import { repoSyncTable } from "@repo/database/schema";
 import {
@@ -7,12 +7,14 @@ import {
     deleteRepoNamespace,
     getRepoFiles,
     saveRepoChunks,
-} from "./repo-sync";
+} from "@repo/services/github/repo-sync";
 
-export const syncRepoCodebaseFunction = inngest.createFunction(
+export const githubSync = inngest.createFunction(
     {
         id: "sync-repo-codebase",
-        triggers: [{ event: "repo/sync.requested" }],
+        triggers: [{ event: "github/sync.requested" }],
+        retries: 3,
+        concurrency: { limit: 2 },
         onFailure: async ({ event }: { event: any }) => {
             const repoSyncId = event.data.event.data.repoSyncId;
             await db.update(repoSyncTable).set({ status: "failed" })

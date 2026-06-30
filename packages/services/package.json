@@ -18,6 +18,9 @@
   "dependencies": {
     "@repo/database": "workspace:*",
     "@repo/logger": "workspace:*",
+    "@repo/ai": "workspace:*",
+    "ai": "^7.0.4",
+    "@pinecone-database/pinecone": "^8.0.0",
     "octokit": "^5.0.5",
     "zod": "^4.3.5"
   }

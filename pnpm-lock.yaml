@@ -129,6 +129,9 @@ importers:
       '@repo/trpc':
         specifier: workspace:*
         version: link:../../packages/trpc
+      '@repo/workflows':
+        specifier: workspace:*
+        version: link:../../packages/workflows
       '@t3-oss/env-nextjs':
         specifier: ^0.13.10
         version: 0.13.11(typescript@5.9.2)(zod@4.4.3)
@@ -152,7 +155,7 @@ importers:
         version: 7.0.4(zod@4.4.3)
       better-auth:
         specifier: ^1.1.18
-        version: 1.6.20(@opentelemetry/api@1.9.1)(drizzle-kit@0.31.10)(drizzle-orm@0.45.2(@opentelemetry/api@1.9.1)(@types/pg@8.20.0)(kysely@0.29.2)(pg@8.20.0))(next@16.1.0(@babel/core@7.29.7)(@opentelemetry/api@1.9.1)(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(pg@8.20.0)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(vitest@4.1.9(@opentelemetry/api@1.9.1)(@types/node@22.15.3)(vite@8.0.16(@types/node@22.15.3)(esbuild@0.28.0)(jiti@2.7.0)(tsx@4.22.1)(yaml@2.9.0)))
+        version: 1.6.20(@opentelemetry/api@1.9.1)(drizzle-kit@0.31.10)(drizzle-orm@0.45.2(@opentelemetry/api@1.9.1)(@types/pg@8.20.0)(kysely@0.29.2)(pg@8.20.0))(next@16.1.0(@opentelemetry/api@1.9.1)(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(pg@8.20.0)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(vitest@4.1.9(@opentelemetry/api@1.9.1)(@types/node@22.15.3)(vite@8.0.16(@types/node@22.15.3)(esbuild@0.28.0)(jiti@2.7.0)(tsx@4.22.1)(yaml@2.9.0)))
       class-variance-authority:
         specifier: ^0.7.1
         version: 0.7.1
@@ -289,7 +292,7 @@ importers:
         version: link:../database
       better-auth:
         specifier: ^1.1.18
-        version: 1.6.20(@opentelemetry/api@1.9.1)(drizzle-kit@0.31.10)(drizzle-orm@0.45.2(@opentelemetry/api@1.9.1)(@types/pg@8.20.0)(kysely@0.29.2)(pg@8.20.0))(next@16.1.0(@babel/core@7.29.7)(@opentelemetry/api@1.9.1)(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(pg@8.20.0)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(vitest@4.1.9(@opentelemetry/api@1.9.1)(@types/node@22.15.3)(vite@8.0.16(@types/node@22.15.3)(esbuild@0.28.0)(jiti@2.7.0)(tsx@4.22.1)(yaml@2.9.0)))
+        version: 1.6.20(@opentelemetry/api@1.9.1)(drizzle-kit@0.31.10)(drizzle-orm@0.45.2(@opentelemetry/api@1.9.1)(@types/pg@8.20.0)(kysely@0.29.2)(pg@8.20.0))(next@16.1.0(@opentelemetry/api@1.9.1)(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(pg@8.20.0)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(vitest@4.1.9(@opentelemetry/api@1.9.1)(@types/node@22.15.3)(vite@8.0.16(@types/node@22.15.3)(esbuild@0.28.0)(jiti@2.7.0)(tsx@4.22.1)(yaml@2.9.0)))
     devDependencies:
       '@repo/eslint-config':
         specifier: workspace:*
@@ -395,12 +398,21 @@ importers:
 
   packages/services:
     dependencies:
+      '@pinecone-database/pinecone':
+        specifier: ^8.0.0
+        version: 8.0.0
+      '@repo/ai':
+        specifier: workspace:*
+        version: link:../ai
       '@repo/database':
         specifier: workspace:*
         version: link:../database
       '@repo/logger':
         specifier: workspace:*
         version: link:../logger
+      ai:
+        specifier: ^7.0.4
+        version: 7.0.4(zod@4.4.3)
       octokit:
         specifier: ^5.0.5
         version: 5.0.5
@@ -471,6 +483,15 @@ importers:
       '@repo/ai':
         specifier: workspace:*
         version: link:../ai
+      '@repo/database':
+        specifier: workspace:*
+        version: link:../database
+      '@repo/services':
+        specifier: workspace:*
+        version: link:../services
+      inngest:
+        specifier: ^4.11.0
+        version: 4.11.0(@opentelemetry/core@2.8.0(@opentelemetry/api@1.9.1))(express@5.2.1)(h3@1.15.1)(hono@4.12.26)(next@16.1.0(@opentelemetry/api@1.9.1)(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(react@19.2.6)(typescript@5.9.3)(zod@4.4.3)
     devDependencies:
       '@repo/typescript-config':
         specifier: workspace:*
@@ -9717,7 +9738,7 @@ snapshots:
 
   before-after-hook@4.0.0: {}
 
-  better-auth@1.6.20(@opentelemetry/api@1.9.1)(drizzle-kit@0.31.10)(drizzle-orm@0.45.2(@opentelemetry/api@1.9.1)(@types/pg@8.20.0)(kysely@0.29.2)(pg@8.20.0))(next@16.1.0(@babel/core@7.29.7)(@opentelemetry/api@1.9.1)(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(pg@8.20.0)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(vitest@4.1.9(@opentelemetry/api@1.9.1)(@types/node@22.15.3)(vite@8.0.16(@types/node@22.15.3)(esbuild@0.28.0)(jiti@2.7.0)(tsx@4.22.1)(yaml@2.9.0))):
+  better-auth@1.6.20(@opentelemetry/api@1.9.1)(drizzle-kit@0.31.10)(drizzle-orm@0.45.2(@opentelemetry/api@1.9.1)(@types/pg@8.20.0)(kysely@0.29.2)(pg@8.20.0))(next@16.1.0(@opentelemetry/api@1.9.1)(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(pg@8.20.0)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(vitest@4.1.9(@opentelemetry/api@1.9.1)(@types/node@22.15.3)(vite@8.0.16(@types/node@22.15.3)(esbuild@0.28.0)(jiti@2.7.0)(tsx@4.22.1)(yaml@2.9.0))):
     dependencies:
       '@better-auth/core': 1.6.20(@better-auth/utils@0.4.2)(@better-fetch/fetch@1.3.1)(@opentelemetry/api@1.9.1)(better-call@1.3.6(zod@4.4.3))(jose@6.2.3)(kysely@0.29.2)(nanostores@1.3.0)
       '@better-auth/drizzle-adapter': 1.6.20(@better-auth/core@1.6.20(@better-auth/utils@0.4.2)(@better-fetch/fetch@1.3.1)(@opentelemetry/api@1.9.1)(better-call@1.3.6(zod@4.4.3))(jose@6.2.3)(kysely@0.29.2)(nanostores@1.3.0))(@better-auth/utils@0.4.2)(drizzle-orm@0.45.2(@opentelemetry/api@1.9.1)(@types/pg@8.20.0)(kysely@0.29.2)(pg@8.20.0))
@@ -10919,6 +10940,44 @@ snapshots:
       next: 16.1.0(@babel/core@7.29.7)(@opentelemetry/api@1.9.1)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
       react: 19.2.6
       typescript: 5.9.2
+    transitivePeerDependencies:
+      - '@opentelemetry/core'
+      - encoding
+      - supports-color
+
+  inngest@4.11.0(@opentelemetry/core@2.8.0(@opentelemetry/api@1.9.1))(express@5.2.1)(h3@1.15.1)(hono@4.12.26)(next@16.1.0(@opentelemetry/api@1.9.1)(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(react@19.2.6)(typescript@5.9.3)(zod@4.4.3):
+    dependencies:
+      '@bufbuild/protobuf': 2.12.1
+      '@inngest/ai': 0.1.7
+      '@jpwilliams/waitgroup': 2.1.1
+      '@opentelemetry/api': 1.9.1
+      '@opentelemetry/auto-instrumentations-node': 0.77.0(@opentelemetry/api@1.9.1)(@opentelemetry/core@2.8.0(@opentelemetry/api@1.9.1))
+      '@opentelemetry/context-async-hooks': 2.8.0(@opentelemetry/api@1.9.1)
+      '@opentelemetry/exporter-trace-otlp-http': 0.219.0(@opentelemetry/api@1.9.1)
+      '@opentelemetry/instrumentation': 0.219.0(@opentelemetry/api@1.9.1)
+      '@opentelemetry/resources': 2.8.0(@opentelemetry/api@1.9.1)
+      '@opentelemetry/sdk-trace-base': 2.8.0(@opentelemetry/api@1.9.1)
+      '@standard-schema/spec': 1.1.0
+      '@traceloop/instrumentation-anthropic': 0.20.0
+      '@types/debug': 4.1.13
+      '@types/ms': 2.1.0
+      canonicalize: 1.0.8
+      cross-fetch: 4.1.0
+      debug: 4.4.3
+      hash.js: 1.1.7
+      json-stringify-safe: 5.0.1
+      ms: 2.1.3
+      serialize-error-cjs: 0.1.4
+      temporal-polyfill: 0.2.5
+      ulid: 2.4.0
+      zod: 4.4.3
+    optionalDependencies:
+      express: 5.2.1
+      h3: 1.15.1
+      hono: 4.12.26
+      next: 16.1.0(@babel/core@7.29.7)(@opentelemetry/api@1.9.1)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
+      react: 19.2.6
+      typescript: 5.9.3
     transitivePeerDependencies:
       - '@opentelemetry/core'
       - encoding

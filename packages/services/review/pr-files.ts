@@ -1,5 +1,7 @@
-import { githubService } from "~/features/github/utils/service";
-import { PrFile } from "../types/review";
+import GithubService from "../github";
+import { PrFile } from "./types";
+
+const githubService = new GithubService();
 
 const FILES_PER_PAGE = 100;
 

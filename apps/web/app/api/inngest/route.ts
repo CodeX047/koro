@@ -1,15 +1,12 @@
 import { serve } from "inngest/next";
-import { inngest } from "~/features/inngest/client";
-import { processTask } from "~/features/inngest/functions";
-import { reviewPullRequest } from "~/features/reviews/server/review-job";
-import { syncRepoCodebaseFunction } from "~/features/repo-sync/server/repo-sync-function";
+import { inngest } from "@repo/workflows/client";
+import { functions } from "@repo/workflows";
 
-// Create an API that serves zero functions for now
+// Maximum execution time allowed by Vercel for this endpoint.
+// Long-running work is checkpointed by Inngest.
+export const maxDuration = 300;
+
 export const { GET, POST, PUT } = serve({
   client: inngest,
-  functions: [
-    processTask,
-    reviewPullRequest,
-    syncRepoCodebaseFunction,
-  ],
+  functions,
 });

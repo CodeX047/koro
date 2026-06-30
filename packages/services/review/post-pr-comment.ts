@@ -1,4 +1,5 @@
-import { githubService } from "~/features/github/utils/service";
+import GithubService from "../github";
+const githubService = new GithubService();
 
 export async function postPrComment(
     installationId: number,

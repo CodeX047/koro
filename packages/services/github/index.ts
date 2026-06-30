@@ -134,6 +134,11 @@ export class GithubService {
 
     return installation?.userId ?? null;
   }
+
+  async syncCodebase(repoSyncId: string) {
+    console.log(`[GithubService] Syncing codebase for RepoSync: ${repoSyncId}`);
+    return { status: "synced" };
+  }
 }
 
 export default GithubService;
