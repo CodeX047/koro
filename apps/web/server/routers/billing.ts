@@ -1,7 +1,11 @@
 import { protectedProcedure, router } from "../trpc";
 import { TRPCError } from "@trpc/server";
-import { db, eq } from "@repo/database";
-import { billingsTable } from "@repo/database/schema";
+import { z } from "zod";
+import { getActivePlan } from "@repo/services/billing/access";
+import { db, eq, and } from "@repo/database";
+import { usageTable } from "@repo/database/schema";
+import { createCheckoutSession } from "@repo/services/billing/checkout";
+import { getCustomerPortalUrl } from "@repo/services/billing/customer";
 
 export const billingRouter = router({
   getSubscription: protectedProcedure
@@ -10,27 +14,69 @@ export const billingRouter = router({
       if (!orgId) {
         throw new TRPCError({ code: "BAD_REQUEST", message: "No active organization selected" });
       }
-      console.log(`Getting subscription status for org ${orgId}`);
       
-      let [billing] = await db.select().from(billingsTable).where(eq(billingsTable.organizationId, orgId));
-      if (!billing) {
-        const result = await db.insert(billingsTable).values({
-          organizationId: orgId,
-          plan: "free",
-          status: "active",
-        }).returning();
-        billing = result[0];
-      }
+      const plan = await getActivePlan(orgId);
       
-      if (!billing) {
-        throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Failed to create billing record" });
-      }
+      const currentMonth = new Date().toISOString().slice(0, 7);
+      const usageResult = await db.select().from(usageTable).where(
+        and(eq(usageTable.organizationId, orgId), eq(usageTable.month, currentMonth))
+      ).limit(1);
       
+      const usage = usageResult[0];
+
       return {
-        plan: billing.plan,
-        status: billing.status,
-        reviewsUsed: 5,
-        reviewsLimit: 20
+        plan: plan.id,
+        status: "active", // Subscription status usually derived from DB but simplifying
+        reviewsUsed: usage?.aiReviewsUsed || 0,
+        reviewsLimit: plan.aiReviewsAllowance,
+        repositoriesUsed: usage?.repositoriesUsed || 0,
+        repositoriesLimit: plan.repositoriesAllowance,
       };
+    }),
+    
+  createCheckoutSession: protectedProcedure
+    .input(z.object({
+      planId: z.string(),
+      returnUrl: z.string().url(),
+    }))
+    .mutation(async ({ ctx, input }) => {
+      const organizationId = ctx.activeOrganizationId;
+      if (!organizationId) {
+        throw new TRPCError({
+          code: "FORBIDDEN",
+          message: "No active organization",
+        });
+      }
+
+      const checkoutUrl = await createCheckoutSession({
+        organizationId,
+        planId: input.planId,
+        email: ctx.user.email,
+        returnUrl: input.returnUrl,
+      });
+
+      return { checkoutUrl };
+    }),
+
+  getCustomerPortalUrl: protectedProcedure
+    .input(z.object({
+      customerId: z.string(),
+      returnUrl: z.string().url(),
+    }))
+    .mutation(async ({ ctx, input }) => {
+      const organizationId = ctx.activeOrganizationId;
+      if (!organizationId) {
+        throw new TRPCError({
+          code: "FORBIDDEN",
+          message: "No active organization",
+        });
+      }
+
+      const url = await getCustomerPortalUrl({
+        customerId: input.customerId,
+        returnUrl: input.returnUrl,
+      });
+
+      return { url };
     }),
 });

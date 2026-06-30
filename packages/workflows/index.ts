@@ -5,6 +5,7 @@ import { rereviewPR } from "./review/rereview";
 import { releaseReadiness } from "./release/readiness";
 import { githubSync } from "./github/sync";
 import { reviewCompleteNotification } from "./notification/review-complete";
+import { dodoWebhookReceived } from "./billing/dodo-webhook";
 
 export * from "./prd/generate";
 export * from "./task/generate";
@@ -13,6 +14,7 @@ export * from "./review/rereview";
 export * from "./release/readiness";
 export * from "./github/sync";
 export * from "./notification/review-complete";
+export * from "./billing/dodo-webhook";
 
 export const functions = [
   generatePRD,
@@ -22,4 +24,5 @@ export const functions = [
   releaseReadiness,
   githubSync,
   reviewCompleteNotification,
+  dodoWebhookReceived,
 ];

@@ -6,7 +6,10 @@ export * from "./models/task";
 export * from "./models/review";
 export * from "./models/pull-request";
 export * from "./models/github";
-export * from "./models/billing";
 export * from "./models/auth";
-
 export * from "./models/repo-sync";
+
+export * from "./models/subscription";
+export * from "./models/billing-event";
+export * from "./models/usage";
+export * from "./models/invoice";

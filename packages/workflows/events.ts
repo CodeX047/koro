@@ -4,6 +4,7 @@ import type { ReviewEvents } from "./review/events";
 import type { ReleaseEvents } from "./release/events";
 import type { GithubEvents } from "./github/events";
 import type { NotificationEvents } from "./notification/events";
+import type { BillingEvents } from "./billing/events";
 
 export type Events = 
   & PRDEvents 
@@ -11,4 +12,5 @@ export type Events =
   & ReviewEvents 
   & ReleaseEvents 
   & GithubEvents 
-  & NotificationEvents;
+  & NotificationEvents
+  & BillingEvents;

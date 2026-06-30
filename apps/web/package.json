@@ -42,6 +42,7 @@
     "@radix-ui/react-tooltip": "^1.2.8",
     "@repo/ai": "workspace:^",
     "@repo/auth": "workspace:*",
+    "@repo/billing": "workspace:*",
     "@repo/database": "workspace:*",
     "@repo/services": "workspace:*",
     "@repo/trpc": "workspace:*",
