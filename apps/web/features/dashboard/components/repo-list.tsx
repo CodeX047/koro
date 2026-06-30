@@ -6,7 +6,7 @@ import { githubReposInfiniteQuery } from "~/features/github/lib/repos-query";
 
 import SyncRepoButton from "~/features/repo-sync/components/sync-repo-button";
 
-export function RepoList() {
+export function RepoList({ isSyncLimitReached = false }: { isSyncLimitReached?: boolean }) {
   const { data, isLoading, isError, error, fetchNextPage, hasNextPage, isFetchingNextPage } =
     useInfiniteQuery(githubReposInfiniteQuery);
 
@@ -85,6 +85,7 @@ export function RepoList() {
                   repoFullName={repo.fullName}
                   branch={repo.defaultBranch}
                   syncStatus={repo.syncStatus}
+                  isSyncLimitReached={isSyncLimitReached}
                 />
               </td>
             </tr>
