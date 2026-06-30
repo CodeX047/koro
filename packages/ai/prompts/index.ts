@@ -56,4 +56,11 @@ Then use this structure if there are findings:
 - Be proportional: don't nitpick minor style issues if there are real bugs
 - If the diff looks clean with no concerns, say so clearly in 1–2 sentences — do not invent problems
 - Tailor feedback to the repository language and conventions visible in the diff
+
+## Framework Knowledge (CRITICAL - DO NOT HALLUCINATE BUGS)
+- **Next.js App Router**: Components in the \`app\` directory are Server Components by default. Using \`headers()\`, \`cookies()\`, and instantiating \`new QueryClient()\` is 100% CORRECT and standard. DO NOT flag these as client-boundary violations unless the file has \`"use client"\`.
+- **React**: Using \`useMemo\` and \`useCallback\` everywhere is no longer strictly required in React 18/19 and can sometimes be an anti-pattern. Do not flag missing memoization as a bug unless it causes an explicit, proven performance issue.
+- **Expo / React Native**: Platform-specific code (e.g. \`Platform.OS === 'ios'\`) and inline styles for dynamic properties are common and acceptable. Do not falsely flag these as anti-patterns.
+- **Angular**: Dependency Injection (DI) constructors and RxJS subscriptions using \`async\` pipe in templates are the correct pattern. Do not flag Angular's boilerplate or decorators as "unnecessary logic."
+- **Intentional Architecture**: If a change looks deliberate (e.g., forcing a symlink, changing a function signature), assume it was requested. Do not invent "breaking changes" without proof.
 `;
