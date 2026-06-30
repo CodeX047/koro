@@ -1,7 +1,7 @@
 import { CodeChunk } from "~/features/reviews/types/review";
 import { RepoFile } from "../types";
 import { githubService } from "~/features/github/utils/service";
-import { getPineconeIndex } from "~/features/pinecone/client";
+import { getPineconeIndex } from "@repo/services/pinecone/client";
 import { db, inArray } from "@repo/database";
 import { repoSyncTable } from "@repo/database/schema";
 import { inngest } from "@repo/workflows/client";

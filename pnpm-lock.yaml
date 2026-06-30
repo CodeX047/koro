@@ -398,12 +398,21 @@ importers:
 
   packages/services:
     dependencies:
+      '@pinecone-database/pinecone':
+        specifier: ^8.0.0
+        version: 8.0.0
+      '@repo/ai':
+        specifier: workspace:*
+        version: link:../ai
       '@repo/database':
         specifier: workspace:*
         version: link:../database
       '@repo/logger':
         specifier: workspace:*
         version: link:../logger
+      ai:
+        specifier: ^7.0.4
+        version: 7.0.4(zod@4.4.3)
       octokit:
         specifier: ^5.0.5
         version: 5.0.5
