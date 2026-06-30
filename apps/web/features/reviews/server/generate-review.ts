@@ -1,7 +1,7 @@
 import { generateText } from "ai";
 import { openrouter, REVIEW_SYSTEM_PROMPT } from "@repo/ai";
 
-const REVIEW_MODEL = "openrouter/free";
+const REVIEW_MODEL = process.env.REVIEW_MODEL || "anthropic/claude-3-haiku";
 
 type ReviewInput = {
   repoFullName: string;
@@ -20,8 +20,14 @@ function buildContextSection(snippets: string[] | undefined, title: string) {
 }
 
 export async function generateReview(input: ReviewInput) {
-  const repoContext = buildContextSection(input.repoContextSnippets, "Related code from the repository (for context only, not part of the change)");
-  const prContext = buildContextSection(input.contextSnippets, "Specific PR chunks related to title");
+  const repoContext = buildContextSection(
+    input.repoContextSnippets,
+    "Related code from the repository (for context only, not part of the change)",
+  );
+  const prContext = buildContextSection(
+    input.contextSnippets,
+    "Specific PR chunks related to title",
+  );
 
   const { text } = await generateText({
     model: openrouter(REVIEW_MODEL),

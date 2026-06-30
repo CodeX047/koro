@@ -1,7 +1,10 @@
 import React from "react";
-import { Layers, FolderKanban, Plus } from "lucide-react";
+import { FolderKanban, Plus } from "lucide-react";
+import { requireAuth } from "~/features/auth/utils/auth";
 
-export default function ProjectsPage() {
+export default async function ProjectsPage() {
+  await requireAuth();
+
   return (
     <div className="min-h-screen bg-[#090b11] text-slate-100 p-8 font-sans">
       <div className="max-w-6xl mx-auto space-y-6">

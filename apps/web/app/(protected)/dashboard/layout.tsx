@@ -1,6 +1,8 @@
 import React from "react";
 import Link from "next/link";
 import { UserMenu } from "./_components/user-menu";
+import { OrgSelector } from "./_components/org-selector";
+import { SystemStatus } from "./_components/system-status";
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -26,18 +28,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           </div>
         </div>
         <div className="flex items-center gap-6">
-          <div className="flex items-center gap-2 text-[12px]">
-            <span style={{ color: "var(--koro-ash)" }}>Org:</span>
-            <select 
-              className="bg-transparent text-[var(--koro-on-primary)] outline-none cursor-pointer font-medium"
-              style={{ appearance: "none" }}
-            >
-              <option>Kōro Engineering</option>
-              <option>Acme Corp</option>
-              <option>Personal Sandbox</option>
-            </select>
-            <span style={{ color: "var(--koro-ash)" }}>▼</span>
-          </div>
+          <OrgSelector />
           <div
             className="hidden sm:flex items-center gap-2 text-[12px] px-3 py-1.5 rounded-sm"
             style={{
@@ -86,24 +77,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             </div>
           </div>
 
-          <div>
-            <div
-              className="text-[10px] tracking-widest uppercase mb-3"
-              style={{ color: "var(--koro-ash)" }}
-            >
-              System Status
-            </div>
-            <div className="flex flex-col gap-3 text-[12px]">
-              <div className="flex items-center justify-between">
-                <span style={{ color: "var(--koro-ash)" }}>AI Services</span>
-                <span style={{ color: "var(--koro-success)" }} className="koro-animate-pulse">●</span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span style={{ color: "var(--koro-ash)" }}>GitHub Sync</span>
-                <span style={{ color: "var(--koro-success)" }}>●</span>
-              </div>
-            </div>
-          </div>
+          <SystemStatus />
 
           <UserMenu />
         </div>

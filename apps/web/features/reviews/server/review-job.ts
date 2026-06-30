@@ -9,7 +9,15 @@ import { buildPrNamespace, saveChunksToPinecone, searchPrContext } from "./vecto
 import { buildRepoNamespace } from "~/features/repo-sync/server/repo-sync";
 
 export const reviewPullRequest = inngest.createFunction(
-    { id: "review-pull-request", triggers: [{ event: "github/pr.received" }] },
+    { 
+        id: "review-pull-request", 
+        triggers: [{ event: "github/pr.received" }],
+        rateLimit: {
+            key: "event.data.pullRequestId",
+            limit: 2,
+            period: "1h"
+        }
+    },
     async ({ event, step }: { event: any, step: any }) => {
         const pullRequestId = event.data.pullRequestId;
 

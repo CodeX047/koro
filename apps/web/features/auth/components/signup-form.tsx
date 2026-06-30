@@ -18,13 +18,11 @@ export interface SignupFormProps extends React.ComponentProps<"div"> {}
 
 export function SignupForm({ className, ...props }: SignupFormProps) {
   const router = useRouter();
-  const { register, handleSubmit, watch } = useForm<SignupFormValues>();
-  
+  const { register, handleSubmit } = useForm<SignupFormValues>();
+
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
   const [isPending, setIsPending] = useState(false);
-
-  const password = watch("password");
 
   const handleGithubSignIn = async () => {
     setErrorMsg(null);
@@ -81,12 +79,8 @@ export function SignupForm({ className, ...props }: SignupFormProps) {
     <div className={cn("w-full max-w-sm flex flex-col gap-6 font-mono", className)} {...props}>
       <div className="border border-[rgba(15,0,0,0.12)] bg-[#fdfcfc] rounded-none p-6 space-y-6">
         <div>
-          <div className="text-[10px] text-[#646262] mb-1 font-bold select-none">
-            Join Koro
-          </div>
-          <h2 className="text-base font-bold text-[#201d1d] tracking-tight">
-            Create an Account
-          </h2>
+          <div className="text-[10px] text-[#646262] mb-1 font-bold select-none">Join Koro</div>
+          <h2 className="text-base font-bold text-[#201d1d] tracking-tight">Create an Account</h2>
           <div className="h-px bg-[rgba(15,0,0,0.12)] my-3" />
         </div>
 
@@ -104,7 +98,10 @@ export function SignupForm({ className, ...props }: SignupFormProps) {
 
         <form onSubmit={handleSubmit(handleSignup)} className="space-y-4">
           <div className="space-y-1.5">
-            <label htmlFor="name" className="text-[11px] font-bold text-[#201d1d] block select-none">
+            <label
+              htmlFor="name"
+              className="text-[11px] font-bold text-[#201d1d] block select-none"
+            >
               Full Name
             </label>
             <input
@@ -119,7 +116,10 @@ export function SignupForm({ className, ...props }: SignupFormProps) {
           </div>
 
           <div className="space-y-1.5">
-            <label htmlFor="email" className="text-[11px] font-bold text-[#201d1d] block select-none">
+            <label
+              htmlFor="email"
+              className="text-[11px] font-bold text-[#201d1d] block select-none"
+            >
               Email
             </label>
             <input
@@ -135,7 +135,10 @@ export function SignupForm({ className, ...props }: SignupFormProps) {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="space-y-1.5">
-              <label htmlFor="password" className="text-[11px] font-bold text-[#201d1d] block select-none">
+              <label
+                htmlFor="password"
+                className="text-[11px] font-bold text-[#201d1d] block select-none"
+              >
                 Password
               </label>
               <input
@@ -148,7 +151,10 @@ export function SignupForm({ className, ...props }: SignupFormProps) {
               />
             </div>
             <div className="space-y-1.5">
-              <label htmlFor="confirm-password" className="text-[11px] font-bold text-[#201d1d] block select-none">
+              <label
+                htmlFor="confirm-password"
+                className="text-[11px] font-bold text-[#201d1d] block select-none"
+              >
                 Confirm Password
               </label>
               <input
@@ -202,11 +208,17 @@ export function SignupForm({ className, ...props }: SignupFormProps) {
           </Link>
         </div>
       </div>
-      
+
       <div className="px-6 text-center text-[10px] text-[#646262] select-none leading-normal">
         By creating an account, you agree to our{" "}
-        <a href="#" className="underline hover:text-[#201d1d]">Terms of Service</a> and{" "}
-        <a href="#" className="underline hover:text-[#201d1d]">Privacy Policy</a>.
+        <a href="#" className="underline hover:text-[#201d1d]">
+          Terms of Service
+        </a>{" "}
+        and{" "}
+        <a href="#" className="underline hover:text-[#201d1d]">
+          Privacy Policy
+        </a>
+        .
       </div>
     </div>
   );

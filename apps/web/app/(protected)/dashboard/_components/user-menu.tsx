@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { authClient } from "@repo/auth/client";
 
@@ -47,7 +48,13 @@ export function UserMenu() {
           }}
         >
           {user.image ? (
-            <img src={user.image} alt={displayName} className="w-full h-full object-cover rounded-sm" />
+            <Image 
+              src={user.image} 
+              alt={displayName} 
+              width={32}
+              height={32}
+              className="w-full h-full object-cover rounded-sm" 
+            />
           ) : (
             displayName.slice(0, 2).toUpperCase()
           )}

@@ -89,7 +89,11 @@ function ConnectionActions({ connected, installUrl }: { connected: boolean; inst
   return <DisconnectedActions installUrl={installUrl} />;
 }
 
-export function GithubConnectCard({ userId, installation, installUrl }: GithubConnectCardProps) {
+export function GithubConnectCard({
+  userId: _userId,
+  installation,
+  installUrl,
+}: GithubConnectCardProps) {
   const { connected, accountLogin } = installation;
 
   // Default to neutral styling; switch to green when connected

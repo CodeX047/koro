@@ -32,8 +32,6 @@ export async function POST(request: NextRequest) {
 
   const event = JSON.parse(payload) as PullRequestWebhookPayload;
 
-  console.log("GitHub Webhook Event:", event.action, event.repository.full_name);
-
   if (!REVIEWABLE_ACTIONS.includes(event.action)) {
     return NextResponse.json({ received: true });
   }
