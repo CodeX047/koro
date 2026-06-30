@@ -12,6 +12,7 @@ type SyncRepoButtonProps = {
     repoFullName: string;
     branch: string;
     syncStatus: RepoSyncStatus | null;
+    isSyncLimitReached?: boolean;
 };
 
 function isSyncing(status: RepoSyncStatus | null, mutationPending: boolean) {
@@ -31,7 +32,7 @@ function getButtonLabel(status: RepoSyncStatus | null, mutationPending: boolean)
     return "Sync";
 }
 
-export default function SyncRepoButton({ repoFullName, branch, syncStatus }: SyncRepoButtonProps) {
+export default function SyncRepoButton({ repoFullName, branch, syncStatus, isSyncLimitReached = false }: SyncRepoButtonProps) {
     const queryClient = useQueryClient();
 
     const syncRepo = useMutation({
@@ -46,13 +47,16 @@ export default function SyncRepoButton({ repoFullName, branch, syncStatus }: Syn
     });
 
     const syncing = isSyncing(syncStatus, syncRepo.isPending);
+    const isUnsynced = !syncStatus;
+    const disabled = syncing || (isSyncLimitReached && isUnsynced);
 
     return (
         <Button
             size="sm"
             variant="outline"
-            disabled={syncing}
+            disabled={disabled}
             onClick={() => syncRepo.mutate()}
+            title={isSyncLimitReached && isUnsynced ? "Free plan limit reached. Upgrade to sync more repositories." : undefined}
         >
             {getButtonLabel(syncStatus, syncRepo.isPending)}
         </Button>

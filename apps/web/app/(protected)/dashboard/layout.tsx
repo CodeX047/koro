@@ -1,10 +1,33 @@
+"use client";
+
 import React from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { UserMenu } from "./_components/user-menu";
 import { OrgSelector } from "./_components/org-selector";
 import { SystemStatus } from "./_components/system-status";
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+  const pathname = usePathname();
+  const segments = pathname.split("/").filter(Boolean);
+
+  const segmentMap: Record<string, string> = {
+    dashboard: "Overview",
+    projects: "Projects",
+    repos: "Repositories",
+    team: "Team",
+    github: "GitHub App",
+    settings: "Settings",
+    billing: "Billing",
+    features: "Features",
+    reviews: "Reviews",
+    workspace: "Workspace",
+  };
+
+  const formatSegment = (segment: string) => {
+    return segmentMap[segment] || segment.charAt(0).toUpperCase() + segment.slice(1);
+  };
+
   return (
     <div className="flex flex-col h-screen overflow-hidden">
       {/* Dashboard Header */}
@@ -18,13 +41,34 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             className="hidden sm:flex items-center gap-3 text-[12px]"
             style={{ color: "var(--koro-ash)" }}
           >
-            <span className="cursor-pointer hover:text-[var(--koro-on-primary)] transition-colors">Overview</span>
-            <span>/</span>
-            <span className="cursor-pointer hover:text-[var(--koro-on-primary)] transition-colors">Projects</span>
-            <span>/</span>
-            <span className="text-[var(--koro-on-primary)] bg-[var(--koro-surface-dark-elevated)] px-2 py-0.5 rounded-sm">
-              Dashboard
-            </span>
+            {segments.map((segment, index) => {
+              const isLast = index === segments.length - 1;
+              const href = "/" + segments.slice(0, index + 1).join("/");
+              const label = formatSegment(segment);
+
+              if (isLast) {
+                return (
+                  <span
+                    key={href}
+                    className="text-[var(--koro-on-primary)] bg-[var(--koro-surface-dark-elevated)] px-2 py-0.5 rounded-sm"
+                  >
+                    {label}
+                  </span>
+                );
+              }
+
+              return (
+                <React.Fragment key={href}>
+                  <Link
+                    href={href}
+                    className="cursor-pointer hover:text-[var(--koro-on-primary)] transition-colors"
+                  >
+                    {label}
+                  </Link>
+                  <span>/</span>
+                </React.Fragment>
+              );
+            })}
           </div>
         </div>
         <div className="flex items-center gap-6">

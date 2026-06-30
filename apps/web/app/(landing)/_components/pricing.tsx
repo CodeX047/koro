@@ -9,27 +9,41 @@ const PLANS = [
     price: "$0",
     period: "forever",
     description: "Get started with Kōro — no credit card required.",
-    features: ["1 Workspace", "1 Repository", "20 AI Reviews / month", "Community support"],
+    features: ["1 Workspace Member", "1 Repository", "20 AI Reviews / month", "Community support"],
     cta: "Get Started",
     href: "/sign-up",
     primary: false,
   },
   {
     name: "Pro",
-    price: "Pro",
-    period: "per seat / month",
-    description: "For teams shipping production software at scale.",
+    price: "$29",
+    period: "per month",
+    description: "For individual developers and small teams.",
     features: [
-      "Unlimited Projects",
-      "Unlimited AI Reviews",
-      "Premium AI Models",
-      "Priority Processing",
-      "Advanced analytics",
-      "Priority support",
+      "5 Workspace Members",
+      "Unlimited Repositories",
+      "500 AI Reviews / month",
+      "Priority AI Processing",
     ],
-    cta: "Contact Us",
+    cta: "Upgrade to Pro",
     href: "/sign-up",
     primary: true,
+  },
+  {
+    name: "Team",
+    price: "$99",
+    period: "per month",
+    description: "For fast-moving engineering organizations.",
+    features: [
+      "20 Workspace Members",
+      "Unlimited Repositories",
+      "2000 AI Reviews / month",
+      "Priority AI Processing",
+      "Custom review rules",
+    ],
+    cta: "Upgrade to Team",
+    href: "/sign-up",
+    primary: false,
   },
 ];
 
@@ -66,7 +80,7 @@ export function Pricing() {
       style={{ paddingTop: "var(--koro-section)", paddingBottom: "var(--koro-section)" }}
       ref={ref}
     >
-      <div className="mx-auto max-w-[960px]">
+      <div className="mx-auto max-w-[1100px]">
         {/* Section divider */}
         <div style={{ borderTop: "1px solid var(--koro-hairline)" }} />
 
@@ -86,7 +100,7 @@ export function Pricing() {
         </p>
 
         {/* Plan cards */}
-        <div className="mt-10 grid gap-6 sm:grid-cols-2">
+        <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {PLANS.map((plan, i) => (
             <div
               key={plan.name}
