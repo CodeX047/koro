@@ -34,6 +34,17 @@ export async function getPullRequestFiles(
             continue;
         }
 
+        // Ignore lockfiles and dependencies for AI review
+        const isIgnored = 
+            file.filename.includes("node_modules/") || 
+            file.filename.endsWith("-lock.yaml") || 
+            file.filename.endsWith("-lock.json") ||
+            file.filename.endsWith(".lock");
+
+        if (isIgnored) {
+            continue;
+        }
+
         files.push({ filePath: file.filename, patch: file.patch });
     }
 
