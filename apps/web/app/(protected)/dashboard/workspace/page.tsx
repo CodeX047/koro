@@ -1,6 +1,9 @@
 import React from "react";
+import { requireAuth } from "~/features/auth/utils/auth";
 
-export default function WorkspacePage() {
+export default async function WorkspacePage() {
+  await requireAuth();
+
   return (
     <div className="min-h-screen bg-slate-950 text-slate-50 p-8">
       <div className="max-w-6xl mx-auto space-y-6">

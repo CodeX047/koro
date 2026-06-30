@@ -1,4 +1,4 @@
-import { pgTable, uuid, varchar, text, integer, timestamp, unique } from "drizzle-orm/pg-core";
+import { pgTable, uuid, varchar, text, integer, timestamp, unique, index } from "drizzle-orm/pg-core";
 
 export const pullRequestsTable = pgTable("pull_request", {
   id: uuid("id").primaryKey().defaultRandom(),
@@ -16,4 +16,5 @@ export const pullRequestsTable = pgTable("pull_request", {
   updatedAt: timestamp("updated_at").$onUpdate(() => new Date()).defaultNow().notNull(),
 }, (t) => [
   unique("repo_pr_unique").on(t.repoFullName, t.prNumber),
+  index("pull_request_installation_id_idx").on(t.installationId),
 ]);

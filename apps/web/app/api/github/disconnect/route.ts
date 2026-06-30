@@ -1,9 +1,9 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { headers } from "next/headers";
 import { auth } from "@repo/auth";
 import { githubService } from "~/features/github/utils/service";
 
-export async function POST(request: NextRequest) {
+export async function POST() {
   const session = await auth.api.getSession({
     headers: await headers(),
   });
@@ -15,8 +15,8 @@ export async function POST(request: NextRequest) {
   try {
     await githubService.deleteInstallation(session.user.id);
     return NextResponse.json({ success: true });
-  } catch (error: any) {
+  } catch (error) {
     console.error("Error disconnecting GitHub App:", error);
-    return NextResponse.json({ error: error.message || "Internal Server Error" }, { status: 500 });
+    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
 }

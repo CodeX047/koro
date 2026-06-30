@@ -2,7 +2,7 @@ import { CodeChunk } from "~/features/reviews/types/review";
 import { RepoFile } from "../types";
 import { githubService } from "~/features/github/utils/service";
 import { getPineconeIndex } from "~/features/pinecone/client";
-import { db, inArray, eq } from "@repo/database";
+import { db, inArray } from "@repo/database";
 import { repoSyncTable } from "@repo/database/schema";
 import { inngest } from "~/features/inngest/client";
 
@@ -12,14 +12,32 @@ const MAX_CHUNK_LINES = 80;
 const UPSERT_BATCH_SIZE = 90;
 
 const CODE_EXTENSIONS = [
-  ".ts", ".tsx", ".js", ".jsx", ".mjs", ".py", ".go", ".rb", ".rs",
-  ".java", ".kt", ".swift", ".c", ".h", ".cpp", ".cs", ".php",
-  ".sql", ".prisma", ".css", ".md", ".yml", ".yaml",
+  ".ts",
+  ".tsx",
+  ".js",
+  ".jsx",
+  ".mjs",
+  ".py",
+  ".go",
+  ".rb",
+  ".rs",
+  ".java",
+  ".kt",
+  ".swift",
+  ".c",
+  ".h",
+  ".cpp",
+  ".cs",
+  ".php",
+  ".sql",
+  ".prisma",
+  ".css",
+  ".md",
+  ".yml",
+  ".yaml",
 ];
 
-const SKIPPED_FOLDERS = [
-  "node_modules/", "dist/", "build/", ".next/", "generated/", "vendor/",
-];
+const SKIPPED_FOLDERS = ["node_modules/", "dist/", "build/", ".next/", "generated/", "vendor/"];
 
 type TreeEntry = {
   path?: string;
@@ -84,28 +102,39 @@ export function chunkRepoFiles(files: RepoFile[]): CodeChunk[] {
 export async function getRepoFiles(
   installationId: number,
   repoFullName: string,
-  branch: string
+  branch: string,
 ): Promise<RepoFile[]> {
   const app = githubService.getGithubApp();
   const octokit = await app.getInstallationOctokit(installationId);
   const [owner, repo] = repoFullName.split("/") as [string, string];
 
-  const { data: tree } = await octokit.request(
-    "GET /repos/{owner}/{repo}/git/trees/{tree_sha}",
-    { owner, repo, tree_sha: branch, recursive: "1" }
-  );
+  const { data: tree } = await octokit.request("GET /repos/{owner}/{repo}/git/trees/{tree_sha}", {
+    owner,
+    repo,
+    tree_sha: branch,
+    recursive: "1",
+  });
 
   const entries = tree.tree.filter(isIndexableFile).slice(0, MAX_FILES);
   const files: RepoFile[] = [];
 
-  for (const entry of entries) {
-    const { data: blob } = await octokit.request(
-      "GET /repos/{owner}/{repo}/git/blobs/{file_sha}",
-      { owner, repo, file_sha: entry.sha! }
-    );
-
-    const content = Buffer.from(blob.content, "base64").toString("utf-8");
-    files.push({ filePath: entry.path!, content });
+  const CONCURRENCY_LIMIT = 10;
+  for (let i = 0; i < entries.length; i += CONCURRENCY_LIMIT) {
+    const batch = entries.slice(i, i + CONCURRENCY_LIMIT);
+    const batchPromises = batch.map(async (entry) => {
+      const { data: blob } = await octokit.request(
+        "GET /repos/{owner}/{repo}/git/blobs/{file_sha}",
+        {
+          owner,
+          repo,
+          file_sha: entry.sha!,
+        },
+      );
+      const content = Buffer.from(blob.content, "base64").toString("utf-8");
+      return { filePath: entry.path!, content };
+    });
+    const batchFiles = await Promise.all(batchPromises);
+    files.push(...batchFiles);
   }
 
   return files;
@@ -135,10 +164,13 @@ export async function saveRepoChunks(namespace: string, chunks: CodeChunk[]) {
 export async function getRepoSyncStatuses(repoFullNames: string[]) {
   if (repoFullNames.length === 0) return {};
 
-  const syncs = await db.select({
-    repoFullName: repoSyncTable.repoFullName,
-    status: repoSyncTable.status,
-  }).from(repoSyncTable).where(inArray(repoSyncTable.repoFullName, repoFullNames));
+  const syncs = await db
+    .select({
+      repoFullName: repoSyncTable.repoFullName,
+      status: repoSyncTable.status,
+    })
+    .from(repoSyncTable)
+    .where(inArray(repoSyncTable.repoFullName, repoFullNames));
 
   const statusByRepo: Record<string, string> = {};
 
@@ -152,14 +184,21 @@ export async function getRepoSyncStatuses(repoFullNames: string[]) {
 export async function triggerRepoSync(
   installationId: number,
   repoFullName: string,
-  branch: string
+  branch: string,
 ) {
-  const [repoSync] = await db.insert(repoSyncTable).values({
-    installationId, repoFullName, branch, status: "pending"
-  }).onConflictDoUpdate({
-    target: repoSyncTable.repoFullName,
-    set: { installationId, branch, status: "pending" }
-  }).returning();
+  const [repoSync] = await db
+    .insert(repoSyncTable)
+    .values({
+      installationId,
+      repoFullName,
+      branch,
+      status: "pending",
+    })
+    .onConflictDoUpdate({
+      target: repoSyncTable.repoFullName,
+      set: { installationId, branch, status: "pending" },
+    })
+    .returning();
 
   if (!repoSync) {
     throw new Error("Failed to create or update RepoSync record");

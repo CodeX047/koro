@@ -1,6 +1,8 @@
 import { z } from "zod";
 import { protectedProcedure, router } from "../trpc";
 import { TRPCError } from "@trpc/server";
+import { db, eq } from "@repo/database";
+import { projectsTable } from "@repo/database/schema";
 
 export const projectRouter = router({
   create: protectedProcedure
@@ -11,8 +13,13 @@ export const projectRouter = router({
         throw new TRPCError({ code: "BAD_REQUEST", message: "No active organization selected" });
       }
       console.log(`Creating project ${input.name} for org ${orgId}`);
-      // In production: return projectService.create({ ...input, organizationId: orgId })
-      return { id: "new-project-id", name: input.name, organizationId: orgId };
+      
+      const [project] = await db.insert(projectsTable).values({
+        name: input.name,
+        organizationId: orgId,
+      }).returning();
+      
+      return project;
     }),
 
   list: protectedProcedure
@@ -22,9 +29,8 @@ export const projectRouter = router({
         return [];
       }
       console.log(`Listing projects for org ${orgId}`);
-      // In production: return projectService.list(orgId)
-      return [
-        { id: "proj-1", name: "Project Kōro", description: "AI Platform", organizationId: orgId }
-      ];
+      
+      const projects = await db.select().from(projectsTable).where(eq(projectsTable.organizationId, orgId));
+      return projects;
     }),
 });

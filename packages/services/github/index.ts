@@ -15,11 +15,18 @@ export class GithubService {
         throw new Error("Missing GITHUB_APP_ID or GITHUB_APP_PRIVATE_KEY environment variables.");
       }
 
+      if (!webhookSecret) {
+        throw new Error(
+          "Missing GITHUB_WEBHOOK_SECRET environment variable. " +
+            "An empty secret makes webhook signature verification ineffective."
+        );
+      }
+
       this.githubApp = new App({
         appId,
         privateKey: privateKey.replace(/\\n/g, "\n"),
         webhooks: {
-          secret: webhookSecret || "",
+          secret: webhookSecret,
         },
       });
     }

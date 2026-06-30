@@ -4,10 +4,12 @@
   "private": true,
   "devDependencies": {
     "@repo/typescript-config": "workspace:*",
+    "@types/node": "^22.15.3",
     "typescript": "^5.9.3"
   },
   "dependencies": {
     "@openrouter/ai-sdk-provider": "^2.10.0",
-    "ai": "^7.0.4"
+    "ai": "^7.0.4",
+    "zod": "^4.3.5"
   }
 }

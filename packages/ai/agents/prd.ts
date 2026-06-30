@@ -1,3 +1,6 @@
+import { generateObject } from "ai";
+import { z } from "zod";
+import { openrouter } from "../index";
 import { PRD_SYSTEM_PROMPT } from "../prompts";
 
 export interface GeneratedPRD {
@@ -10,28 +13,31 @@ export interface GeneratedPRD {
 }
 
 export class PRDAgent {
-  async generate(title: string, description: string, clarifications: { question: string; answer: string }[]): Promise<GeneratedPRD> {
+  async generate(
+    title: string,
+    description: string,
+    clarifications: { question: string; answer: string }[],
+  ): Promise<GeneratedPRD> {
     console.log("Running PRDAgent for:", title);
-    // In production, call the AI SDK using PRD_SYSTEM_PROMPT
-    return {
-      problemStatement: `Currently, users lack a clear method to handle: ${title}. ${description}`,
-      goals: [
-        `Enable seamless ${title} functionality.`,
-        "Provide interactive user feedback."
-      ],
-      nonGoals: [
-        "Support legacy third-party custom systems."
-      ],
-      userStories: [
-        `As a user, I want to execute ${title} easily.`
-      ],
-      acceptanceCriteria: [
-        "Feature works end-to-end.",
-        "Response time is under 1 second."
-      ],
-      successMetrics: [
-        "Adoption rate > 80% among users."
-      ]
-    };
+
+    const clarificationsText = clarifications
+      .map((c) => `Q: ${c.question}\nA: ${c.answer}`)
+      .join("\n\n");
+
+    const { object } = await generateObject({
+      model: openrouter(process.env.AI_MODEL || "anthropic/claude-3-haiku"),
+      system: PRD_SYSTEM_PROMPT,
+      prompt: `Title: ${title}\nDescription: ${description}\n\nClarifications:\n${clarificationsText}`,
+      schema: z.object({
+        problemStatement: z.string(),
+        goals: z.array(z.string()),
+        nonGoals: z.array(z.string()),
+        userStories: z.array(z.string()),
+        acceptanceCriteria: z.array(z.string()),
+        successMetrics: z.array(z.string()),
+      }),
+    });
+
+    return object;
   }
 }

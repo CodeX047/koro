@@ -4,6 +4,18 @@
   "tasks": {
     "build": {
       "dependsOn": ["^build"],
+      "env": [
+        "PINECONE_API_KEY",
+        "PINECONE_INDEX",
+        "FRONTEND_URL",
+        "BETTER_AUTH_URL",
+        "OPENROUTER_API_KEY",
+        "NODE_ENV",
+        "GITHUB_APP_ID",
+        "GITHUB_APP_PRIVATE_KEY",
+        "GITHUB_WEBHOOK_SECRET",
+        "NEXT_PUBLIC_APP_URL"
+      ],
       "inputs": ["$TURBO_DEFAULT$", ".env*"],
       "outputs": [".next/**", "!.next/cache/**"]
     },

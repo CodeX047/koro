@@ -1,7 +1,10 @@
 import React from "react";
-import { GitPullRequest, Search } from "lucide-react";
+import { GitPullRequest } from "lucide-react";
+import { requireAuth } from "~/features/auth/utils/auth";
 
-export default function ReviewsPage() {
+export default async function ReviewsPage() {
+  await requireAuth();
+
   return (
     <div className="min-h-screen bg-[#090b11] text-slate-100 p-8 font-sans">
       <div className="max-w-6xl mx-auto space-y-6">
