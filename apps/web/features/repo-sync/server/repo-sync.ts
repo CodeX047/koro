@@ -4,7 +4,7 @@ import { githubService } from "~/features/github/utils/service";
 import { getPineconeIndex } from "~/features/pinecone/client";
 import { db, inArray } from "@repo/database";
 import { repoSyncTable } from "@repo/database/schema";
-import { inngest } from "~/features/inngest/client";
+import { inngest } from "@repo/workflows/client";
 
 const MAX_FILE_SIZE_BYTES = 100_000;
 const MAX_FILES = 200;
@@ -121,7 +121,7 @@ export async function getRepoFiles(
   const CONCURRENCY_LIMIT = 10;
   for (let i = 0; i < entries.length; i += CONCURRENCY_LIMIT) {
     const batch = entries.slice(i, i + CONCURRENCY_LIMIT);
-    const batchPromises = batch.map(async (entry) => {
+    const batchPromises = batch.map(async (entry: any) => {
       const { data: blob } = await octokit.request(
         "GET /repos/{owner}/{repo}/git/blobs/{file_sha}",
         {
@@ -205,7 +205,7 @@ export async function triggerRepoSync(
   }
 
   await inngest.send({
-    name: "repo/sync.requested",
+    name: "github/sync.requested",
     data: { repoSyncId: repoSync.id },
   });
 }
