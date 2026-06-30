@@ -5,16 +5,27 @@
     "build": {
       "dependsOn": ["^build"],
       "env": [
-        "PINECONE_API_KEY",
-        "PINECONE_INDEX",
-        "FRONTEND_URL",
+        "DATABASE_URL",
+        "BETTER_AUTH_SECRET",
         "BETTER_AUTH_URL",
-        "OPENROUTER_API_KEY",
-        "NODE_ENV",
+        "BETTER_AUTH_TRUSTED_ORIGINS",
+        "INNGEST_DEV",
+        "ALLOWED_DEV_ORIGINS",
+        "REVIEW_MODEL",
+        "GITHUB_CLIENT_ID",
+        "GITHUB_CLIENT_SECRET",
         "GITHUB_APP_ID",
         "GITHUB_APP_PRIVATE_KEY",
         "GITHUB_WEBHOOK_SECRET",
-        "NEXT_PUBLIC_APP_URL"
+        "GITHUB_APP_NAME",
+        "NEXT_PUBLIC_GITHUB_APP_LINK",
+        "OPENROUTER_API_KEY",
+        "PINECONE_API_KEY",
+        "PINECONE_INDEX",
+        "NEXT_PUBLIC_API_URL",
+        "NEXT_PUBLIC_APP_URL",
+        "FRONTEND_URL",
+        "NODE_ENV"
       ],
       "inputs": ["$TURBO_DEFAULT$", ".env*"],
       "outputs": [".next/**", "!.next/cache/**"]
