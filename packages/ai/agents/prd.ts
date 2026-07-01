@@ -9,6 +9,7 @@ export interface GeneratedPRD {
   nonGoals: string[];
   userStories: string[];
   acceptanceCriteria: string[];
+  edgeCases: string[];
   successMetrics: string[];
 }
 
@@ -34,6 +35,7 @@ export class PRDAgent {
         nonGoals: z.array(z.string()),
         userStories: z.array(z.string()),
         acceptanceCriteria: z.array(z.string()),
+        edgeCases: z.array(z.string()),
         successMetrics: z.array(z.string()),
       }),
     });

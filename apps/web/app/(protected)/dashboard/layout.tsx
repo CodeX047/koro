@@ -106,6 +106,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               <Link href="/dashboard/projects" className="flex items-center justify-between cursor-pointer text-[var(--koro-ash)] hover:text-[var(--koro-on-primary)] transition-colors">
                 <span>Projects</span>
               </Link>
+              <Link href="/dashboard/features" className="flex items-center justify-between cursor-pointer text-[var(--koro-ash)] hover:text-[var(--koro-on-primary)] transition-colors">
+                <span>Features</span>
+              </Link>
               <Link href="/dashboard/repos" className="flex items-center justify-between cursor-pointer text-[var(--koro-ash)] hover:text-[var(--koro-on-primary)] transition-colors">
                 <span>Repositories</span>
               </Link>

@@ -88,13 +88,7 @@ export default async function DashboardPage() {
       .orderBy(desc(featuresTable.createdAt))
       .limit(3);
 
-    featuresWithPrd = await Promise.all(fetchedFeatures.map(async (feature) => {
-      const [prd] = await db.select().from(prdsTable).where(eq(prdsTable.featureId, feature.id)).limit(1);
-      return {
-        ...feature,
-        status: prd ? "PRD READY" : "DRAFT",
-      };
-    }));
+    featuresWithPrd = fetchedFeatures;
 
     // Reviews
     recentReviews = await db.select().from(reviewsTable)

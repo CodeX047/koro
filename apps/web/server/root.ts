@@ -3,6 +3,7 @@ import { healthRouter } from "./routers/health";
 import { authRouter } from "./routers/auth";
 import { projectRouter } from "./routers/project";
 import { featureRouter } from "./routers/feature";
+import { clarificationRouter } from "./routers/clarification";
 import { prdRouter } from "./routers/prd";
 import { taskRouter } from "./routers/task";
 import { reviewRouter } from "./routers/review";
@@ -13,6 +14,7 @@ export const appRouter = router({
   auth: authRouter,
   project: projectRouter,
   feature: featureRouter,
+  clarification: clarificationRouter,
   prd: prdRouter,
   task: taskRouter,
   review: reviewRouter,
