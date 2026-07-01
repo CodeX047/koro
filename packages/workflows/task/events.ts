@@ -1,8 +1,18 @@
 export type TaskEvents = {
-  "task/generate.requested": {
+  "task/generation.requested": {
     data: {
+      featureId: string;
       prdId: string;
-      prdContent: string;
+    };
+  };
+  "task/generated": {
+    data: {
+      featureId: string;
+    };
+  };
+  "planning/completed": {
+    data: {
+      featureId: string;
     };
   };
 };

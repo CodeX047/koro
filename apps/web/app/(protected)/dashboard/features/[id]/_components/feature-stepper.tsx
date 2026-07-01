@@ -3,18 +3,20 @@
 import React from "react";
 import { CheckCircle2, Circle, Loader2 } from "lucide-react";
 
-type Stage = "feature" | "clarification" | "prd";
+type Stage = "feature" | "clarification" | "prd" | "plan";
 
 const STAGES: { id: Stage; label: string }[] = [
   { id: "feature", label: "Feature" },
   { id: "clarification", label: "Discovery" },
   { id: "prd", label: "PRD" },
+  { id: "plan", label: "Plan" },
 ];
 
 function getActiveStage(status: string): Stage {
   if (status === "DRAFT") return "feature";
   if (status === "CLARIFICATION_PENDING" || status === "CLARIFICATION_COMPLETE") return "clarification";
-  return "prd";
+  if (status === "PRD_GENERATING" || status === "PRD_READY") return "prd";
+  return "plan";
 }
 
 function isStageComplete(stage: Stage, status: string): boolean {
@@ -23,9 +25,18 @@ function isStageComplete(stage: Stage, status: string): boolean {
     return (
       status === "CLARIFICATION_COMPLETE" ||
       status === "PRD_GENERATING" ||
-      status === "PRD_READY"
+      status === "PRD_READY" ||
+      status === "TASKS_GENERATING" ||
+      status === "TASKS_DRAFT" ||
+      status === "PLANNING_COMPLETE"
     );
-  if (stage === "prd") return status === "PRD_READY";
+  if (stage === "prd") 
+    return (
+      status === "TASKS_GENERATING" || 
+      status === "TASKS_DRAFT" || 
+      status === "PLANNING_COMPLETE"
+    );
+  if (stage === "plan") return status === "PLANNING_COMPLETE";
   return false;
 }
 
@@ -38,7 +49,8 @@ export function FeatureStepper({ status }: { status: string }) {
         const isComplete = isStageComplete(stage.id, status);
         const isActive = activeStage === stage.id;
         const isGenerating =
-          stage.id === "prd" && status === "PRD_GENERATING";
+          (stage.id === "prd" && status === "PRD_GENERATING") ||
+          (stage.id === "plan" && status === "TASKS_GENERATING");
 
         return (
           <React.Fragment key={stage.id}>

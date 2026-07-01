@@ -10,12 +10,14 @@
   },
   "devDependencies": {
     "@repo/typescript-config": "workspace:*",
+    "@types/uuid": "^11.0.0",
     "typescript": "^5.9.3"
   },
   "dependencies": {
     "@repo/ai": "workspace:*",
-    "@repo/services": "workspace:*",
     "@repo/database": "workspace:*",
-    "inngest": "^4.11.0"
+    "@repo/services": "workspace:*",
+    "inngest": "^4.11.0",
+    "uuid": "^14.0.1"
   }
 }

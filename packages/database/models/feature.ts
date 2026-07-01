@@ -7,6 +7,9 @@ export type FeatureStatus =
   | "CLARIFICATION_COMPLETE"
   | "PRD_GENERATING"
   | "PRD_READY"
+  | "TASKS_GENERATING"
+  | "TASKS_DRAFT"
+  | "PLANNING_COMPLETE"
   | "FAILED";
 
 export const featuresTable = pgTable("features", {

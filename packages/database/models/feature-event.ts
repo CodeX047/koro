@@ -7,6 +7,7 @@ export type FeatureEventType =
   | "clarification_completed"
   | "prd_generation_started"
   | "prd_generated"
+  | "tasks_generated"
   | "failed";
 
 export const featureEventsTable = pgTable("feature_events", {
