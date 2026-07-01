@@ -8,6 +8,7 @@ export type FeatureEventType =
   | "prd_generation_started"
   | "prd_generated"
   | "tasks_generated"
+  | "planning_approved"
   | "failed";
 
 export const featureEventsTable = pgTable("feature_events", {

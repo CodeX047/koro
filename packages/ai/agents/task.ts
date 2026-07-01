@@ -33,6 +33,7 @@ export class TaskAgent {
           z.object({
             title: z.string(),
             description: z.string(),
+            reason: z.string().describe("A short explanation of why this task is needed or prioritized as such"),
             category: z.enum([
               "frontend",
               "backend",

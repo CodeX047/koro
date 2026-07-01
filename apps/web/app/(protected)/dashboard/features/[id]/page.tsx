@@ -343,7 +343,9 @@ export default function FeatureDetailPage() {
               )}
             </div>
             
-            <KanbanBoard featureId={id} />
+            {/* Planning Metrics UI will go here */}
+
+            <KanbanBoard featureId={id} projectId={feature.projectId} />
           </div>
         )}
 

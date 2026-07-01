@@ -24,6 +24,7 @@ import { CSS } from "@dnd-kit/utilities";
 import { GripVertical } from "lucide-react";
 import { trpc } from "~/trpc/client";
 import { TaskDialog } from "./task-dialog";
+import { PlanningMetrics } from "./planning-metrics";
 
 // ── Column Configuration ────────────────────────────────────────────────
 const COLUMNS = [
@@ -141,7 +142,7 @@ function Column({
 }
 
 // ── Main Kanban Board ────────────────────────────────────────────────────
-export function KanbanBoard({ featureId }: { featureId: string }) {
+export function KanbanBoard({ featureId, projectId }: { featureId: string, projectId: string }) {
   const utils = trpc.useUtils();
   const { data: initialTasks, isLoading } = trpc.task.listByFeature.useQuery({ featureId });
   const moveTask = trpc.task.move.useMutation({
@@ -255,21 +256,48 @@ export function KanbanBoard({ featureId }: { featureId: string }) {
   };
 
   return (
-    <div className="flex overflow-x-auto gap-4 pb-4 h-[600px]">
-      <DndContext
-        sensors={sensors}
-        collisionDetection={closestCorners}
-        onDragStart={handleDragStart}
-        onDragOver={handleDragOver}
-        onDragEnd={handleDragEnd}
-      >
+    <div className="flex flex-col gap-2">
+      <PlanningMetrics tasks={tasks} />
+      <div className="flex overflow-x-auto gap-4 pb-4 h-[600px]">
+        <DndContext
+          sensors={sensors}
+          collisionDetection={closestCorners}
+          onDragStart={handleDragStart}
+          onDragOver={handleDragOver}
+          onDragEnd={handleDragEnd}
+        >
         {COLUMNS.map((col) => (
-          <Column
-            key={col.id}
-            column={col}
-            tasks={tasks.filter((t) => t.status === col.id)}
-            onTaskClick={setSelectedTask}
-          />
+          <div key={col.id} className="flex flex-col">
+            <Column
+              column={col}
+              tasks={tasks.filter((t) => t.status === col.id)}
+              onTaskClick={setSelectedTask}
+            />
+            {col.id === "TODO" && (
+              <button
+                onClick={() => setSelectedTask({
+                  isNew: true,
+                  title: "",
+                  description: "",
+                  priority: "MEDIUM",
+                  complexity: "MEDIUM",
+                  status: "TODO",
+                  estimatedHours: null,
+                  assigneeId: "",
+                  featureId,
+                  projectId,
+                })}
+                className="mt-3 py-2 rounded-lg text-[11px] font-semibold flex items-center justify-center gap-1.5 transition-colors hover:opacity-80 border-dashed"
+                style={{
+                  color: "var(--koro-on-primary)",
+                  backgroundColor: "var(--koro-surface-dark)",
+                  border: "1px dashed var(--koro-hairline-strong)",
+                }}
+              >
+                + New Task
+              </button>
+            )}
+          </div>
         ))}
 
         <DragOverlay>
@@ -280,6 +308,7 @@ export function KanbanBoard({ featureId }: { featureId: string }) {
           ) : null}
         </DragOverlay>
       </DndContext>
+      </div>
 
       {selectedTask && (
         <TaskDialog

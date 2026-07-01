@@ -10,7 +10,7 @@ export type TaskEvents = {
       featureId: string;
     };
   };
-  "planning/completed": {
+  "planning/approved": {
     data: {
       featureId: string;
     };

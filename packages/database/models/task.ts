@@ -1,4 +1,4 @@
-import { pgTable, uuid, varchar, text, timestamp, integer, primaryKey, uniqueIndex } from "drizzle-orm/pg-core";
+import { pgTable, uuid, varchar, text, timestamp, integer, primaryKey, uniqueIndex, jsonb } from "drizzle-orm/pg-core";
 import { projectsTable } from "./project";
 import { featuresTable } from "./feature";
 import { prdsTable } from "./prd";
@@ -16,6 +16,7 @@ export const tasksTable = pgTable("tasks", {
   parentTaskId: uuid("parent_task_id"), // Self-reference for Epics -> Tasks -> Subtasks
   title: varchar("title", { length: 255 }).notNull(),
   description: text("description"),
+  reason: text("reason"), // AI explanation for why this task exists
   status: varchar("status", { length: 50 }).$type<TaskStatus>().default("TODO").notNull(),
   priority: varchar("priority", { length: 50 }).$type<TaskPriority>().default("MEDIUM").notNull(),
   complexity: varchar("complexity", { length: 50 }).$type<TaskComplexity>().default("MEDIUM").notNull(),
@@ -34,4 +35,20 @@ export const taskDependenciesTable = pgTable("task_dependencies", {
 }, (t) => [
   primaryKey({ columns: [t.taskId, t.dependsOnTaskId] }),
 ]);
+
+export const taskHistoryTable = pgTable("task_history", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  taskId: uuid("task_id").references(() => tasksTable.id, { onDelete: "cascade" }).notNull(),
+  changes: jsonb("changes").$type<Record<string, { old: any; new: any }>>().notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const planningVersionsTable = pgTable("planning_versions", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  featureId: uuid("feature_id").references(() => featuresTable.id, { onDelete: "cascade" }).notNull(),
+  version: integer("version").notNull(),
+  snapshot: jsonb("snapshot").notNull(), // Full JSON dump of tasks array
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
 

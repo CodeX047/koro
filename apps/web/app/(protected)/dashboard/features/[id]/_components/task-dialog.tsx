@@ -16,6 +16,7 @@ export function TaskDialog({ task, onClose, onUpdated }: TaskDialogProps) {
   const [priority, setPriority] = useState(task.priority);
   const [complexity, setComplexity] = useState(task.complexity);
   const [estimatedHours, setEstimatedHours] = useState<number | "">(task.estimatedHours || "");
+  const [assigneeId, setAssigneeId] = useState(task.assigneeId || "");
   const [error, setError] = useState<string | null>(null);
 
   const updateTask = trpc.task.update.useMutation({
@@ -28,19 +29,44 @@ export function TaskDialog({ task, onClose, onUpdated }: TaskDialogProps) {
     },
   });
 
+  const createTask = trpc.task.create.useMutation({
+    onSuccess: () => {
+      onUpdated();
+      onClose();
+    },
+    onError: (err) => {
+      setError(err.message);
+    },
+  });
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
-    updateTask.mutate({
-      taskId: task.id,
-      data: {
+    if (task.isNew) {
+      createTask.mutate({
+        projectId: task.projectId,
+        featureId: task.featureId,
         title,
         description,
         priority,
         complexity,
         estimatedHours: estimatedHours === "" ? null : Number(estimatedHours),
-      },
-    });
+        assigneeId: assigneeId === "" ? null : assigneeId,
+        status: "TODO",
+      });
+    } else {
+      updateTask.mutate({
+        taskId: task.id,
+        data: {
+          title,
+          description,
+          priority,
+          complexity,
+          estimatedHours: estimatedHours === "" ? null : Number(estimatedHours),
+          assigneeId: assigneeId === "" ? null : assigneeId,
+        },
+      });
+    }
   };
 
   return (
@@ -94,8 +120,44 @@ export function TaskDialog({ task, onClose, onUpdated }: TaskDialogProps) {
             <textarea
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              rows={4}
+              rows={3}
               className="w-full px-3 py-2 rounded-lg text-xs focus:outline-none resize-none"
+              style={{
+                backgroundColor: "var(--koro-surface-dark)",
+                border: "1px solid var(--koro-hairline-strong)",
+                color: "var(--koro-on-primary)",
+              }}
+            />
+          </div>
+
+          {task.reason && (
+            <div>
+              <label className="block text-[11px] font-semibold mb-1.5 uppercase tracking-wider text-[var(--koro-ash)]">
+                AI Reasoning
+              </label>
+              <div 
+                className="w-full px-3 py-2 rounded-lg text-[11px] leading-relaxed italic"
+                style={{
+                  backgroundColor: "var(--koro-surface-dark)",
+                  color: "var(--koro-ash)",
+                  border: "1px solid var(--koro-hairline-strong)",
+                }}
+              >
+                {task.reason}
+              </div>
+            </div>
+          )}
+
+          <div>
+            <label className="block text-[11px] font-semibold mb-1.5 uppercase tracking-wider text-[var(--koro-ash)]">
+              Assignee
+            </label>
+            <input
+              type="text"
+              value={assigneeId}
+              onChange={(e) => setAssigneeId(e.target.value)}
+              placeholder="e.g. user_id or team name"
+              className="w-full px-3 py-2 rounded-lg text-xs focus:outline-none"
               style={{
                 backgroundColor: "var(--koro-surface-dark)",
                 border: "1px solid var(--koro-hairline-strong)",

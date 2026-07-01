@@ -7,6 +7,8 @@ import {
   moveTask,
   updateTask,
   getTaskById,
+  snapshotPlan,
+  createTask,
 } from "@repo/services/task";
 import { updateFeatureStatus } from "@repo/services/feature";
 
@@ -30,6 +32,26 @@ export const taskRouter = router({
       });
 
       return { success: true, featureId: input.featureId };
+    }),
+
+  create: protectedProcedure
+    .input(
+      z.object({
+        projectId: z.string().uuid(),
+        featureId: z.string().uuid().optional(),
+        prdId: z.string().uuid().optional(),
+        title: z.string().min(1),
+        description: z.string().optional(),
+        status: z.enum(["TODO", "IN_PROGRESS", "REVIEW", "DONE", "BLOCKED"]).default("TODO"),
+        priority: z.enum(["LOW", "MEDIUM", "HIGH", "URGENT"]).default("MEDIUM"),
+        complexity: z.enum(["LOW", "MEDIUM", "HIGH"]).default("MEDIUM"),
+        category: z.enum(["frontend", "backend", "database", "testing", "devops", "documentation", "other"]).default("other"),
+        estimatedHours: z.number().nullable().optional(),
+        assigneeId: z.string().optional(),
+      })
+    )
+    .mutation(async ({ input }) => {
+      return createTask(input);
     }),
 
   updateStatus: protectedProcedure
@@ -65,6 +87,7 @@ export const taskRouter = router({
           priority: z.enum(["LOW", "MEDIUM", "HIGH", "URGENT"]).optional(),
           complexity: z.enum(["LOW", "MEDIUM", "HIGH"]).optional(),
           estimatedHours: z.number().nullable().optional(),
+          assigneeId: z.string().nullable().optional(),
         }),
       }),
     )
@@ -75,10 +98,12 @@ export const taskRouter = router({
   approvePlan: protectedProcedure
     .input(z.object({ featureId: z.string().uuid() }))
     .mutation(async ({ input }) => {
+      await snapshotPlan(input.featureId);
+      
       await updateFeatureStatus(input.featureId, "PLANNING_COMPLETE");
 
       await inngest.send({
-        name: "planning/completed",
+        name: "planning/approved",
         data: { featureId: input.featureId },
       });
 
