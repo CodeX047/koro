@@ -8,6 +8,8 @@ import { prdRouter } from "./routers/prd";
 import { taskRouter } from "./routers/task";
 import { reviewRouter } from "./routers/review";
 import { billingRouter } from "./routers/billing";
+import { githubRouter } from "./routers/github";
+import { pullRequestRouter } from "./routers/pull-request";
 
 export const appRouter = router({
   health: healthRouter,
@@ -19,6 +21,8 @@ export const appRouter = router({
   task: taskRouter,
   review: reviewRouter,
   billing: billingRouter,
+  github: githubRouter,
+  pullRequest: pullRequestRouter,
 });
 
 export type AppRouter = typeof appRouter;

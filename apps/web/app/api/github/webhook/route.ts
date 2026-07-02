@@ -1,9 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { githubService } from "~/features/github/utils/service";
-import { savePullRequest, PullRequestWebhookPayload } from "@repo/services/github/webhook";
 import { inngest } from "@repo/workflows/client";
-
-const REVIEWABLE_ACTIONS = ["opened", "synchronize", "reopened"];
 
 async function isSignatureValid(payload: string, signature: string | null) {
   if (!signature) {
@@ -26,24 +23,21 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Invalid signature" }, { status: 401 });
   }
 
-  if (eventName !== "pull_request") {
-    return NextResponse.json({ received: true });
-  }
-
-  const event = JSON.parse(payload) as PullRequestWebhookPayload;
-
-  if (!REVIEWABLE_ACTIONS.includes(event.action)) {
-    return NextResponse.json({ received: true });
-  }
-
-  const pullRequest = await savePullRequest(event);
-
-  if (pullRequest) {
+  if (eventName === "pull_request") {
+    const event = JSON.parse(payload);
+    
+    // We emit an event, then Inngest handles processing the PR metadata & changed files
     await inngest.send({
-      name: "review/pr.requested",
-      data: { pullRequestId: pullRequest.id },
+      name: "github/pr.event", // Let's use a unified event or split them. Let's use github/pr.event
+      data: {
+        installationId: event.installation.id,
+        repositoryFullName: event.repository.full_name,
+        payload: event
+      },
     });
+
+    return NextResponse.json({ received: true, event: "github/pr.event" });
   }
 
-  return NextResponse.json({ received: true, prId: pullRequest?.id });
+  return NextResponse.json({ received: true });
 }

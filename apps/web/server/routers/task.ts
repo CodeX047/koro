@@ -109,4 +109,14 @@ export const taskRouter = router({
 
       return { success: true, featureId: input.featureId };
     }),
+
+  syncToGithub: protectedProcedure
+    .input(z.object({ featureId: z.string().uuid() }))
+    .mutation(async ({ input }) => {
+      await inngest.send({
+        name: "github/issues.sync.requested",
+        data: { featureId: input.featureId },
+      });
+      return { success: true };
+    }),
 });

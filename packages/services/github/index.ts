@@ -1,5 +1,5 @@
-import { eq, db } from "@repo/database";
-import { githubInstallationsTable } from "@repo/database/schema";
+import { eq, db, and } from "@repo/database";
+import { githubInstallationsTable, repositoriesTable } from "@repo/database/schema";
 import { App } from "octokit";
 
 export class GithubService {
@@ -138,6 +138,67 @@ export class GithubService {
   async syncCodebase(repoSyncId: string) {
     console.log(`[GithubService] Syncing codebase for RepoSync: ${repoSyncId}`);
     return { status: "synced" };
+  }
+
+  async listRepositories(userId: string) {
+    const installationId = await this.getUserInstallationId(userId);
+    if (!installationId) return [];
+
+    const app = this.getGithubApp();
+    const octokit = await app.getInstallationOctokit(installationId);
+
+    const { data } = await octokit.request("GET /installation/repositories");
+    return data.repositories;
+  }
+
+  async connectRepository(organizationId: string, projectId: string, userId: string, repoFullName: string) {
+    const installationId = await this.getUserInstallationId(userId);
+    if (!installationId) throw new Error("GitHub App not installed");
+
+    const app = this.getGithubApp();
+    const octokit = await app.getInstallationOctokit(installationId);
+
+    const [owner, name] = repoFullName.split("/") as [string, string];
+    const { data: repo } = await octokit.request("GET /repos/{owner}/{repo}", {
+      owner,
+      repo: name,
+    });
+
+    const [connected] = await db
+      .insert(repositoriesTable)
+      .values({
+        organizationId,
+        projectId,
+        installationId,
+        owner,
+        name,
+        defaultBranch: repo.default_branch,
+        private: repo.private,
+        syncStatus: "CONNECTED",
+      })
+      .returning();
+
+    return connected;
+  }
+
+  async getConnectedRepository(projectId: string) {
+    const [repo] = await db
+      .select()
+      .from(repositoriesTable)
+      .where(eq(repositoriesTable.projectId, projectId))
+      .limit(1);
+    return repo || null;
+  }
+
+  async disconnectRepository(projectId: string) {
+    await db.delete(repositoriesTable).where(eq(repositoriesTable.projectId, projectId));
+  }
+
+  async updateRepositorySyncStatus(repositoryId: string, syncStatus: "CONNECTED" | "SYNCING" | "SYNCED" | "FAILED") {
+    await db
+      .update(repositoriesTable)
+      .set({ syncStatus, updatedAt: new Date() })
+      .where(eq(repositoriesTable.id, repositoryId));
   }
 }
 

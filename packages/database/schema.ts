@@ -15,3 +15,4 @@ export * from "./models/subscription";
 export * from "./models/billing-event";
 export * from "./models/usage";
 export * from "./models/invoice";
+export * from "./models/development-event";

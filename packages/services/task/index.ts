@@ -4,6 +4,7 @@ import {
   taskDependenciesTable,
   taskHistoryTable,
   planningVersionsTable,
+  githubIssuesTable,
 } from "@repo/database/schema";
 import { TaskStatus, TaskPriority, TaskComplexity, TaskCategory } from "@repo/database/models/task";
 
@@ -25,11 +26,21 @@ export async function getTasksByFeatureId(featureId: string) {
     .from(taskDependenciesTable)
     .where(inArray(taskDependenciesTable.taskId, taskIds));
 
+  const issues = await db
+    .select()
+    .from(githubIssuesTable)
+    .where(inArray(githubIssuesTable.taskId, taskIds));
+
   // Map dependencies back to tasks
-  return tasks.map((task) => ({
-    ...task,
-    dependencies: dependencies.filter((d) => d.taskId === task.id).map((d) => d.dependsOnTaskId),
-  }));
+  return tasks.map((task) => {
+    const issue = issues.find(i => i.taskId === task.id);
+    return {
+      ...task,
+      dependencies: dependencies.filter((d) => d.taskId === task.id).map((d) => d.dependsOnTaskId),
+      githubIssueUrl: issue?.url || null,
+      githubIssueNumber: issue?.issueNumber || null,
+    };
+  });
 }
 
 export async function getTaskById(taskId: string) {

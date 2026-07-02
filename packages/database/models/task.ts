@@ -23,6 +23,7 @@ export const tasksTable = pgTable("tasks", {
   category: varchar("category", { length: 50 }).$type<TaskCategory>().default("other").notNull(),
   estimatedHours: integer("estimated_hours"),
   assigneeId: varchar("assignee_id", { length: 255 }), // Can link to auth users table later
+  syncStatus: varchar("sync_status", { length: 50 }).default("PENDING").notNull(), // PENDING, SYNCED, FAILED
   order: integer("order").default(0).notNull(), // Position in the Kanban column
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").$onUpdate(() => new Date()),

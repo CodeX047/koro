@@ -6,6 +6,8 @@ import { reviewPR } from "./review/review-pr";
 import { rereviewPR } from "./review/rereview";
 import { releaseReadiness } from "./release/readiness";
 import { githubSync } from "./github/sync";
+import { syncIssues } from "./github/issues";
+import { processPullRequest } from "./github/pull-request";
 import { reviewCompleteNotification } from "./notification/review-complete";
 import { dodoWebhookReceived } from "./billing/dodo-webhook";
 
@@ -17,6 +19,8 @@ export * from "./review/review-pr";
 export * from "./review/rereview";
 export * from "./release/readiness";
 export * from "./github/sync";
+export * from "./github/issues";
+export * from "./github/pull-request";
 export * from "./notification/review-complete";
 export * from "./billing/dodo-webhook";
 
@@ -29,6 +33,8 @@ export const functions = [
   rereviewPR,
   releaseReadiness,
   githubSync,
+  syncIssues,
+  processPullRequest,
   reviewCompleteNotification,
   dodoWebhookReceived,
 ];

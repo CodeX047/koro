@@ -33,4 +33,24 @@ export const projectRouter = router({
       const projects = await db.select().from(projectsTable).where(eq(projectsTable.organizationId, orgId));
       return projects;
     }),
+
+  getById: protectedProcedure
+    .input(z.object({ id: z.string() }))
+    .query(async ({ input, ctx }) => {
+      const orgId = ctx.activeOrganizationId;
+      if (!orgId) return null;
+
+      const [project] = await db
+        .select()
+        .from(projectsTable)
+        .where(eq(projectsTable.id, input.id))
+        .limit(1);
+      
+      // Ensure the project belongs to the user's active org
+      if (project && project.organizationId !== orgId) {
+        throw new TRPCError({ code: "UNAUTHORIZED" });
+      }
+
+      return project || null;
+    }),
 });
