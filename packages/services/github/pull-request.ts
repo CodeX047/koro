@@ -116,6 +116,8 @@ export class GithubPullRequestService {
         prId,
         filename: f.filename,
         status: f.status,
+        additions: f.additions,
+        deletions: f.deletions,
         patch: f.patch,
       }));
       await db.insert(changedFilesTable).values(filesToInsert);

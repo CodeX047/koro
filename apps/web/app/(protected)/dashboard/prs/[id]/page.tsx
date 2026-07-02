@@ -69,6 +69,10 @@ export default function PRDetailsPage() {
             <h2 className="text-lg font-bold mb-4 flex items-center gap-2">
               <FileText className="w-5 h-5 text-indigo-400" />
               Changed Files ({files.length})
+              <span className="ml-4 text-sm font-normal text-slate-400 flex items-center gap-2">
+                <span className="text-green-400">+{files.reduce((sum: number, f: any) => sum + (f.additions || 0), 0)}</span>
+                <span className="text-red-400">-{files.reduce((sum: number, f: any) => sum + (f.deletions || 0), 0)}</span>
+              </span>
             </h2>
             <div className="bg-slate-950 border border-slate-800 rounded-xl overflow-hidden divide-y divide-slate-800">
               {files.map(f => (

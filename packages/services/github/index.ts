@@ -1,5 +1,5 @@
 import { eq, db, and } from "@repo/database";
-import { githubInstallationsTable, repositoriesTable } from "@repo/database/schema";
+import { githubInstallationsTable, repositoriesTable, pullRequestsTable } from "@repo/database/schema";
 import { App } from "octokit";
 
 export class GithubService {
@@ -187,7 +187,15 @@ export class GithubService {
       .from(repositoriesTable)
       .where(eq(repositoriesTable.projectId, projectId))
       .limit(1);
-    return repo || null;
+    
+    if (!repo) return null;
+
+    const openPrs = await db
+      .select({ id: pullRequestsTable.id })
+      .from(pullRequestsTable)
+      .where(and(eq(pullRequestsTable.repositoryId, repo.id), eq(pullRequestsTable.status, "OPENED")));
+
+    return { ...repo, openPrsCount: openPrs.length };
   }
 
   async disconnectRepository(projectId: string) {

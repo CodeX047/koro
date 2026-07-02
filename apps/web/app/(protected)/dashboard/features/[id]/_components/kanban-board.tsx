@@ -78,6 +78,19 @@ function SortableTaskItem({
             {task.title}
           </h4>
           <div className="flex items-center gap-2 mt-2">
+            {task.githubIssueNumber ? (
+              <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded uppercase ${
+                task.githubIssueState === "open" 
+                  ? "bg-green-500/20 text-green-400 border border-green-500/30" 
+                  : "bg-purple-500/20 text-purple-400 border border-purple-500/30"
+              }`}>
+                #{task.githubIssueNumber} {task.githubIssueState?.toUpperCase() || 'OPEN'}
+              </span>
+            ) : (
+              <span className="text-[9px] font-semibold uppercase text-[var(--koro-ash)] bg-[var(--koro-surface-dark)] px-1.5 py-0.5 rounded">
+                Task
+              </span>
+            )}
             <span
               className="text-[9px] font-bold px-1.5 py-0.5 rounded uppercase"
               style={{

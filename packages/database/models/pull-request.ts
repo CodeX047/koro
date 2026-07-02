@@ -33,6 +33,8 @@ export const changedFilesTable = pgTable("changed_files", {
   prId: uuid("pr_id").references(() => pullRequestsTable.id, { onDelete: "cascade" }).notNull(),
   filename: text("filename").notNull(),
   status: varchar("status", { length: 50 }).notNull(),
+  additions: integer("additions").default(0).notNull(),
+  deletions: integer("deletions").default(0).notNull(),
   patch: text("patch"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });

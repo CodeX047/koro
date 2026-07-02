@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import { useParams } from "next/navigation";
 import { trpc } from "~/trpc/client";
-import { Loader2, Github, CheckCircle, AlertCircle } from "lucide-react";
+import { Loader2, Github, CheckCircle, AlertCircle, Clock, GitBranch, GitPullRequest } from "lucide-react";
 import { toast } from "sonner";
 
 export default function ProjectSettingsPage() {
@@ -63,7 +63,31 @@ export default function ProjectSettingsPage() {
                 <p className="text-xs text-green-400/80">Status: {connectedRepo.syncStatus}</p>
               </div>
             </div>
-            
+
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 py-4">
+              <div className="bg-slate-900 border border-slate-800 rounded-xl p-4 text-center">
+                <CheckCircle className="w-5 h-5 text-green-400 mx-auto mb-2" />
+                <div className="text-xs text-slate-400">Repository</div>
+                <div className="font-bold text-sm text-slate-200">Connected</div>
+              </div>
+              <div className="bg-slate-900 border border-slate-800 rounded-xl p-4 text-center">
+                <Clock className="w-5 h-5 text-indigo-400 mx-auto mb-2" />
+                <div className="text-xs text-slate-400">Last Sync</div>
+                <div className="font-bold text-sm text-slate-200">
+                  {connectedRepo.updatedAt ? new Date(connectedRepo.updatedAt).toLocaleDateString() : 'Just now'}
+                </div>
+              </div>
+              <div className="bg-slate-900 border border-slate-800 rounded-xl p-4 text-center">
+                <GitBranch className="w-5 h-5 text-indigo-400 mx-auto mb-2" />
+                <div className="text-xs text-slate-400">Default Branch</div>
+                <div className="font-bold text-sm text-slate-200">{connectedRepo.defaultBranch}</div>
+              </div>
+              <div className="bg-slate-900 border border-slate-800 rounded-xl p-4 text-center">
+                <GitPullRequest className="w-5 h-5 text-indigo-400 mx-auto mb-2" />
+                <div className="text-xs text-slate-400">Open PRs</div>
+                <div className="font-bold text-sm text-slate-200">{connectedRepo.openPrsCount}</div>
+              </div>
+            </div>
             <button
               onClick={() => disconnectMutation.mutate({ projectId })}
               disabled={disconnectMutation.isPending}
