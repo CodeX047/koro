@@ -59,6 +59,19 @@ export const processPullRequest = inngest.createFunction(
       });
     }
 
+    // 4. Dispatch AI Review Workflow
+    if (pr && payload.action === "opened") {
+       await step.sendEvent("trigger-review", {
+         name: "review/pr.requested",
+         data: { pullRequestId: pr.id }
+       });
+    } else if (pr && payload.action === "synchronize") {
+       await step.sendEvent("trigger-rereview", {
+         name: "review/rereview.requested",
+         data: { pullRequestId: pr.id }
+       });
+    }
+
     return { processed: true, prId: pr?.id };
   }
 );

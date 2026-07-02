@@ -210,4 +210,5 @@ export class GithubService {
   }
 }
 
+export const githubService = new GithubService();
 export default GithubService;

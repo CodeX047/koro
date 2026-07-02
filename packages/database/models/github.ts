@@ -17,7 +17,7 @@ export const githubInstallationsTable = pgTable("github_installations", {
 
 export const repositoriesTable = pgTable("repositories", {
   id: uuid("id").primaryKey().defaultRandom(),
-  organizationId: uuid("organization_id").references(() => organizationTable.id, { onDelete: "cascade" }).notNull(),
+  organizationId: text("organization_id").references(() => organizationTable.id, { onDelete: "cascade" }).notNull(),
   projectId: uuid("project_id").notNull(), // Assuming projectTable reference isn't circular/direct import needed or we can import projectTable
   installationId: integer("installation_id").notNull(),
   owner: varchar("owner", { length: 255 }).notNull(),

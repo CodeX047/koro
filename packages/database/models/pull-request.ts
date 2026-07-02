@@ -1,4 +1,4 @@
-import { pgTable, uuid, varchar, text, integer, timestamp, unique, index, boolean } from "drizzle-orm/pg-core";
+import { pgTable, uuid, varchar, text, integer, timestamp, unique, index, boolean, jsonb } from "drizzle-orm/pg-core";
 import { repositoriesTable } from "./github";
 import { tasksTable } from "./task";
 import { featuresTable } from "./feature";
@@ -19,6 +19,8 @@ export const pullRequestsTable = pgTable("pull_request", { // Renamed from pull_
   baseBranch: varchar("base_branch", { length: 255 }).notNull(),
   status: varchar("status", { length: 50 }).default("OPENED").notNull(), // OPENED, READY_FOR_REVIEW, CHANGES_REQUESTED, APPROVED, MERGED, CLOSED
   merged: boolean("merged").default(false).notNull(),
+  reviewStatus: varchar("review_status", { length: 50 }), // PENDING, RUNNING, COMPLETED, FAILED
+  reviewVersion: integer("review_version").default(0).notNull(),
   reviewComment: text("review_comment"),
   reviewedAt: timestamp("reviewed_at"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
@@ -48,3 +50,18 @@ export const commitsTable = pgTable("commits", {
   timestamp: timestamp("timestamp"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
+
+export const reviewRunsTable = pgTable("review_runs", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  prId: uuid("pr_id").references(() => pullRequestsTable.id, { onDelete: "cascade" }).notNull(),
+  headSha: varchar("head_sha", { length: 255 }).notNull(),
+  attempt: integer("attempt").notNull(),
+  score: integer("score"),
+  scoreBreakdown: jsonb("score_breakdown"), // { correctness, security, performance, maintainability, requirements }
+  verdict: varchar("verdict", { length: 50 }), // REQUEST_CHANGES, COMMENT, APPROVE
+  model: varchar("model", { length: 100 }),
+  durationMs: integer("duration_ms"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+}, (t) => [
+  index("review_runs_pr_idx").on(t.prId),
+]);

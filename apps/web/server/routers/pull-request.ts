@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { router, protectedProcedure } from "../trpc";
 import { db, eq, desc } from "@repo/database";
-import { pullRequestsTable, changedFilesTable, commitsTable, developmentEventsTable } from "@repo/database/schema";
+import { pullRequestsTable, changedFilesTable, commitsTable, developmentEventsTable, reviewRunsTable } from "@repo/database/schema";
 
 export const pullRequestRouter = router({
   listByFeature: protectedProcedure
@@ -36,7 +36,13 @@ export const pullRequestRouter = router({
         .where(eq(commitsTable.prId, input.prId))
         .orderBy(desc(commitsTable.timestamp));
 
-      return { ...pr, files, commits };
+      const reviewRuns = await db
+        .select()
+        .from(reviewRunsTable)
+        .where(eq(reviewRunsTable.prId, input.prId))
+        .orderBy(desc(reviewRunsTable.attempt));
+
+      return { ...pr, files, commits, reviewRuns };
     }),
 
   timeline: protectedProcedure
