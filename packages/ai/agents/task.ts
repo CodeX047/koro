@@ -25,7 +25,7 @@ export class TaskAgent {
     console.log("Running TaskAgent with structured PRD content");
 
     const { object } = await generateObject({
-      model: openrouter(process.env.AI_MODEL || "anthropic/claude-3-haiku"),
+      model: openrouter(process.env.AI_MODEL || "openrouter/free"),
       system: TASK_SYSTEM_PROMPT,
       prompt: `PRD Content:\n${JSON.stringify(prdSections, null, 2)}`,
       schema: z.object({

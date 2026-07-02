@@ -6,7 +6,7 @@ import { X, Loader2 } from "lucide-react";
 import { trpc } from "~/trpc/client";
 
 interface NewFeatureDialogProps {
-  projects: { id: string; name: string }[];
+  projects: { id: string; name: string; repoName?: string | null }[];
   onClose: () => void;
 }
 
@@ -75,7 +75,7 @@ export function NewFeatureDialog({ projects, onClose }: NewFeatureDialogProps) {
               className="block text-[11px] font-semibold mb-1.5 uppercase tracking-wider"
               style={{ color: "var(--koro-ash)" }}
             >
-              Project
+              Project & Repository
             </label>
             <select
               id="feature-project"
@@ -93,7 +93,7 @@ export function NewFeatureDialog({ projects, onClose }: NewFeatureDialogProps) {
               )}
               {projects.map((p) => (
                 <option key={p.id} value={p.id}>
-                  {p.name}
+                  {p.name} {p.repoName ? `(Repo: ${p.repoName})` : ""}
                 </option>
               ))}
             </select>

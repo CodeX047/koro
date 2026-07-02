@@ -14,8 +14,15 @@ export const clarifyFeature = inngest.createFunction(
   {
     id: "clarify-feature",
     triggers: [{ event: "feature/requested" }],
-    retries: 2,
-    concurrency: { limit: 10 },
+    retries: 3,
+    concurrency: { limit: 5 },
+    onFailure: async ({ event }) => {
+      const featureId = event.data.event.data.featureId;
+      if (featureId) {
+        const { updateFeatureStatus } = await import("@repo/services/feature");
+        await updateFeatureStatus(featureId, "FAILED");
+      }
+    },
   },
   async ({ event, step }: { event: any; step: any }) => {
     const { featureId, title, description } = event.data;

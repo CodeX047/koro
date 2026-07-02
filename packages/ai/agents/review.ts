@@ -61,7 +61,7 @@ export class ReviewAgent {
     ].join("");
 
     const { object } = await generateObject({
-      model: openrouter(process.env.REVIEW_MODEL || process.env.AI_MODEL || "anthropic/claude-3-haiku"),
+      model: openrouter(process.env.REVIEW_MODEL || process.env.AI_MODEL || "openrouter/free"),
       system: REVIEW_SYSTEM_PROMPT,
       prompt: promptContext,
       schema: z.object({

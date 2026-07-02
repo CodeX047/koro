@@ -60,6 +60,12 @@ export default function FeatureDetailPage() {
     },
   });
 
+  const retryMutation = trpc.feature.retry.useMutation({
+    onSuccess: () => {
+      utils.feature.get.invalidate({ featureId: id });
+    },
+  });
+
   const syncTasksMutation = trpc.task.syncToGithub.useMutation({
     onSuccess: () => {
       utils.feature.get.invalidate({ featureId: id });
@@ -419,9 +425,20 @@ export default function FeatureDetailPage() {
             <p className="text-sm font-semibold" style={{ color: "var(--koro-on-primary)" }}>
               Pipeline Failed
             </p>
-            <p className="text-[11px] mt-1" style={{ color: "var(--koro-ash)" }}>
+            <p className="text-[11px] mt-1 mb-4" style={{ color: "var(--koro-ash)" }}>
               Something went wrong. Check the Inngest dashboard for details.
             </p>
+            <button
+              onClick={() => retryMutation.mutate({ featureId: id })}
+              disabled={retryMutation.isPending}
+              className="px-4 py-2 rounded-lg text-xs font-bold transition-opacity hover:opacity-90 disabled:opacity-50 inline-flex items-center gap-2"
+              style={{ backgroundColor: "var(--koro-accent)", color: "#fff" }}
+            >
+              {retryMutation.isPending && (
+                <Loader2 className="w-3 h-3 animate-spin" />
+              )}
+              Rerun Generation
+            </button>
           </div>
         )}
       </div>

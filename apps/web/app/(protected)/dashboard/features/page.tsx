@@ -196,7 +196,7 @@ export default function FeaturesPage() {
       {/* New Feature Dialog */}
       {dialogOpen && (
         <NewFeatureDialog
-          projects={projects.filter(Boolean).map((p) => ({ id: p.id, name: p.name }))}
+          projects={projects.filter(Boolean).map((p) => ({ id: p.id, name: p.name, repoName: p.repoName }))}
           onClose={() => setDialogOpen(false)}
         />
       )}

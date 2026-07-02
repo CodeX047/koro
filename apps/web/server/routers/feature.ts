@@ -46,4 +46,35 @@ export const featureRouter = router({
     .query(async ({ input }) => {
       return getFeaturesByProjectId(input.projectId);
     }),
+
+  retry: protectedProcedure
+    .input(z.object({ featureId: z.string().uuid() }))
+    .mutation(async ({ input }) => {
+      const feature = await getFeatureById(input.featureId);
+      if (!feature) return null;
+      
+      const { getClarificationsByFeatureId } = await import("@repo/services/clarification");
+      const { updateFeatureStatus } = await import("@repo/services/feature");
+      
+      const clarifications = await getClarificationsByFeatureId(input.featureId);
+      
+      if (clarifications.length > 0) {
+        await updateFeatureStatus(input.featureId, "PRD_GENERATING");
+        await inngest.send({
+          name: "prd/generation.requested",
+          data: { featureId: input.featureId },
+        });
+      } else {
+        await updateFeatureStatus(input.featureId, "DRAFT");
+        await inngest.send({
+          name: "feature/requested",
+          data: {
+            featureId: feature.id,
+            title: feature.title,
+            description: feature.description ?? "",
+          },
+        });
+      }
+      return { success: true };
+    }),
 });

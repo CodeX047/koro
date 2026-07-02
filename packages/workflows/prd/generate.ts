@@ -4,7 +4,7 @@ import { getFeatureById, updateFeatureStatus, logFeatureEvent } from "@repo/serv
 import { getClarificationsByFeatureId } from "@repo/services/clarification";
 import { createPrd } from "@repo/services/prd";
 
-const AI_MODEL = process.env.AI_MODEL || "anthropic/claude-3-haiku";
+const AI_MODEL = process.env.AI_MODEL || "openrouter/free";
 
 export const generatePRD = inngest.createFunction(
   {
@@ -12,6 +12,13 @@ export const generatePRD = inngest.createFunction(
     triggers: [{ event: "prd/generation.requested" }],
     retries: 3,
     concurrency: { limit: 5 },
+    onFailure: async ({ event }) => {
+      const featureId = event.data.event.data.featureId;
+      if (featureId) {
+        const { updateFeatureStatus } = await import("@repo/services/feature");
+        await updateFeatureStatus(featureId, "FAILED");
+      }
+    },
   },
   async ({ event, step }: { event: any; step: any }) => {
     const { featureId } = event.data;

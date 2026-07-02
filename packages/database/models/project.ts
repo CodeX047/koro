@@ -4,6 +4,7 @@ import { organizationTable } from "./auth";
 export const projectsTable = pgTable("projects", {
   id: uuid("id").primaryKey().defaultRandom(),
   name: varchar("name", { length: 255 }).notNull(),
+  description: text("description"),
   organizationId: text("organization_id")
     .references(() => organizationTable.id, { onDelete: "cascade" })
     .notNull(),

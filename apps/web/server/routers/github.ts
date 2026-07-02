@@ -9,6 +9,21 @@ export const githubRouter = router({
     return await githubService.listRepositories(ctx.session.user.id);
   }),
 
+  getSyncedRepositories: protectedProcedure.query(async ({ ctx }) => {
+    const installationId = await githubService.getUserInstallationId(ctx.session.user.id);
+    if (!installationId) return [];
+    
+    const { db, eq } = await import("@repo/database");
+    const { repoSyncTable } = await import("@repo/database/schema");
+    
+    const syncedRepos = await db
+      .select({ repoFullName: repoSyncTable.repoFullName })
+      .from(repoSyncTable)
+      .where(eq(repoSyncTable.installationId, installationId));
+      
+    return syncedRepos.map(r => r.repoFullName);
+  }),
+
   getConnectedRepository: protectedProcedure
     .input(z.object({ projectId: z.string() }))
     .query(async ({ input }) => {
