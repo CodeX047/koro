@@ -1,8 +1,8 @@
 import { z } from "zod";
 import { protectedProcedure, router } from "../trpc";
 import { TRPCError } from "@trpc/server";
-import { db, eq } from "@repo/database";
-import { projectsTable, repositoriesTable } from "@repo/database/schema";
+import { db, eq, inArray } from "@repo/database";
+import { projectsTable, repositoriesTable, featuresTable, tasksTable, reviewsTable } from "@repo/database/schema";
 import { githubService } from "@repo/services/github";
 
 export const projectRouter = router({
@@ -37,17 +37,15 @@ export const projectRouter = router({
         });
       }
 
-      try {
-        await githubService.connectRepository(
-          orgId,
-          project.id,
-          ctx.user.id,
-          input.repoFullName,
-        );
-      } catch (error) {
+      // Run repository connection asynchronously to prevent blocking UI
+      githubService.connectRepository(
+        orgId,
+        project.id,
+        ctx.user.id,
+        input.repoFullName,
+      ).catch((error) => {
         console.error("Failed to connect repository during project creation:", error);
-        // We still return the project, even if connecting the repo fails
-      }
+      });
 
       return project;
     }),
@@ -94,4 +92,64 @@ export const projectRouter = router({
 
     return project || null;
   }),
+
+  delete: protectedProcedure
+    .input(z.object({ id: z.string() }))
+    .mutation(async ({ input, ctx }) => {
+      const orgId = ctx.activeOrganizationId;
+      if (!orgId) {
+        throw new TRPCError({ code: "BAD_REQUEST", message: "No active organization selected" });
+      }
+
+      const [project] = await db
+        .select()
+        .from(projectsTable)
+        .where(eq(projectsTable.id, input.id))
+        .limit(1);
+
+      if (!project) {
+        throw new TRPCError({ code: "NOT_FOUND", message: "Project not found" });
+      }
+      if (project.organizationId !== orgId) {
+        throw new TRPCError({ code: "UNAUTHORIZED", message: "Not authorized to delete this project" });
+      }
+
+      // Manually handle cascading deletes for safety (run concurrently to save time)
+      await Promise.all([
+        db.delete(tasksTable).where(eq(tasksTable.projectId, input.id)),
+        db.delete(featuresTable).where(eq(featuresTable.projectId, input.id)),
+        db.delete(reviewsTable).where(eq(reviewsTable.projectId, input.id)),
+        db.delete(repositoriesTable).where(eq(repositoriesTable.projectId, input.id))
+      ]);
+      
+      // Finally, delete the project
+      await db.delete(projectsTable).where(eq(projectsTable.id, input.id));
+
+      return { success: true };
+    }),
+
+  update: protectedProcedure
+    .input(z.object({
+      id: z.string(),
+      name: z.string(),
+      description: z.string().optional(),
+    }))
+    .mutation(async ({ input, ctx }) => {
+      const orgId = ctx.activeOrganizationId;
+      if (!orgId) throw new TRPCError({ code: "BAD_REQUEST" });
+
+      const [project] = await db.select().from(projectsTable).where(eq(projectsTable.id, input.id)).limit(1);
+      if (!project) throw new TRPCError({ code: "NOT_FOUND" });
+      if (project.organizationId !== orgId) throw new TRPCError({ code: "UNAUTHORIZED" });
+
+      const [updated] = await db.update(projectsTable)
+        .set({
+          name: input.name,
+          description: input.description,
+        })
+        .where(eq(projectsTable.id, input.id))
+        .returning();
+        
+      return updated;
+    }),
 });

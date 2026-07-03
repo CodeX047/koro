@@ -10,7 +10,11 @@ export const syncIssues = inngest.createFunction(
   { 
     id: "github-sync-issues", 
     name: "Sync GitHub Issues",
-    triggers: [{ event: "github/issues.sync.requested" }]
+    triggers: [{ event: "github/issues.sync.requested" }],
+    concurrency: {
+      limit: 1,
+      key: "event.data.featureId"
+    }
   },
   async ({ event, step }: { event: any; step: any }) => {
     const { featureId } = event.data;

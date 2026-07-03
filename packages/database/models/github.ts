@@ -1,4 +1,4 @@
-import { pgTable, uuid, text, timestamp, integer, varchar, boolean } from "drizzle-orm/pg-core";
+import { pgTable, uuid, text, timestamp, integer, varchar, boolean, bigint } from "drizzle-orm/pg-core";
 import { organizationTable } from "./auth";
 import { usersTable } from "./user";
 
@@ -33,7 +33,7 @@ export const repositoriesTable = pgTable("repositories", {
 export const githubIssuesTable = pgTable("github_issues", {
   id: uuid("id").primaryKey().defaultRandom(),
   taskId: uuid("task_id").notNull(),
-  githubIssueId: integer("github_issue_id").notNull(),
+  githubIssueId: bigint("github_issue_id", { mode: "number" }).notNull(),
   issueNumber: integer("issue_number").notNull(),
   url: varchar("url", { length: 1024 }).notNull(),
   nodeId: varchar("node_id", { length: 255 }),
