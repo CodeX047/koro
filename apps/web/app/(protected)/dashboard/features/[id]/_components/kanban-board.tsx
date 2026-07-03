@@ -32,7 +32,6 @@ const COLUMNS = [
   { id: "IN_PROGRESS", title: "In Progress" },
   { id: "REVIEW", title: "Review" },
   { id: "DONE", title: "Done" },
-  { id: "BLOCKED", title: "Blocked" },
 ] as const;
 
 // ── Sortable Task Item Component ──────────────────────────────────────────

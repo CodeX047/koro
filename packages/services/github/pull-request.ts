@@ -1,4 +1,4 @@
-import { eq, and, db } from "@repo/database";
+import { eq, and, db, inArray } from "@repo/database";
 import { pullRequestsTable, changedFilesTable, commitsTable, repositoriesTable, tasksTable, githubIssuesTable } from "@repo/database/schema";
 import { GithubService } from "./index";
 
@@ -14,29 +14,71 @@ export class GithubPullRequestService {
     const action = payload.action; // opened, closed, reopened, synchronize
     const repoFullName = payload.repository.full_name;
 
-    // 1. Attempt to match PR to a Task
+    // 1. Attempt to match PR to Tasks
     let taskId: string | null = null;
     let featureId: string | null = null;
 
-    // 1a. Try to match by branch name (e.g., feature/auth-14)
-    const branchName = pr.head.ref;
-    // We could extract taskId if we encoded it in the branch name
+    // Parse all issue numbers from body and title
+    const issueNumbers: number[] = [];
+    const bodyMatches = pr.body ? [...pr.body.matchAll(/#(\d+)/g)] : [];
+    const titleMatches = pr.title ? [...pr.title.matchAll(/#(\d+)/g)] : [];
+    
+    for (const m of [...bodyMatches, ...titleMatches]) {
+      const num = parseInt(m[1]);
+      if (!issueNumbers.includes(num)) {
+        issueNumbers.push(num);
+      }
+    }
 
-    // 1b. Try to match by linked issue number in body or title
-    const issueMatch = pr.body?.match(/#(\d+)/) || pr.title?.match(/#(\d+)/);
-    if (issueMatch) {
-      const issueNumber = parseInt(issueMatch[1]);
-      const [issue] = await db
+    let matchedTasks: any[] = [];
+    if (issueNumbers.length > 0) {
+      const issues = await db
         .select()
         .from(githubIssuesTable)
-        .where(eq(githubIssuesTable.issueNumber, issueNumber))
-        .limit(1);
+        .where(inArray(githubIssuesTable.issueNumber, issueNumbers));
+      
+      const taskIds = issues.map(i => i.taskId);
+      if (taskIds.length > 0) {
+        matchedTasks = await db
+          .select()
+          .from(tasksTable)
+          .where(inArray(tasksTable.id, taskIds));
+        
+        if (matchedTasks.length > 0) {
+          taskId = matchedTasks[0].id;
+          featureId = matchedTasks[0].featureId;
+        }
+      }
+    }
 
-      if (issue) {
-        taskId = issue.taskId;
-        const [task] = await db.select().from(tasksTable).where(eq(tasksTable.id, taskId)).limit(1);
-        if (task) {
-          featureId = task.featureId;
+    // 1c. Update task statuses based on PR state
+    if (matchedTasks.length > 0) {
+      let newTaskStatus: "TODO" | "IN_PROGRESS" | "REVIEW" | "DONE" | "BLOCKED" | null = null;
+      let newIssueState: "open" | "closed" | null = null;
+
+      if (pr.state === "closed" && pr.merged) {
+        newTaskStatus = "DONE";
+        newIssueState = "closed";
+      } else if (pr.state === "closed" && !pr.merged) {
+        newTaskStatus = "IN_PROGRESS";
+        newIssueState = "open"; // PR closed unmerged, issue is still open
+      } else if (pr.state === "open") {
+        newTaskStatus = "REVIEW";
+        newIssueState = "open";
+      }
+
+      if (newTaskStatus) {
+        const taskIdsToUpdate = matchedTasks.map(t => t.id);
+        await db
+          .update(tasksTable)
+          .set({ status: newTaskStatus, updatedAt: new Date() })
+          .where(inArray(tasksTable.id, taskIdsToUpdate));
+
+        if (newIssueState) {
+          await db
+            .update(githubIssuesTable)
+            .set({ state: newIssueState, updatedAt: new Date() })
+            .where(inArray(githubIssuesTable.taskId, taskIdsToUpdate));
         }
       }
     }
