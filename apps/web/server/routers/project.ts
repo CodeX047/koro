@@ -3,6 +3,7 @@ import { protectedProcedure, router } from "../trpc";
 import { TRPCError } from "@trpc/server";
 import { db, eq } from "@repo/database";
 import { projectsTable, repositoriesTable } from "@repo/database/schema";
+import { githubService } from "@repo/services/github";
 
 export const projectRouter = router({
   create: protectedProcedure
@@ -10,7 +11,7 @@ export const projectRouter = router({
       z.object({
         name: z.string(),
         description: z.string().optional(),
-        repoFullName: z.string().optional(),
+        repoFullName: z.string(),
       }),
     )
     .mutation(async ({ input, ctx }) => {
@@ -36,19 +37,16 @@ export const projectRouter = router({
         });
       }
 
-      if (input.repoFullName) {
-        const { githubService } = await import("@repo/services/github");
-        try {
-          await githubService.connectRepository(
-            orgId,
-            project.id,
-            ctx.session.user.id,
-            input.repoFullName,
-          );
-        } catch (error) {
-          console.error("Failed to connect repository during project creation:", error);
-          // We still return the project, even if connecting the repo fails
-        }
+      try {
+        await githubService.connectRepository(
+          orgId,
+          project.id,
+          ctx.user.id,
+          input.repoFullName,
+        );
+      } catch (error) {
+        console.error("Failed to connect repository during project creation:", error);
+        // We still return the project, even if connecting the repo fails
       }
 
       return project;

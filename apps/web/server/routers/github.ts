@@ -4,17 +4,17 @@ import GithubService from "@repo/services/github";
 
 const githubService = new GithubService();
 
+import { db, eq } from "@repo/database";
+import { repoSyncTable } from "@repo/database/schema";
+
 export const githubRouter = router({
   listRepositories: protectedProcedure.query(async ({ ctx }) => {
-    return await githubService.listRepositories(ctx.session.user.id);
+    return await githubService.listRepositories(ctx.user.id);
   }),
 
   getSyncedRepositories: protectedProcedure.query(async ({ ctx }) => {
-    const installationId = await githubService.getUserInstallationId(ctx.session.user.id);
+    const installationId = await githubService.getUserInstallationId(ctx.user.id);
     if (!installationId) return [];
-    
-    const { db, eq } = await import("@repo/database");
-    const { repoSyncTable } = await import("@repo/database/schema");
     
     const syncedRepos = await db
       .select({ repoFullName: repoSyncTable.repoFullName })
@@ -40,7 +40,7 @@ export const githubRouter = router({
       return await githubService.connectRepository(
         input.organizationId,
         input.projectId,
-        ctx.session.user.id,
+        ctx.user.id,
         input.repoFullName
       );
     }),
