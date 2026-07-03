@@ -1,4 +1,4 @@
-import { generateObject } from "ai";
+import { generateText } from "ai";
 import { z } from "zod";
 import { openrouter } from "../index";
 import { REVIEW_SYSTEM_PROMPT } from "../prompts";
@@ -24,6 +24,7 @@ export interface GeneratedReview {
   };
   summary: string;
   findings: ReviewFinding[];
+  securityIssues: boolean;
 }
 
 export type ReviewInput = {
@@ -60,34 +61,64 @@ export class ReviewAgent {
       buildContextSection(input.diff, "Code Diff (The changes to review)")
     ].join("");
 
-    const { object } = await generateObject({
-      model: openrouter(process.env.REVIEW_MODEL || process.env.AI_MODEL || "openrouter/free"),
-      system: REVIEW_SYSTEM_PROMPT,
-      prompt: promptContext,
-      schema: z.object({
-        verdict: z.enum(["APPROVE", "COMMENT", "REQUEST_CHANGES"]),
-        score: z.number().min(0).max(100),
-        scoreBreakdown: z.object({
-          correctness: z.number().min(0).max(100),
-          security: z.number().min(0).max(100),
-          performance: z.number().min(0).max(100),
-          maintainability: z.number().min(0).max(100),
-          requirements: z.number().min(0).max(100),
-        }),
-        summary: z.string(),
-        findings: z.array(
-          z.object({
-            file: z.string().optional(),
-            severity: z.enum(["Blocking", "Major", "Minor", "Nit"]),
-            category: z.string(),
-            title: z.string(),
-            explanation: z.string(),
-            suggestion: z.string(),
-          })
-        ),
-      }),
-    });
+    let text = "";
+    try {
+      const result = await generateText({
+        model: openrouter(process.env.REVIEW_MODEL || process.env.AI_MODEL || "openrouter/free"),
+        system: REVIEW_SYSTEM_PROMPT + `\n\nCRITICAL INSTRUCTION: Respond ONLY with a valid JSON object matching exactly this schema:
+{
+  "verdict": "APPROVE" | "COMMENT" | "REQUEST_CHANGES",
+  "score": number,
+  "scoreBreakdown": { "correctness": number, "security": number, "performance": number, "maintainability": number, "requirements": number },
+  "summary": "string",
+  "findings": [
+    {
+      "file": "string",
+      "severity": "Blocking" | "Major" | "Minor" | "Nit",
+      "category": "Security" | "Performance" | "Correctness" | "Style" | "Architecture",
+      "description": "string",
+      "suggestion": "string",
+      "line": number
+    }
+  ],
+  "securityIssues": boolean
+}
+Do not include explanations or markdown.`,
+        prompt: promptContext,
+      });
+      text = result.text;
+    } catch (e) {
+      console.error("ReviewAgent AI generation error:", e);
+      return {
+        verdict: "COMMENT",
+        score: 0,
+        scoreBreakdown: { correctness: 0, security: 0, performance: 0, maintainability: 0, requirements: 0 },
+        summary: "Failed to generate review due to API error.",
+        findings: [],
+        securityIssues: false,
+      };
+    }
 
-    return object;
+    try {
+      const parsed = JSON.parse(text.match(/\{[\s\S]*\}/)?.[0] || "{}");
+      return {
+        verdict: parsed.verdict || "COMMENT",
+        score: parsed.score || 0,
+        scoreBreakdown: parsed.scoreBreakdown || { correctness: 0, security: 0, performance: 0, maintainability: 0, requirements: 0 },
+        summary: parsed.summary || "",
+        findings: Array.isArray(parsed.findings) ? parsed.findings : [],
+        securityIssues: !!parsed.securityIssues,
+      };
+    } catch (e) {
+      console.error("ReviewAgent JSON parse error:", e);
+      return {
+        verdict: "COMMENT",
+        score: 0,
+        scoreBreakdown: { correctness: 0, security: 0, performance: 0, maintainability: 0, requirements: 0 },
+        summary: "Failed to parse review.",
+        findings: [],
+        securityIssues: false,
+      };
+    }
   }
 }

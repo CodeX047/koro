@@ -1,4 +1,4 @@
-import { generateObject } from "ai";
+import { generateText } from "ai";
 import { z } from "zod";
 import { openrouter } from "../index";
 import { TASK_SYSTEM_PROMPT } from "../prompts";
@@ -24,35 +24,39 @@ export class TaskAgent {
   }): Promise<GeneratedTask[]> {
     console.log("Running TaskAgent with structured PRD content");
 
-    const { object } = await generateObject({
-      model: openrouter(process.env.AI_MODEL || "openrouter/free"),
-      system: TASK_SYSTEM_PROMPT,
-      prompt: `PRD Content:\n${JSON.stringify(prdSections, null, 2)}`,
-      schema: z.object({
-        tasks: z.array(
-          z.object({
-            title: z.string(),
-            description: z.string(),
-            reason: z.string().describe("A short explanation of why this task is needed or prioritized as such"),
-            category: z.enum([
-              "frontend",
-              "backend",
-              "database",
-              "testing",
-              "devops",
-              "documentation",
-              "other",
-            ]),
-            priority: z.enum(["LOW", "MEDIUM", "HIGH", "URGENT"]),
-            complexity: z.enum(["LOW", "MEDIUM", "HIGH"]),
-            estimateHours: z.number().min(1),
-            epic: z.string().optional(),
-            dependencies: z.array(z.string()).optional(),
-          }),
-        ),
-      }),
-    });
+    let text = "";
+    try {
+      const result = await generateText({
+        model: openrouter(process.env.AI_MODEL || "openrouter/free"),
+        system: TASK_SYSTEM_PROMPT + `\n\nCRITICAL INSTRUCTION: Respond ONLY with a valid JSON object matching exactly this schema:
+{
+  "tasks": [
+    {
+      "title": "string",
+      "description": "string",
+      "category": "frontend" | "backend" | "database" | "testing" | "devops" | "documentation" | "other",
+      "priority": "LOW" | "MEDIUM" | "HIGH" | "URGENT",
+      "complexity": "LOW" | "MEDIUM" | "HIGH",
+      "estimateHours": number,
+      "dependencies": ["string"]
+    }
+  ]
+}
+Do not include explanations or markdown.`,
+        prompt: `PRD Content:\n${JSON.stringify(prdSections, null, 2)}`,
+      });
+      text = result.text;
+    } catch (e) {
+      console.error("TaskAgent API error:", e);
+      return [];
+    }
 
-    return object.tasks;
+    try {
+      const parsed = JSON.parse(text.match(/\{[\s\S]*\}/)?.[0] || "{}");
+      return Array.isArray(parsed.tasks) ? parsed.tasks : [];
+    } catch (e) {
+      console.error("TaskAgent JSON parse error:", e);
+      return [];
+    }
   }
 }

@@ -121,6 +121,10 @@ export async function deleteTask(taskId: string) {
   return deleted;
 }
 
+export async function deleteTasksByFeatureId(featureId: string): Promise<void> {
+  await db.delete(tasksTable).where(eq(tasksTable.featureId, featureId));
+}
+
 export async function createTask(data: NewTaskInput) {
   return await db.transaction(async (tx) => {
     const [inserted] = await tx.insert(tasksTable).values(data).returning();

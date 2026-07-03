@@ -1,4 +1,4 @@
-import { generateObject } from "ai";
+import { generateText } from "ai";
 import { z } from "zod";
 import { openrouter } from "../index";
 import { PRD_SYSTEM_PROMPT } from "../prompts";
@@ -25,50 +25,26 @@ export class PRDAgent {
       .map((c) => `Q: ${c.question}\nA: ${c.answer}`)
       .join("\n\n");
 
+    let text = "";
     try {
-      const { object } = await generateObject({
+      const result = await generateText({
         model: openrouter(process.env.AI_MODEL || "openrouter/free"),
-        system: PRD_SYSTEM_PROMPT + "\n\nCRITICAL INSTRUCTION: Respond ONLY with a valid JSON object matching the requested schema. Do not include any explanations, markdown formatting, or surrounding text.",
+        system: PRD_SYSTEM_PROMPT + `\n\nCRITICAL INSTRUCTION: Respond ONLY with a valid JSON object. Do not include any explanations or markdown. Use EXACTLY these properties:\n{
+  "problemStatement": "string",
+  "goals": ["string"],
+  "nonGoals": ["string"],
+  "userStories": ["string"],
+  "acceptanceCriteria": ["string"],
+  "edgeCases": ["string"],
+  "successMetrics": ["string"]
+}`,
         prompt: `Title: ${title}\nDescription: ${description}\n\nClarifications:\n${clarificationsText}`,
-        schema: z.object({
-          problemStatement: z.string(),
-          goals: z.array(z.string()),
-          nonGoals: z.array(z.string()),
-          userStories: z.array(z.string()),
-          acceptanceCriteria: z.array(z.string()),
-          edgeCases: z.array(z.string()),
-          successMetrics: z.array(z.string()),
-        }),
       });
-
-      return object;
+      text = result.text;
     } catch (error: any) {
-      console.error("PRDAgent error:", error);
-      
-      // Attempt manual extraction if it's a JSON parse error containing the raw text
-      if (error.text) {
-        try {
-          const match = error.text.match(/\{[\s\S]*\}/);
-          if (match) {
-            const parsed = JSON.parse(match[0]);
-            return {
-              problemStatement: parsed.problemStatement || "",
-              goals: Array.isArray(parsed.goals) ? parsed.goals : [],
-              nonGoals: Array.isArray(parsed.nonGoals) ? parsed.nonGoals : [],
-              userStories: Array.isArray(parsed.userStories) ? parsed.userStories : [],
-              acceptanceCriteria: Array.isArray(parsed.acceptanceCriteria) ? parsed.acceptanceCriteria : [],
-              edgeCases: Array.isArray(parsed.edgeCases) ? parsed.edgeCases : [],
-              successMetrics: Array.isArray(parsed.successMetrics) ? parsed.successMetrics : [],
-            };
-          }
-        } catch (e) {
-          // Ignore secondary parse errors
-        }
-      }
-      
-      // Fallback
+      console.error("PRDAgent API error:", error);
       return {
-        problemStatement: error.text ? `[Raw Output, failed to parse]\n\n${error.text}` : "Failed to generate PRD.",
+        problemStatement: "Failed to generate PRD due to API error.",
         goals: [],
         nonGoals: [],
         userStories: [],
@@ -77,5 +53,65 @@ export class PRDAgent {
         successMetrics: [],
       };
     }
+
+    let parsed: any = {};
+    try {
+      const match = text.match(/\{[\s\S]*\}/);
+      if (match) {
+        parsed = JSON.parse(match[0]);
+      }
+    } catch (e) {
+      console.error("PRDAgent JSON parse error:", e);
+    }
+
+    // Try to find the values regardless of case or spacing
+    const getStr = (keys: string[]) => {
+      for (const key of keys) {
+        if (parsed[key] !== undefined) return String(parsed[key]);
+        const lowerKey = Object.keys(parsed).find(k => k.toLowerCase().replace(/[^a-z]/g, '') === key.toLowerCase().replace(/[^a-z]/g, ''));
+        if (lowerKey) return String(parsed[lowerKey]);
+      }
+      return "";
+    };
+
+    const getArr = (keys: string[]) => {
+      for (const key of keys) {
+        if (Array.isArray(parsed[key])) return parsed[key];
+        const lowerKey = Object.keys(parsed).find(k => k.toLowerCase().replace(/[^a-z]/g, '') === key.toLowerCase().replace(/[^a-z]/g, ''));
+        if (lowerKey && Array.isArray(parsed[lowerKey])) return parsed[lowerKey];
+      }
+      return [];
+    };
+
+    const problemStatement = getStr(["problemStatement", "problem", "statement"]);
+    const goals = getArr(["goals"]);
+    const nonGoals = getArr(["nonGoals", "nongoal"]);
+    const userStories = getArr(["userStories", "stories"]);
+    const acceptanceCriteria = getArr(["acceptanceCriteria", "criteria"]);
+    const edgeCases = getArr(["edgeCases", "edge", "cases"]);
+    const successMetrics = getArr(["successMetrics", "metrics"]);
+
+    if (problemStatement || goals.length > 0 || userStories.length > 0) {
+       return {
+         problemStatement,
+         goals,
+         nonGoals,
+         userStories,
+         acceptanceCriteria,
+         edgeCases,
+         successMetrics,
+       };
+    }
+    
+    // Fallback
+    return {
+      problemStatement: `[Raw Output, failed to parse]\n\n${text}`,
+      goals: [],
+      nonGoals: [],
+      userStories: [],
+      acceptanceCriteria: [],
+      edgeCases: [],
+      successMetrics: [],
+    };
   }
 }

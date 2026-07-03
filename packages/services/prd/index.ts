@@ -1,4 +1,4 @@
-import { db, eq } from "@repo/database";
+import { db, eq, desc } from "@repo/database";
 import { prdsTable } from "@repo/database/schema";
 import type { GeneratedPRD } from "@repo/ai";
 
@@ -41,7 +41,9 @@ export async function getPrdByFeatureId(featureId: string) {
   const [prd] = await db
     .select()
     .from(prdsTable)
-    .where(eq(prdsTable.featureId, featureId));
+    .where(eq(prdsTable.featureId, featureId))
+    .orderBy(desc(prdsTable.createdAt))
+    .limit(1);
 
   return prd ?? null;
 }

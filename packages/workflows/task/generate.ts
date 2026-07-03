@@ -2,7 +2,7 @@ import { inngest } from "../client";
 import { TaskAgent } from "@repo/ai";
 import { getFeatureById, updateFeatureStatus, logFeatureEvent } from "@repo/services/feature";
 import { getPrdByFeatureId } from "@repo/services/prd";
-import { createTasksBatch } from "@repo/services/task";
+import { createTasksBatch, deleteTasksByFeatureId } from "@repo/services/task";
 import { v4 as uuidv4 } from "uuid";
 
 export const generateTasks = inngest.createFunction(
@@ -110,7 +110,8 @@ export const generateTasks = inngest.createFunction(
         }
       }
 
-      // 4. Batch insert
+      // 4. Delete existing tasks and batch insert new ones
+      await deleteTasksByFeatureId(featureId);
       await createTasksBatch(tasksToInsert, dependenciesToInsert);
     });
 
