@@ -1,12 +1,14 @@
 "use client";
 
 import React, { useState, useRef, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { FolderKanban, Plus, Loader2, MoreVertical, Pencil, Trash } from "lucide-react";
 import { trpc } from "~/trpc/client";
 import { NewProjectDialog } from "./_components/new-project-dialog";
 import { EditProjectDialog } from "./_components/edit-project-dialog";
 
 function ProjectCard({ project, onEdit, onDelete }: { project: any, onEdit: (project: any) => void, onDelete: (id: string) => void }) {
+  const router = useRouter();
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
@@ -23,7 +25,8 @@ function ProjectCard({ project, onEdit, onDelete }: { project: any, onEdit: (pro
 
   return (
     <div 
-      className="p-4 rounded-sm flex flex-col gap-3 group transition-colors relative"
+      onClick={() => router.push(`/dashboard/projects/${project.id}/settings`)}
+      className="p-4 rounded-sm flex flex-col gap-3 group transition-colors relative cursor-pointer"
       style={{ 
         border: "1px solid var(--koro-hairline-strong)",
         backgroundColor: "var(--koro-surface-dark)"
