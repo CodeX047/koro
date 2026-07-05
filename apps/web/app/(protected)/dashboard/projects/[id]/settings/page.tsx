@@ -14,7 +14,9 @@ export default function ProjectSettingsPage() {
 
   const { data: project, isLoading: projectLoading } = trpc.project.getById.useQuery({ id: projectId });
   const { data: connectedRepo, isLoading: connectedRepoLoading } = trpc.github.getConnectedRepository.useQuery({ projectId });
-  const { data: availableRepos, isLoading: reposLoading } = trpc.github.listRepositories.useQuery();
+  const { data: availableRepos, isLoading: reposLoading } = trpc.github.listRepositories.useQuery(undefined, {
+    enabled: !connectedRepoLoading && !connectedRepo,
+  });
 
   const connectMutation = trpc.github.connectRepository.useMutation({
     onSuccess: () => {
@@ -33,7 +35,7 @@ export default function ProjectSettingsPage() {
     }
   });
 
-  if (projectLoading || connectedRepoLoading || reposLoading) {
+  if (projectLoading || connectedRepoLoading) {
     return (
       <div className="flex items-center justify-center p-8">
         <Loader2 className="w-6 h-6 animate-spin text-[var(--koro-ash)]" />
@@ -119,14 +121,15 @@ export default function ProjectSettingsPage() {
               <select
                 value={selectedRepo}
                 onChange={(e) => setSelectedRepo(e.target.value)}
-                className="flex-1 rounded-sm p-2 text-xs focus:outline-none focus:border-[var(--koro-accent)] transition cursor-pointer"
+                disabled={reposLoading}
+                className="flex-1 rounded-sm p-2 text-xs focus:outline-none focus:border-[var(--koro-accent)] transition cursor-pointer disabled:opacity-50"
                 style={{ 
                   backgroundColor: "var(--koro-surface-dark-elevated)",
                   border: "1px solid var(--koro-hairline-strong)",
                   color: "var(--koro-on-primary)"
                 }}
               >
-                <option value="">Select a repository...</option>
+                <option value="">{reposLoading ? "Loading repositories..." : "Select a repository..."}</option>
                 {availableRepos?.map((repo: any) => (
                   <option key={repo.id} value={repo.full_name}>
                     {repo.full_name}
@@ -155,7 +158,7 @@ export default function ProjectSettingsPage() {
               </button>
             </div>
             
-            {availableRepos?.length === 0 && (
+            {!reposLoading && availableRepos?.length === 0 && (
               <div className="flex items-center gap-2 text-yellow-500 bg-yellow-500/10 p-3 rounded-sm border border-yellow-500/20 mt-4 text-[11px]">
                 <AlertCircle className="w-4 h-4 shrink-0" />
                 <p>No repositories found. Make sure the Kōro GitHub App is installed and has access to your repositories.</p>
