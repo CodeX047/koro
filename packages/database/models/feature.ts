@@ -1,4 +1,4 @@
-import { pgTable, uuid, varchar, text, timestamp } from "drizzle-orm/pg-core";
+import { pgTable, uuid, varchar, text, timestamp, index } from "drizzle-orm/pg-core";
 import { projectsTable } from "./project";
 
 export type FeatureStatus =
@@ -23,4 +23,7 @@ export const featuresTable = pgTable("features", {
   projectId: uuid("project_id").references(() => projectsTable.id).notNull(),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").$onUpdate(() => new Date()),
-});
+}, (t) => [
+  index("features_project_id_idx").on(t.projectId),
+  index("features_project_id_created_at_idx").on(t.projectId, t.createdAt),
+]);

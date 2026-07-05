@@ -1,4 +1,4 @@
-import { pgTable, uuid, text, timestamp, integer, varchar, boolean, bigint } from "drizzle-orm/pg-core";
+import { pgTable, uuid, text, timestamp, integer, varchar, boolean, bigint, index } from "drizzle-orm/pg-core";
 import { organizationTable } from "./auth";
 import { usersTable } from "./user";
 
@@ -18,7 +18,7 @@ export const githubInstallationsTable = pgTable("github_installations", {
 export const repositoriesTable = pgTable("repositories", {
   id: uuid("id").primaryKey().defaultRandom(),
   organizationId: text("organization_id").references(() => organizationTable.id, { onDelete: "cascade" }).notNull(),
-  projectId: uuid("project_id").notNull(), // Assuming projectTable reference isn't circular/direct import needed or we can import projectTable
+  projectId: uuid("project_id").notNull(),
   installationId: integer("installation_id").notNull(),
   owner: varchar("owner", { length: 255 }).notNull(),
   name: varchar("name", { length: 255 }).notNull(),
@@ -28,7 +28,10 @@ export const repositoriesTable = pgTable("repositories", {
   connectedAt: timestamp("connected_at").defaultNow().notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").$onUpdate(() => new Date()).defaultNow().notNull(),
-});
+}, (t) => [
+  index("repositories_organization_id_idx").on(t.organizationId),
+  index("repositories_project_id_idx").on(t.projectId),
+]);
 
 export const githubIssuesTable = pgTable("github_issues", {
   id: uuid("id").primaryKey().defaultRandom(),

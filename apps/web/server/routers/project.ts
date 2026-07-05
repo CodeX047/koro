@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { protectedProcedure, router } from "../trpc";
 import { TRPCError } from "@trpc/server";
-import { db, eq, inArray } from "@repo/database";
+import { db, eq, desc } from "@repo/database";
 import {
   projectsTable,
   repositoriesTable,
@@ -42,7 +42,6 @@ export const projectRouter = router({
         });
       }
 
-      // Run repository connection asynchronously to prevent blocking UI
       githubService
         .connectRepository(orgId, project.id, ctx.user.id, input.repoFullName)
         .catch((error) => {
@@ -59,7 +58,11 @@ export const projectRouter = router({
     }
 
     const [projects, repos] = await Promise.all([
-      db.select().from(projectsTable).where(eq(projectsTable.organizationId, orgId)),
+      db
+        .select()
+        .from(projectsTable)
+        .where(eq(projectsTable.organizationId, orgId))
+        .orderBy(desc(projectsTable.createdAt)),
       db.select().from(repositoriesTable).where(eq(repositoriesTable.organizationId, orgId)),
     ]);
 

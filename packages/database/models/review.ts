@@ -1,4 +1,4 @@
-import { pgTable, uuid, varchar, timestamp } from "drizzle-orm/pg-core";
+import { pgTable, uuid, varchar, timestamp, index } from "drizzle-orm/pg-core";
 import { projectsTable } from "./project";
 
 export const reviewsTable = pgTable("reviews", {
@@ -8,4 +8,7 @@ export const reviewsTable = pgTable("reviews", {
   projectId: uuid("project_id").references(() => projectsTable.id).notNull(),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").$onUpdate(() => new Date()),
-});
+}, (t) => [
+  index("reviews_project_id_idx").on(t.projectId),
+  index("reviews_project_id_created_at_idx").on(t.projectId, t.createdAt),
+]);

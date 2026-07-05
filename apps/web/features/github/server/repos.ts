@@ -48,11 +48,27 @@ function mapRepo(repo: {
 }
 
 const REPOS_PER_PAGE = 100;
+const CACHE_TTL_MS = 5 * 60 * 1000; // 5 minutes
+
+interface CacheEntry {
+  data: InstallationReposPage;
+  timestamp: number;
+}
+
+const reposCache = new Map<string, CacheEntry>();
 
 export async function getInstallationReposPage(
   installationId: number,
   page = 1
 ): Promise<InstallationReposPage> {
+  const cacheKey = `${installationId}-${page}`;
+  const cached = reposCache.get(cacheKey);
+  const now = Date.now();
+
+  if (cached && now - cached.timestamp < CACHE_TTL_MS) {
+    return cached.data;
+  }
+
   const app = githubService.getGithubApp();
   const octokit = await app.getInstallationOctokit(installationId);
   const { data } = await octokit.request("GET /installation/repositories", {
@@ -63,10 +79,13 @@ export async function getInstallationReposPage(
   const totalCount = data.total_count;
   const repos = data.repositories.map(mapRepo);
 
-  return {
+  const result: InstallationReposPage = {
     repos,
     totalCount,
     page,
     hasMore: page * REPOS_PER_PAGE < totalCount,
   };
+
+  reposCache.set(cacheKey, { data: result, timestamp: now });
+  return result;
 }

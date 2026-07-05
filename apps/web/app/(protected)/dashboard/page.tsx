@@ -16,6 +16,7 @@ import { CreateOrgCard } from "./_components/create-org-card";
 
 export default async function DashboardPage() {
   const session = await requireAuth();
+
   const userId = session.user.id;
   const orgId = session.session.activeOrganizationId;
 
