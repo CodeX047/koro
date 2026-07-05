@@ -15,7 +15,6 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     dashboard: "Overview",
     projects: "Projects",
     repos: "Repositories",
-    team: "Team",
     github: "GitHub App",
     settings: "Settings",
     billing: "Billing",
@@ -111,9 +110,6 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               </Link>
               <Link href="/dashboard/repos" className="flex items-center justify-between cursor-pointer text-[var(--koro-ash)] hover:text-[var(--koro-on-primary)] transition-colors">
                 <span>Repositories</span>
-              </Link>
-              <Link href="/dashboard/team" className="flex items-center justify-between cursor-pointer text-[var(--koro-ash)] hover:text-[var(--koro-on-primary)] transition-colors">
-                <span>Team</span>
               </Link>
               <Link href="/dashboard/github" className="flex items-center justify-between cursor-pointer text-[var(--koro-ash)] hover:text-[var(--koro-on-primary)] transition-colors">
                 <span>GitHub App</span>

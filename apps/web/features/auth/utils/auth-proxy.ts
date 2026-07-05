@@ -37,9 +37,14 @@ export function getSafeCallbackPath(callbackUrl: string | null | undefined): str
 export async function handleAuthProxy(req: NextRequest) {
   const { pathname, searchParams } = req.nextUrl;
 
+  const start = performance.now();
   const session = await auth.api.getSession({
     headers: req.headers,
   });
+  const elapsed = Math.round(performance.now() - start);
+  if (elapsed > 200) {
+    console.warn(`[perf] middleware getSession took ${elapsed}ms for ${pathname}`);
+  }
 
   const isAuthenticated = !!session;
 

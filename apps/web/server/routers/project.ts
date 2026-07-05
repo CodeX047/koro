@@ -2,7 +2,13 @@ import { z } from "zod";
 import { protectedProcedure, router } from "../trpc";
 import { TRPCError } from "@trpc/server";
 import { db, eq, inArray } from "@repo/database";
-import { projectsTable, repositoriesTable, featuresTable, tasksTable, reviewsTable } from "@repo/database/schema";
+import {
+  projectsTable,
+  repositoriesTable,
+  featuresTable,
+  tasksTable,
+  reviewsTable,
+} from "@repo/database/schema";
 import { githubService } from "@repo/services/github";
 
 export const projectRouter = router({
@@ -19,7 +25,6 @@ export const projectRouter = router({
       if (!orgId) {
         throw new TRPCError({ code: "BAD_REQUEST", message: "No active organization selected" });
       }
-      console.log(`Creating project ${input.name} for org ${orgId}`);
 
       const [project] = await db
         .insert(projectsTable)
@@ -38,14 +43,11 @@ export const projectRouter = router({
       }
 
       // Run repository connection asynchronously to prevent blocking UI
-      githubService.connectRepository(
-        orgId,
-        project.id,
-        ctx.user.id,
-        input.repoFullName,
-      ).catch((error) => {
-        console.error("Failed to connect repository during project creation:", error);
-      });
+      githubService
+        .connectRepository(orgId, project.id, ctx.user.id, input.repoFullName)
+        .catch((error) => {
+          console.error("Failed to connect repository during project creation:", error);
+        });
 
       return project;
     }),
@@ -55,16 +57,11 @@ export const projectRouter = router({
     if (!orgId) {
       return [];
     }
-    console.log(`Listing projects for org ${orgId}`);
 
-    const projects = await db
-      .select()
-      .from(projectsTable)
-      .where(eq(projectsTable.organizationId, orgId));
-    const repos = await db
-      .select()
-      .from(repositoriesTable)
-      .where(eq(repositoriesTable.organizationId, orgId));
+    const [projects, repos] = await Promise.all([
+      db.select().from(projectsTable).where(eq(projectsTable.organizationId, orgId)),
+      db.select().from(repositoriesTable).where(eq(repositoriesTable.organizationId, orgId)),
+    ]);
 
     return projects.map((p) => {
       const pRepos = repos.filter((r) => r.projectId === p.id);
@@ -111,45 +108,53 @@ export const projectRouter = router({
         throw new TRPCError({ code: "NOT_FOUND", message: "Project not found" });
       }
       if (project.organizationId !== orgId) {
-        throw new TRPCError({ code: "UNAUTHORIZED", message: "Not authorized to delete this project" });
+        throw new TRPCError({
+          code: "UNAUTHORIZED",
+          message: "Not authorized to delete this project",
+        });
       }
 
-      // Manually handle cascading deletes for safety (run concurrently to save time)
       await Promise.all([
         db.delete(tasksTable).where(eq(tasksTable.projectId, input.id)),
         db.delete(featuresTable).where(eq(featuresTable.projectId, input.id)),
         db.delete(reviewsTable).where(eq(reviewsTable.projectId, input.id)),
-        db.delete(repositoriesTable).where(eq(repositoriesTable.projectId, input.id))
+        db.delete(repositoriesTable).where(eq(repositoriesTable.projectId, input.id)),
       ]);
-      
-      // Finally, delete the project
+
       await db.delete(projectsTable).where(eq(projectsTable.id, input.id));
 
       return { success: true };
     }),
 
   update: protectedProcedure
-    .input(z.object({
-      id: z.string(),
-      name: z.string(),
-      description: z.string().optional(),
-    }))
+    .input(
+      z.object({
+        id: z.string(),
+        name: z.string(),
+        description: z.string().optional(),
+      }),
+    )
     .mutation(async ({ input, ctx }) => {
       const orgId = ctx.activeOrganizationId;
       if (!orgId) throw new TRPCError({ code: "BAD_REQUEST" });
 
-      const [project] = await db.select().from(projectsTable).where(eq(projectsTable.id, input.id)).limit(1);
+      const [project] = await db
+        .select()
+        .from(projectsTable)
+        .where(eq(projectsTable.id, input.id))
+        .limit(1);
       if (!project) throw new TRPCError({ code: "NOT_FOUND" });
       if (project.organizationId !== orgId) throw new TRPCError({ code: "UNAUTHORIZED" });
 
-      const [updated] = await db.update(projectsTable)
+      const [updated] = await db
+        .update(projectsTable)
         .set({
           name: input.name,
           description: input.description,
         })
         .where(eq(projectsTable.id, input.id))
         .returning();
-        
+
       return updated;
     }),
 });

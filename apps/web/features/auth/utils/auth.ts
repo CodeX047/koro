@@ -1,16 +1,22 @@
+import { cache } from "react";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { auth } from "@repo/auth";
 
-/**
- * Ensures the user is authenticated. 
- * If unauthenticated, redirects to the sign-in page.
- * Otherwise, returns the active session.
- */
-export async function requireAuth() {
+export const getSession = cache(async () => {
+  const start = performance.now();
   const session = await auth.api.getSession({
     headers: await headers(),
   });
+  const elapsed = Math.round(performance.now() - start);
+  if (elapsed > 100) {
+    console.warn(`[perf] getSession took ${elapsed}ms`);
+  }
+  return session;
+});
+
+export async function requireAuth() {
+  const session = await getSession();
 
   if (!session) {
     redirect("/sign-in");
@@ -19,15 +25,8 @@ export async function requireAuth() {
   return session;
 }
 
-/**
- * Ensures the user is unauthenticated.
- * If authenticated, redirects to the dashboard.
- * Otherwise, returns null.
- */
 export async function requireUnAuth() {
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  });
+  const session = await getSession();
 
   if (session) {
     redirect("/dashboard");

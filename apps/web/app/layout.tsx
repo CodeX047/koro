@@ -21,7 +21,7 @@ export const metadata: Metadata = {
   description:
     "From feature request to shipped software. Kōro guides your team through the complete product lifecycle with AI agents, GitHub integration, and human approval workflows.",
   icons: {
-    icon: "favicon.png",
+    icon: "/favicon.png",
   },
 };
 

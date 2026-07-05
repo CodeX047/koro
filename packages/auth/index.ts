@@ -5,8 +5,6 @@ import { db } from "@repo/database";
 import * as schema from "@repo/database/schema";
 
 export const auth = betterAuth({
-  // Comma-separated list of trusted cross-origin hosts (e.g. production domain, staging URL).
-  // Do NOT hardcode dev tunnel URLs here — set BETTER_AUTH_TRUSTED_ORIGINS in your env instead.
   trustedOrigins: process.env.BETTER_AUTH_TRUSTED_ORIGINS
     ? process.env.BETTER_AUTH_TRUSTED_ORIGINS.split(",").map((s) => s.trim())
     : [],
@@ -23,6 +21,13 @@ export const auth = betterAuth({
       invitation: schema.invitationTable,
     },
   }),
+  session: {
+    cookieCache: {
+      enabled: true,
+      maxAge: 5 * 60,
+    },
+    deferSessionRefresh: true,
+  },
   user: {
     fields: {
       name: "fullName",

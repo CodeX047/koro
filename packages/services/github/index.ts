@@ -1,6 +1,13 @@
 import { eq, db, and } from "@repo/database";
-import { githubInstallationsTable, repositoriesTable, pullRequestsTable } from "@repo/database/schema";
+import {
+  githubInstallationsTable,
+  repositoriesTable,
+  pullRequestsTable,
+} from "@repo/database/schema";
 import { App } from "octokit";
+
+const repoListCache = new Map<string, { data: any[]; expiresAt: number }>();
+const REPO_CACHE_TTL_MS = 60 * 1000; // 60 seconds
 
 export class GithubService {
   private githubApp: App | null = null;
@@ -18,7 +25,7 @@ export class GithubService {
       if (!webhookSecret) {
         throw new Error(
           "Missing GITHUB_WEBHOOK_SECRET environment variable. " +
-            "An empty secret makes webhook signature verification ineffective."
+            "An empty secret makes webhook signature verification ineffective.",
         );
       }
 
@@ -141,6 +148,11 @@ export class GithubService {
   }
 
   async listRepositories(userId: string) {
+    const cached = repoListCache.get(userId);
+    if (cached && cached.expiresAt > Date.now()) {
+      return cached.data;
+    }
+
     const installationId = await this.getUserInstallationId(userId);
     if (!installationId) return [];
 
@@ -148,10 +160,21 @@ export class GithubService {
     const octokit = await app.getInstallationOctokit(installationId);
 
     const { data } = await octokit.request("GET /installation/repositories");
+
+    repoListCache.set(userId, {
+      data: data.repositories,
+      expiresAt: Date.now() + REPO_CACHE_TTL_MS,
+    });
+
     return data.repositories;
   }
 
-  async connectRepository(organizationId: string, projectId: string, userId: string, repoFullName: string) {
+  async connectRepository(
+    organizationId: string,
+    projectId: string,
+    userId: string,
+    repoFullName: string,
+  ) {
     const installationId = await this.getUserInstallationId(userId);
     if (!installationId) throw new Error("GitHub App not installed");
 
@@ -187,13 +210,15 @@ export class GithubService {
       .from(repositoriesTable)
       .where(eq(repositoriesTable.projectId, projectId))
       .limit(1);
-    
+
     if (!repo) return null;
 
     const openPrs = await db
       .select({ id: pullRequestsTable.id })
       .from(pullRequestsTable)
-      .where(and(eq(pullRequestsTable.repositoryId, repo.id), eq(pullRequestsTable.status, "OPENED")));
+      .where(
+        and(eq(pullRequestsTable.repositoryId, repo.id), eq(pullRequestsTable.status, "OPENED")),
+      );
 
     return { ...repo, openPrsCount: openPrs.length };
   }
@@ -202,7 +227,10 @@ export class GithubService {
     await db.delete(repositoriesTable).where(eq(repositoriesTable.projectId, projectId));
   }
 
-  async updateRepositorySyncStatus(repositoryId: string, syncStatus: "CONNECTED" | "SYNCING" | "SYNCED" | "FAILED") {
+  async updateRepositorySyncStatus(
+    repositoryId: string,
+    syncStatus: "CONNECTED" | "SYNCING" | "SYNCED" | "FAILED",
+  ) {
     await db
       .update(repositoriesTable)
       .set({ syncStatus, updatedAt: new Date() })

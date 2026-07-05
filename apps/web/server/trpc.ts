@@ -1,6 +1,6 @@
 import { initTRPC, TRPCError } from "@trpc/server";
-import { cookies, headers } from "next/headers";
-import { auth } from "@repo/auth";
+import { cookies } from "next/headers";
+import { getSession } from "~/features/auth/utils/auth";
 
 export interface TRPCContext {
   createCookie: (name: string, value: string, opts?: any) => void;
@@ -21,7 +21,7 @@ export async function createContext(): Promise<TRPCContext> {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "strict",
-      maxAge: 365 * 24 * 60 * 60, // 1 year (seconds in Next.js cookies API)
+      maxAge: 365 * 24 * 60 * 60, // 1 year
       ...opts,
     });
   };
@@ -29,9 +29,7 @@ export async function createContext(): Promise<TRPCContext> {
     cookieStore.delete(name);
   };
 
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  });
+  const session = await getSession();
 
   const ctx: TRPCContext = {
     createCookie,
