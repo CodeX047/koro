@@ -3,6 +3,7 @@ import { completeClarification } from "./prd/complete-clarification";
 import { generatePRD } from "./prd/generate";
 import { generateTasks } from "./task/generate";
 import { reviewPR } from "./review/review-pr";
+import { cleanupOrganization } from "./organization/cleanup";
 
 import { releaseReadiness } from "./release/readiness";
 import { githubSync } from "./github/sync";
@@ -30,6 +31,7 @@ export const functions = [
   generatePRD,
   generateTasks,
   reviewPR,
+  cleanupOrganization,
   releaseReadiness,
   githubSync,
   syncIssues,

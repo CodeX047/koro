@@ -1,10 +1,10 @@
 import { z } from "zod";
-import { protectedProcedure, router } from "../trpc";
+import { projectProcedure, featureProcedure, router } from "../trpc";
 import { inngest } from "@repo/workflows/client";
 import { createFeature, getFeatureById, getFeaturesByProjectId } from "@repo/services/feature";
 
 export const featureRouter = router({
-  create: protectedProcedure
+  create: projectProcedure
     .input(
       z.object({
         projectId: z.string().uuid(),
@@ -13,14 +13,12 @@ export const featureRouter = router({
       }),
     )
     .mutation(async ({ input }) => {
-      // 1. Persist to DB
       const feature = await createFeature({
         projectId: input.projectId,
         title: input.title,
         description: input.description,
       });
 
-      // 2. Fire Inngest — starts the clarification → PRD pipeline
       await inngest.send({
         name: "feature/requested",
         data: {
@@ -33,7 +31,7 @@ export const featureRouter = router({
       return feature;
     }),
 
-  get: protectedProcedure
+  get: featureProcedure
     .input(z.object({ featureId: z.string().uuid() }))
     .query(async ({ input }) => {
       const feature = await getFeatureById(input.featureId);
@@ -41,23 +39,23 @@ export const featureRouter = router({
       return feature;
     }),
 
-  list: protectedProcedure
+  list: projectProcedure
     .input(z.object({ projectId: z.string().uuid() }))
     .query(async ({ input }) => {
       return getFeaturesByProjectId(input.projectId);
     }),
 
-  retry: protectedProcedure
+  retry: featureProcedure
     .input(z.object({ featureId: z.string().uuid() }))
     .mutation(async ({ input }) => {
       const feature = await getFeatureById(input.featureId);
       if (!feature) return null;
-      
+
       const { getClarificationsByFeatureId } = await import("@repo/services/clarification");
       const { updateFeatureStatus } = await import("@repo/services/feature");
-      
+
       const clarifications = await getClarificationsByFeatureId(input.featureId);
-      
+
       if (clarifications.length > 0) {
         await updateFeatureStatus(input.featureId, "PRD_GENERATING");
         await inngest.send({

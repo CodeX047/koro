@@ -14,8 +14,7 @@ export type FeatureEventType =
 export const featureEventsTable = pgTable("feature_events", {
   id: uuid("id").primaryKey().defaultRandom(),
   featureId: uuid("feature_id")
-    .references(() => featuresTable.id, { onDelete: "cascade" })
-    .notNull(),
+    .references(() => featuresTable.id, { onDelete: "set null" }),
   type: varchar("type", { length: 100 })
     .$type<FeatureEventType>()
     .notNull(),

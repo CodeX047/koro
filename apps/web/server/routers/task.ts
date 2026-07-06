@@ -1,5 +1,7 @@
 import { z } from "zod";
-import { protectedProcedure, router } from "../trpc";
+import { organizationProcedure, featureProcedure, taskProcedure, router } from "../trpc";
+import { TRPCError } from "@trpc/server";
+import { checkAuthorization } from "@repo/services/security/authorize";
 import { inngest } from "@repo/workflows/client";
 import {
   getTasksByFeatureId,
@@ -13,19 +15,17 @@ import {
 import { updateFeatureStatus } from "@repo/services/feature";
 
 export const taskRouter = router({
-  listByFeature: protectedProcedure
+  listByFeature: featureProcedure
     .input(z.object({ featureId: z.string().uuid() }))
     .query(async ({ input }) => {
       return getTasksByFeatureId(input.featureId);
     }),
 
-  generate: protectedProcedure
+  generate: featureProcedure
     .input(z.object({ featureId: z.string().uuid(), prdId: z.string().uuid() }))
     .mutation(async ({ input }) => {
-      // Transition feature to TASKS_GENERATING
       await updateFeatureStatus(input.featureId, "TASKS_GENERATING");
 
-      // Fire workflow
       await inngest.send({
         name: "task/generation.requested",
         data: { featureId: input.featureId, prdId: input.prdId },
@@ -34,7 +34,7 @@ export const taskRouter = router({
       return { success: true, featureId: input.featureId };
     }),
 
-  create: protectedProcedure
+  create: organizationProcedure
     .input(
       z.object({
         projectId: z.string().uuid(),
@@ -45,16 +45,25 @@ export const taskRouter = router({
         status: z.enum(["TODO", "IN_PROGRESS", "REVIEW", "DONE", "BLOCKED"]).default("TODO"),
         priority: z.enum(["LOW", "MEDIUM", "HIGH", "URGENT"]).default("MEDIUM"),
         complexity: z.enum(["LOW", "MEDIUM", "HIGH"]).default("MEDIUM"),
-        category: z.enum(["frontend", "backend", "database", "testing", "devops", "documentation", "other"]).default("other"),
+        category: z
+          .enum(["frontend", "backend", "database", "testing", "devops", "documentation", "other"])
+          .default("other"),
         estimatedHours: z.number().nullable().optional(),
         assigneeId: z.string().optional(),
-      })
+      }),
     )
-    .mutation(async ({ input }) => {
+    .mutation(async ({ input, ctx }) => {
+      const isAuthorized = await checkAuthorization({
+        resource: "project",
+        id: input.projectId,
+        organizationId: ctx.activeOrganizationId!,
+      });
+      if (!isAuthorized) throw new TRPCError({ code: "NOT_FOUND" });
+
       return createTask(input);
     }),
 
-  updateStatus: protectedProcedure
+  updateStatus: taskProcedure
     .input(
       z.object({
         taskId: z.string().uuid(),
@@ -65,7 +74,7 @@ export const taskRouter = router({
       return updateTaskStatus(input.taskId, input.status);
     }),
 
-  move: protectedProcedure
+  move: taskProcedure
     .input(
       z.object({
         taskId: z.string().uuid(),
@@ -77,7 +86,7 @@ export const taskRouter = router({
       return moveTask(input.taskId, input.status, input.order);
     }),
 
-  update: protectedProcedure
+  update: taskProcedure
     .input(
       z.object({
         taskId: z.string().uuid(),
@@ -95,11 +104,11 @@ export const taskRouter = router({
       return updateTask(input.taskId, input.data);
     }),
 
-  approvePlan: protectedProcedure
+  approvePlan: featureProcedure
     .input(z.object({ featureId: z.string().uuid() }))
     .mutation(async ({ input }) => {
       await snapshotPlan(input.featureId);
-      
+
       await updateFeatureStatus(input.featureId, "PLANNING_COMPLETE");
 
       await inngest.send({
@@ -110,7 +119,7 @@ export const taskRouter = router({
       return { success: true, featureId: input.featureId };
     }),
 
-  syncToGithub: protectedProcedure
+  syncToGithub: featureProcedure
     .input(z.object({ featureId: z.string().uuid() }))
     .mutation(async ({ input }) => {
       await inngest.send({

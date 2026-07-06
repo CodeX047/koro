@@ -1,10 +1,10 @@
 import { z } from "zod";
-import { protectedProcedure, router } from "../trpc";
+import { pullRequestProcedure, projectProcedure, router } from "../trpc";
 import { db, eq } from "@repo/database";
 import { reviewsTable } from "@repo/database/schema";
 
 export const reviewRouter = router({
-  get: protectedProcedure
+  get: pullRequestProcedure
     .input(z.object({ pullRequestId: z.string() }))
     .query(async ({ input, ctx }) => {
       console.log(`Getting AI Review for PR: ${input.pullRequestId}`);
@@ -22,7 +22,7 @@ export const reviewRouter = router({
       };
     }),
 
-  listHistory: protectedProcedure
+  listHistory: projectProcedure
     .input(z.object({ projectId: z.string() }))
     .query(async ({ input, ctx }) => {
       console.log(`Listing review history for project: ${input.projectId}`);

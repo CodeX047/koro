@@ -1,10 +1,12 @@
 import { z } from "zod";
-import { router, protectedProcedure } from "../trpc";
+import { featureProcedure, organizationProcedure, router } from "../trpc";
+import { checkAuthorization } from "@repo/services/security/authorize";
+import { TRPCError } from "@trpc/server";
 import { db, eq, desc } from "@repo/database";
 import { pullRequestsTable, changedFilesTable, commitsTable, developmentEventsTable, reviewRunsTable } from "@repo/database/schema";
 
 export const pullRequestRouter = router({
-  listByFeature: protectedProcedure
+  listByFeature: featureProcedure
     .input(z.object({ featureId: z.string() }))
     .query(async ({ input }) => {
       return await db
@@ -14,9 +16,16 @@ export const pullRequestRouter = router({
         .orderBy(desc(pullRequestsTable.createdAt));
     }),
 
-  details: protectedProcedure
+  details: organizationProcedure
     .input(z.object({ prId: z.string() }))
-    .query(async ({ input }) => {
+    .query(async ({ input, ctx }) => {
+      const isAuthorized = await checkAuthorization({
+        resource: "pull-request",
+        id: input.prId,
+        organizationId: ctx.activeOrganizationId!,
+      });
+      if (!isAuthorized) throw new TRPCError({ code: "NOT_FOUND" });
+
       const [pr] = await db
         .select()
         .from(pullRequestsTable)
@@ -45,7 +54,7 @@ export const pullRequestRouter = router({
       return { ...pr, files, commits, reviewRuns };
     }),
 
-  timeline: protectedProcedure
+  timeline: featureProcedure
     .input(z.object({ featureId: z.string() }))
     .query(async ({ input }) => {
       return await db

@@ -23,6 +23,11 @@ export async function saveChunksToPinecone(
     await index.namespace(namespace).upsertRecords({ records });
 }
 
+export async function deletePineconeNamespace(namespace: string) {
+    const index = getPineconeIndex();
+    await index.namespace(namespace).deleteAll();
+}
+
 
 export async function searchPrContext(namespace: string, query: string) {
     const index = getPineconeIndex();

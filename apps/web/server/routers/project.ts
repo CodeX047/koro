@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { protectedProcedure, router } from "../trpc";
+import { organizationProcedure, roleProcedure, projectProcedure, router } from "../trpc";
 import { TRPCError } from "@trpc/server";
 import { db, eq, desc } from "@repo/database";
 import {
@@ -12,7 +12,7 @@ import {
 import { githubService } from "@repo/services/github";
 
 export const projectRouter = router({
-  create: protectedProcedure
+  create: roleProcedure("admin")
     .input(
       z.object({
         name: z.string(),
@@ -22,9 +22,6 @@ export const projectRouter = router({
     )
     .mutation(async ({ input, ctx }) => {
       const orgId = ctx.activeOrganizationId;
-      if (!orgId) {
-        throw new TRPCError({ code: "BAD_REQUEST", message: "No active organization selected" });
-      }
 
       const [project] = await db
         .insert(projectsTable)
@@ -51,11 +48,8 @@ export const projectRouter = router({
       return project;
     }),
 
-  list: protectedProcedure.query(async ({ ctx }) => {
+  list: organizationProcedure.query(async ({ ctx }) => {
     const orgId = ctx.activeOrganizationId;
-    if (!orgId) {
-      return [];
-    }
 
     const [projects, repos] = await Promise.all([
       db
@@ -75,9 +69,8 @@ export const projectRouter = router({
     });
   }),
 
-  getById: protectedProcedure.input(z.object({ id: z.string() })).query(async ({ input, ctx }) => {
+  getById: projectProcedure.input(z.object({ id: z.string() })).query(async ({ input, ctx }) => {
     const orgId = ctx.activeOrganizationId;
-    if (!orgId) return null;
 
     const [project] = await db
       .select()
@@ -85,21 +78,17 @@ export const projectRouter = router({
       .where(eq(projectsTable.id, input.id))
       .limit(1);
 
-    // Ensure the project belongs to the user's active org
     if (project && project.organizationId !== orgId) {
-      throw new TRPCError({ code: "UNAUTHORIZED" });
+      throw new TRPCError({ code: "NOT_FOUND" });
     }
 
     return project || null;
   }),
 
-  delete: protectedProcedure
+  delete: roleProcedure("admin")
     .input(z.object({ id: z.string() }))
     .mutation(async ({ input, ctx }) => {
       const orgId = ctx.activeOrganizationId;
-      if (!orgId) {
-        throw new TRPCError({ code: "BAD_REQUEST", message: "No active organization selected" });
-      }
 
       const [project] = await db
         .select()
@@ -112,8 +101,8 @@ export const projectRouter = router({
       }
       if (project.organizationId !== orgId) {
         throw new TRPCError({
-          code: "UNAUTHORIZED",
-          message: "Not authorized to delete this project",
+          code: "NOT_FOUND",
+          message: "Project not found",
         });
       }
 
@@ -129,7 +118,7 @@ export const projectRouter = router({
       return { success: true };
     }),
 
-  update: protectedProcedure
+  update: roleProcedure("admin")
     .input(
       z.object({
         id: z.string(),
@@ -139,7 +128,6 @@ export const projectRouter = router({
     )
     .mutation(async ({ input, ctx }) => {
       const orgId = ctx.activeOrganizationId;
-      if (!orgId) throw new TRPCError({ code: "BAD_REQUEST" });
 
       const [project] = await db
         .select()
@@ -147,7 +135,7 @@ export const projectRouter = router({
         .where(eq(projectsTable.id, input.id))
         .limit(1);
       if (!project) throw new TRPCError({ code: "NOT_FOUND" });
-      if (project.organizationId !== orgId) throw new TRPCError({ code: "UNAUTHORIZED" });
+      if (project.organizationId !== orgId) throw new TRPCError({ code: "NOT_FOUND" });
 
       const [updated] = await db
         .update(projectsTable)

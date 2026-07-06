@@ -1,6 +1,8 @@
 "use client";
 
 import { authClient } from "@repo/auth/client";
+import Link from "next/link";
+import { Settings } from "lucide-react";
 
 export function OrgSelector() {
   const { data: orgs } = authClient.useListOrganizations();
@@ -16,6 +18,7 @@ export function OrgSelector() {
         onChange={async (e) => {
           if (e.target.value) {
             await authClient.organization.setActive({ organizationId: e.target.value });
+            window.location.reload();
           }
         }}
         aria-label="Organization"
@@ -26,6 +29,9 @@ export function OrgSelector() {
         ))}
       </select>
       <span style={{ color: "var(--koro-ash)" }}>▼</span>
+      <Link href="/dashboard/settings/organization" className="ml-2 text-[var(--koro-ash)] hover:text-white transition-colors flex items-center" title="Manage Organizations">
+        <Settings className="w-3.5 h-3.5" />
+      </Link>
     </div>
   );
 }
