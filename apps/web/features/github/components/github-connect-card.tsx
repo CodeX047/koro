@@ -1,21 +1,10 @@
 "use client";
 
 import * as React from "react";
-import { ArrowSquareOut, GithubLogo, Plugs } from "@phosphor-icons/react";
+import { Github, ExternalLink, Unplug, CheckCircle2, Shield, Zap, GitPullRequest } from "lucide-react";
 
 import type { GithubInstallationStatus } from "~/app/(protected)/dashboard/lib/types";
-import { statusBadge, statusButtonClass } from "~/app/(protected)/dashboard/lib/status-style";
-
 import { cn } from "~/lib/utils";
-import { Button } from "~/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "~/components/ui/card";
 import { disconnectGithubApp } from "../actions";
 
 type GithubConnectCardProps = {
@@ -24,71 +13,6 @@ type GithubConnectCardProps = {
   installUrl: string;
 };
 
-function ConnectedDetails({ accountLogin }: { accountLogin: string | null }) {
-  return (
-    <p className="text-xs text-[var(--koro-ash)]">
-      Installed for{" "}
-      <span className="font-semibold text-[var(--koro-success)]">@{accountLogin}</span>. The app can
-      read repository metadata and post review comments on pull requests.
-    </p>
-  );
-}
-
-function DisconnectedDetails() {
-  return (
-    <ul className="list-inside list-disc space-y-1 text-xs text-[var(--koro-ash)]">
-      <li>Access public and private repositories you select</li>
-      <li>Receive webhooks for pull request events</li>
-      <li>Post AI-generated review comments on PRs</li>
-    </ul>
-  );
-}
-
-function ConnectedActions() {
-  return (
-    <form action={disconnectGithubApp}>
-      <Button type="submit" variant="outline" className={statusButtonClass.danger}>
-        <Plugs />
-        Disconnect GitHub App
-      </Button>
-    </form>
-  );
-}
-
-function DisconnectedActions({ installUrl }: { installUrl: string }) {
-  return (
-    <Button asChild className={statusButtonClass.success}>
-      <a href={installUrl}>
-        <GithubLogo />
-        Install GitHub App
-        <ArrowSquareOut className="size-3 opacity-80" />
-      </a>
-    </Button>
-  );
-}
-
-function ConnectionDetails({
-  connected,
-  accountLogin,
-}: {
-  connected: boolean;
-  accountLogin: string | null;
-}) {
-  if (connected) {
-    return <ConnectedDetails accountLogin={accountLogin} />;
-  }
-
-  return <DisconnectedDetails />;
-}
-
-function ConnectionActions({ connected, installUrl }: { connected: boolean; installUrl: string }) {
-  if (connected) {
-    return <ConnectedActions />;
-  }
-
-  return <DisconnectedActions installUrl={installUrl} />;
-}
-
 export function GithubConnectCard({
   userId: _userId,
   installation,
@@ -96,57 +20,109 @@ export function GithubConnectCard({
 }: GithubConnectCardProps) {
   const { connected, accountLogin } = installation;
 
-  // Default to neutral styling; switch to green when connected
-  let cardBorderClass = "border-[var(--koro-hairline-strong)]";
-  let iconWrapperClass =
-    "border-[var(--koro-hairline-strong)] bg-[var(--koro-surface-dark-elevated)] text-[var(--koro-ash)]";
-  let statusTone: "success" | "neutral" = "neutral";
-  let statusLabel = "Not connected";
-
-  if (connected) {
-    cardBorderClass = "border-[var(--koro-success)]/30";
-    iconWrapperClass =
-      "border-[var(--koro-success)]/40 bg-[var(--koro-success)]/10 text-[var(--koro-success)]";
-    statusTone = "success";
-    statusLabel = "Connected";
-  }
-
   return (
-    <div className="flex flex-1 flex-col gap-6 p-6">
-      <Card
-        className={cn("max-w-2xl bg-[var(--koro-surface-dark)] transition-colors", cardBorderClass)}
-      >
-        <CardHeader>
-          <div className="flex items-start justify-between gap-4">
-            <div className="flex items-center gap-3">
-              <span
-                className={cn(
-                  "flex size-10 items-center justify-center rounded-none border",
-                  iconWrapperClass,
-                )}
-              >
-                <GithubLogo className="size-5" />
-              </span>
-              <div>
-                <CardTitle className="text-base font-bold text-[var(--koro-on-primary)]">
-                  GitHub App
-                </CardTitle>
-                <CardDescription className="text-xs text-[var(--koro-ash)] mt-1">
-                  Install the Koro reviewer app on your GitHub account or organization to access
-                  public and private repositories.
-                </CardDescription>
-              </div>
-            </div>
-            <span className={statusBadge(statusTone)}>{statusLabel}</span>
+    <div className={cn(
+      "relative overflow-hidden border rounded-2xl p-6 md:p-8 transition-all duration-300",
+      connected 
+        ? "bg-[var(--koro-surface-dark-elevated)] border-green-500/30" 
+        : "bg-[var(--koro-surface-dark)] border-[var(--koro-hairline-strong)]"
+    )}>
+      {/* Decorative background element */}
+      <div className={cn(
+        "absolute -top-32 -right-32 w-64 h-64 rounded-full blur-3xl opacity-10 pointer-events-none transition-all duration-700",
+        connected ? "bg-green-500" : "bg-[var(--koro-accent)]"
+      )} />
+
+      <div className="relative z-10 flex flex-col md:flex-row gap-8 items-start md:items-center justify-between">
+        <div className="flex items-start gap-5">
+          <div className={cn(
+            "p-3 rounded-xl shrink-0 mt-1",
+            connected 
+              ? "bg-green-500/10 text-green-500 border border-green-500/20" 
+              : "bg-[var(--koro-surface-dark-elevated)] text-[var(--koro-on-primary)] border border-[var(--koro-hairline-strong)]"
+          )}>
+            <Github className="w-8 h-8" />
           </div>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <ConnectionDetails connected={connected} accountLogin={accountLogin} />
-        </CardContent>
-        <CardFooter className="flex flex-wrap gap-2 border-t border-[var(--koro-hairline-strong)]">
-          <ConnectionActions connected={connected} installUrl={installUrl} />
-        </CardFooter>
-      </Card>
+          
+          <div>
+            <div className="flex items-center gap-3 mb-2">
+              <h2 className="text-xl font-semibold text-[var(--koro-on-primary)]">
+                GitHub App
+              </h2>
+              {connected ? (
+                <span className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-green-500/10 border border-green-500/20 text-green-500 text-xs font-medium tracking-wide">
+                  <CheckCircle2 className="w-3.5 h-3.5" />
+                  Connected
+                </span>
+              ) : (
+                <span className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[var(--koro-surface-dark-elevated)] border border-[var(--koro-hairline-strong)] text-[var(--koro-ash)] text-xs font-medium tracking-wide uppercase">
+                  Not Connected
+                </span>
+              )}
+            </div>
+            
+            {connected ? (
+              <p className="text-[var(--koro-ash)] text-sm leading-relaxed max-w-lg">
+                Installed and active for <span className="font-semibold text-[var(--koro-on-primary)]">@{accountLogin}</span>. 
+                Kōro is continuously monitoring your repositories for new pull requests and codebase updates.
+              </p>
+            ) : (
+              <p className="text-[var(--koro-ash)] text-sm leading-relaxed max-w-lg">
+                Install the Kōro GitHub app to authorize repository access. This allows us to read your code and post AI reviews directly to your pull requests.
+              </p>
+            )}
+          </div>
+        </div>
+
+        <div className="shrink-0 w-full md:w-auto">
+          {connected ? (
+            <form action={disconnectGithubApp}>
+              <button 
+                type="submit" 
+                className="w-full md:w-auto flex items-center justify-center gap-2 px-5 py-2.5 rounded-lg border border-red-500/20 bg-red-500/10 hover:bg-red-500/20 text-red-500 font-medium transition-colors text-sm cursor-pointer"
+              >
+                <Unplug className="w-4 h-4" />
+                Disconnect App
+              </button>
+            </form>
+          ) : (
+            <a 
+              href={installUrl}
+              className="w-full md:w-auto flex items-center justify-center gap-2 px-6 py-3 rounded-lg bg-[var(--koro-accent)] hover:opacity-90 text-black font-semibold transition-opacity text-sm cursor-pointer"
+            >
+              <Github className="w-4 h-4" />
+              Connect to GitHub
+              <ExternalLink className="w-4 h-4 opacity-70" />
+            </a>
+          )}
+        </div>
+      </div>
+
+      {!connected && (
+        <div className="relative z-10 grid grid-cols-1 md:grid-cols-3 gap-6 mt-8 pt-8 border-t border-[var(--koro-hairline-strong)]">
+          <div className="flex flex-col gap-2">
+            <Shield className="w-5 h-5 text-[var(--koro-accent)]" />
+            <h3 className="text-sm font-medium text-[var(--koro-on-primary)]">Granular Permissions</h3>
+            <p className="text-xs text-[var(--koro-ash)] leading-relaxed">
+              You choose exactly which repositories Kōro can access. We only ask for the minimum permissions required.
+            </p>
+          </div>
+          <div className="flex flex-col gap-2">
+            <Zap className="w-5 h-5 text-[var(--koro-accent)]" />
+            <h3 className="text-sm font-medium text-[var(--koro-on-primary)]">Real-time Webhooks</h3>
+            <p className="text-xs text-[var(--koro-ash)] leading-relaxed">
+              We instantly receive events when PRs are opened, ensuring blazing fast AI reviews.
+            </p>
+          </div>
+          <div className="flex flex-col gap-2">
+            <GitPullRequest className="w-5 h-5 text-[var(--koro-accent)]" />
+            <h3 className="text-sm font-medium text-[var(--koro-on-primary)]">Inline PR Comments</h3>
+            <p className="text-xs text-[var(--koro-ash)] leading-relaxed">
+              Reviews are posted directly to your GitHub PRs, right where your developers already work.
+            </p>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

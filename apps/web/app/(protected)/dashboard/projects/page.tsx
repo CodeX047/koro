@@ -26,49 +26,40 @@ function ProjectCard({ project, onEdit, onDelete }: { project: any, onEdit: (pro
   return (
     <div 
       onClick={() => router.push(`/dashboard/projects/${project.id}/settings`)}
-      className="p-4 rounded-sm flex flex-col gap-3 group transition-colors relative cursor-pointer"
-      style={{ 
-        border: "1px solid var(--koro-hairline-strong)",
-        backgroundColor: "var(--koro-surface-dark)"
-      }}
+      className="p-5 flex flex-col gap-4 group transition-all cursor-pointer bg-[var(--koro-surface-dark-elevated)] border border-[var(--koro-hairline-strong)] rounded-xl hover:border-[var(--koro-hairline-stronger)] shadow-sm"
     >
       <div className="flex justify-between items-start">
-        <div className="text-[14px] font-bold group-hover:text-[var(--koro-accent)] transition-colors cursor-pointer pr-4">
+        <div className="text-base font-semibold text-[var(--koro-on-primary)] group-hover:text-[var(--koro-accent)] transition-colors pr-4">
           {project.name}
         </div>
-        <div className="flex items-center gap-2">
-          <div className="text-[9px] px-1.5 py-0.5 rounded-sm font-bold tracking-wide" style={{ backgroundColor: "var(--koro-surface-dark-elevated)", color: "var(--koro-success)" }}>
+        <div className="flex items-center gap-3">
+          <div className="text-[10px] px-2 py-0.5 rounded-full font-bold tracking-widest uppercase bg-green-500/10 text-green-500 border border-green-500/20">
             ACTIVE
           </div>
           <div className="relative" ref={menuRef}>
             <button 
               onClick={(e) => { e.stopPropagation(); setMenuOpen(!menuOpen); }}
-              className="p-1 rounded-sm transition-colors hover:bg-slate-800 text-slate-400 hover:text-slate-200"
+              className="p-1 rounded-md transition-colors hover:bg-[var(--koro-surface-dark)] text-[var(--koro-ash)] hover:text-[var(--koro-on-primary)]"
             >
               <MoreVertical className="w-4 h-4" />
             </button>
             
             {menuOpen && (
               <div 
-                className="absolute right-0 top-full mt-1 w-32 rounded-sm shadow-xl z-10 flex flex-col overflow-hidden"
-                style={{ 
-                  backgroundColor: "var(--koro-surface-dark-elevated)",
-                  border: "1px solid var(--koro-hairline-strong)"
-                }}
+                className="absolute right-0 top-full mt-2 w-36 rounded-lg shadow-xl z-10 flex flex-col overflow-hidden bg-[var(--koro-surface-dark)] border border-[var(--koro-hairline-strong)] py-1"
               >
                 <button 
                   onClick={(e) => { e.stopPropagation(); setMenuOpen(false); onEdit(project); }}
-                  className="flex items-center gap-2 px-3 py-2 text-[11px] text-left hover:bg-slate-800 transition-colors"
-                  style={{ color: "var(--koro-on-primary)" }}
+                  className="flex items-center gap-2 px-3 py-2 text-xs text-left hover:bg-[var(--koro-surface-dark-elevated)] transition-colors text-[var(--koro-on-primary)]"
                 >
-                  <Pencil className="w-3 h-3" />
+                  <Pencil className="w-3.5 h-3.5" />
                   Edit
                 </button>
                 <button 
                   onClick={(e) => { e.stopPropagation(); setMenuOpen(false); onDelete(project.id); }}
-                  className="flex items-center gap-2 px-3 py-2 text-[11px] text-left hover:bg-red-950 transition-colors text-red-400"
+                  className="flex items-center gap-2 px-3 py-2 text-xs text-left hover:bg-red-500/10 transition-colors text-red-400"
                 >
-                  <Trash className="w-3 h-3" />
+                  <Trash className="w-3.5 h-3.5" />
                   Delete
                 </button>
               </div>
@@ -76,11 +67,11 @@ function ProjectCard({ project, onEdit, onDelete }: { project: any, onEdit: (pro
           </div>
         </div>
       </div>
-      <div className="text-[12px] leading-relaxed line-clamp-2" style={{ color: "var(--koro-ash)" }}>
+      <div className="text-sm leading-relaxed line-clamp-2 text-[var(--koro-ash)]">
         {project.description || "No description provided."}
       </div>
-      <div className="text-[10px] mt-2" style={{ color: "var(--koro-ash)", opacity: 0.7 }}>
-        Created on {new Date(project.createdAt || "").toLocaleDateString()}
+      <div className="text-xs mt-1 text-[var(--koro-ash)] opacity-70">
+        Created on {new Date(project.createdAt || "").toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' })}
       </div>
     </div>
   );
@@ -110,40 +101,46 @@ export default function ProjectsPage() {
   };
 
   return (
-    <div className="p-6 max-w-5xl mx-auto space-y-8 font-sans text-slate-100">
-      <div className="flex justify-between items-center pb-4 border-b border-dashed" style={{ borderColor: "var(--koro-hairline-strong)" }}>
+    <div className="p-6 md:p-10 max-w-6xl mx-auto space-y-8">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 pb-6 border-b border-[var(--koro-hairline-strong)]">
         <div>
-          <h1 className="text-[14px] font-bold flex items-center gap-2 uppercase tracking-wider" style={{ color: "var(--koro-on-primary)" }}>
-            <FolderKanban className="text-[var(--koro-accent)] w-5 h-5" />
+          <h1 className="text-2xl font-semibold text-[var(--koro-on-primary)] flex items-center gap-3">
+            <FolderKanban className="w-6 h-6 text-[var(--koro-accent)]" />
             Projects
           </h1>
-          <p className="text-[12px] mt-1" style={{ color: "var(--koro-ash)" }}>
-            Manage your code repositories and delivery routes.
+          <p className="text-[var(--koro-ash)] mt-2 text-sm max-w-2xl">
+            Organize your repositories and features. Create projects to manage your workflows and deployments.
           </p>
         </div>
         <button 
           onClick={() => setDialogOpen(true)}
-          className="flex items-center gap-1.5 px-3 py-1.5 font-bold text-[11px] rounded-sm transition lowercase tracking-normal hover:opacity-90"
-          style={{ backgroundColor: "var(--koro-accent)", color: "#fff" }}
+          className="flex items-center gap-2 px-4 py-2 font-medium text-sm rounded-lg bg-[var(--koro-accent)] hover:opacity-90 text-black transition-opacity whitespace-nowrap"
         >
-          <Plus className="w-3.5 h-3.5" />
-          add project
+          <Plus className="w-4 h-4" />
+          Create Project
         </button>
       </div>
 
       {isLoading ? (
-        <div className="flex items-center gap-2 text-[12px] py-8 justify-center" style={{ color: "var(--koro-ash)" }}>
-          <Loader2 className="w-4 h-4 animate-spin" />
-          Loading projects...
+        <div className="flex flex-col items-center justify-center p-16 bg-[var(--koro-surface-dark-elevated)] border border-[var(--koro-hairline-strong)] rounded-xl">
+          <Loader2 className="w-8 h-8 text-[var(--koro-accent)] animate-spin mb-4" />
+          <p className="text-[var(--koro-ash)] text-sm">Loading your projects...</p>
         </div>
       ) : projects?.length === 0 ? (
-        <div className="text-center py-12 border border-dashed rounded-sm" style={{ borderColor: "var(--koro-hairline-strong)" }}>
-          <FolderKanban className="w-8 h-8 mx-auto mb-3" style={{ color: "var(--koro-ash)" }} />
-          <p className="text-[13px] font-bold" style={{ color: "var(--koro-on-primary)" }}>No projects yet</p>
-          <p className="text-[11px] mt-1" style={{ color: "var(--koro-ash)" }}>Create your first project to get started.</p>
+        <div className="flex flex-col items-center justify-center py-16 px-4 text-center border border-dashed border-[var(--koro-hairline-strong)] rounded-xl bg-[var(--koro-surface-dark-elevated)]">
+          <FolderKanban className="w-12 h-12 text-[var(--koro-ash)] opacity-50 mb-4" />
+          <h3 className="text-lg font-medium text-[var(--koro-on-primary)] mb-2">No projects found</h3>
+          <p className="text-[var(--koro-ash)] text-sm max-w-sm mb-6">Get started by creating your first project to organize your repositories.</p>
+          <button 
+            onClick={() => setDialogOpen(true)}
+            className="flex items-center gap-2 px-4 py-2 font-medium text-sm rounded-lg bg-[var(--koro-surface-dark)] border border-[var(--koro-hairline-strong)] hover:border-[var(--koro-hairline-stronger)] text-[var(--koro-on-primary)] transition-colors"
+          >
+            <Plus className="w-4 h-4" />
+            Create Project
+          </button>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
           {projects?.map(project => (
             <ProjectCard 
               key={project.id} 

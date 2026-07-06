@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
-import { X, Loader2 } from "lucide-react";
+import { X, Loader2, Sparkles } from "lucide-react";
 import { trpc } from "~/trpc/client";
 
 interface NewFeatureDialogProps {
@@ -37,43 +37,37 @@ export function NewFeatureDialog({ projects, onClose }: NewFeatureDialogProps) {
   };
 
   return (
-    <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4"
-      style={{ backgroundColor: "rgba(0,0,0,0.7)" }}
-    >
-      <div
-        className="relative w-full max-w-lg rounded-2xl p-6 shadow-2xl"
-        style={{
-          backgroundColor: "var(--koro-surface-dark-elevated)",
-          border: "1px solid var(--koro-hairline-strong)",
-        }}
-      >
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
+      <div className="relative w-full max-w-xl rounded-2xl p-6 md:p-8 bg-[var(--koro-surface-dark-elevated)] border border-[var(--koro-hairline-strong)] shadow-2xl overflow-hidden">
+        
+        {/* Subtle decorative glow */}
+        <div className="absolute top-0 right-0 w-64 h-64 bg-[var(--koro-accent)]/10 rounded-full blur-3xl pointer-events-none -translate-y-1/2 translate-x-1/2" />
+        
         {/* Header */}
-        <div className="flex items-center justify-between mb-5">
+        <div className="relative flex items-center justify-between mb-8">
           <div>
-            <h2 className="text-sm font-bold" style={{ color: "var(--koro-on-primary)" }}>
+            <h2 className="text-xl font-semibold text-[var(--koro-on-primary)] flex items-center gap-2">
+              <Sparkles className="w-5 h-5 text-[var(--koro-accent)]" />
               New Feature Request
             </h2>
-            <p className="text-[11px] mt-0.5" style={{ color: "var(--koro-ash)" }}>
-              The AI will clarify requirements and generate a PRD automatically.
+            <p className="text-sm text-[var(--koro-ash)] mt-1.5">
+              Describe what you need. AI will clarify requirements and draft a PRD automatically.
             </p>
           </div>
           <button
             onClick={onClose}
-            className="p-1.5 rounded-lg transition-colors hover:opacity-70"
-            style={{ color: "var(--koro-ash)" }}
+            className="p-2 rounded-lg bg-[var(--koro-surface-dark)] border border-[var(--koro-hairline-strong)] text-[var(--koro-ash)] hover:text-[var(--koro-on-primary)] transition-colors hover:border-[var(--koro-hairline-stronger)]"
           >
             <X className="w-4 h-4" />
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="relative space-y-6">
           {/* Project */}
-          <div>
+          <div className="space-y-2">
             <label
               htmlFor="feature-project"
-              className="block text-[11px] font-semibold mb-1.5 uppercase tracking-wider"
-              style={{ color: "var(--koro-ash)" }}
+              className="block text-xs font-bold uppercase tracking-wider text-[var(--koro-ash)]"
             >
               Project & Repository
             </label>
@@ -81,12 +75,7 @@ export function NewFeatureDialog({ projects, onClose }: NewFeatureDialogProps) {
               id="feature-project"
               value={projectId}
               onChange={(e) => setProjectId(e.target.value)}
-              className="w-full px-3 py-2 rounded-lg text-xs focus:outline-none"
-              style={{
-                backgroundColor: "var(--koro-surface-dark)",
-                border: "1px solid var(--koro-hairline-strong)",
-                color: "var(--koro-on-primary)",
-              }}
+              className="w-full px-4 py-3 rounded-xl text-sm bg-[var(--koro-surface-dark)] border border-[var(--koro-hairline-strong)] text-[var(--koro-on-primary)] focus:outline-none focus:border-[var(--koro-accent)] transition-colors appearance-none cursor-pointer"
             >
               {projects.length === 0 && (
                 <option value="">No projects — create one first</option>
@@ -100,11 +89,10 @@ export function NewFeatureDialog({ projects, onClose }: NewFeatureDialogProps) {
           </div>
 
           {/* Title */}
-          <div>
+          <div className="space-y-2">
             <label
               htmlFor="feature-title"
-              className="block text-[11px] font-semibold mb-1.5 uppercase tracking-wider"
-              style={{ color: "var(--koro-ash)" }}
+              className="block text-xs font-bold uppercase tracking-wider text-[var(--koro-ash)]"
             >
               Feature Title
             </label>
@@ -113,74 +101,67 @@ export function NewFeatureDialog({ projects, onClose }: NewFeatureDialogProps) {
               type="text"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              placeholder="e.g. Dark mode toggle for the dashboard"
+              placeholder="e.g. Implement dark mode toggle for the dashboard"
               required
               minLength={3}
               maxLength={255}
-              className="w-full px-3 py-2 rounded-lg text-xs focus:outline-none"
-              style={{
-                backgroundColor: "var(--koro-surface-dark)",
-                border: "1px solid var(--koro-hairline-strong)",
-                color: "var(--koro-on-primary)",
-              }}
+              className="w-full px-4 py-3 rounded-xl text-sm bg-[var(--koro-surface-dark)] border border-[var(--koro-hairline-strong)] text-[var(--koro-on-primary)] placeholder:text-[var(--koro-ash)]/50 focus:outline-none focus:border-[var(--koro-accent)] transition-colors"
             />
           </div>
 
           {/* Description */}
-          <div>
+          <div className="space-y-2">
             <label
               htmlFor="feature-description"
-              className="block text-[11px] font-semibold mb-1.5 uppercase tracking-wider"
-              style={{ color: "var(--koro-ash)" }}
+              className="block text-xs font-bold uppercase tracking-wider text-[var(--koro-ash)] flex justify-between"
             >
-              Description
+              <span>Description</span>
+              <span className="font-normal normal-case opacity-70">Markdown supported</span>
             </label>
             <textarea
               id="feature-description"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              placeholder="Describe what this feature should do and why it matters. The more context you provide, the fewer follow-up questions the AI will ask."
+              placeholder="Describe what this feature should do, who it's for, and why it matters. The more context you provide, the fewer follow-up questions the AI will ask."
               required
               minLength={10}
-              rows={4}
-              className="w-full px-3 py-2 rounded-lg text-xs focus:outline-none resize-none"
-              style={{
-                backgroundColor: "var(--koro-surface-dark)",
-                border: "1px solid var(--koro-hairline-strong)",
-                color: "var(--koro-on-primary)",
-              }}
+              rows={5}
+              className="w-full px-4 py-3 rounded-xl text-sm bg-[var(--koro-surface-dark)] border border-[var(--koro-hairline-strong)] text-[var(--koro-on-primary)] placeholder:text-[var(--koro-ash)]/50 focus:outline-none focus:border-[var(--koro-accent)] transition-colors resize-none leading-relaxed"
             />
           </div>
 
           {error && (
-            <p className="text-[11px] text-red-400">{error}</p>
+            <div className="p-3 bg-red-500/10 border border-red-500/20 rounded-lg text-sm text-red-500 flex items-center gap-2">
+              <div className="w-1.5 h-1.5 rounded-full bg-red-500 shrink-0" />
+              {error}
+            </div>
           )}
 
           {/* Actions */}
-          <div className="flex gap-2 pt-2">
+          <div className="flex flex-col sm:flex-row gap-3 pt-4">
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 py-2 rounded-lg text-xs font-semibold transition-opacity hover:opacity-70"
-              style={{
-                backgroundColor: "var(--koro-surface-dark)",
-                color: "var(--koro-ash)",
-                border: "1px solid var(--koro-hairline-strong)",
-              }}
+              className="flex-1 px-4 py-3 rounded-xl text-sm font-medium bg-[var(--koro-surface-dark)] border border-[var(--koro-hairline-strong)] text-[var(--koro-on-primary)] hover:bg-[var(--koro-surface-dark-elevated)] transition-colors"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={createFeature.isPending || projects.length === 0}
-              className="flex-1 py-2 rounded-lg text-xs font-bold flex items-center justify-center gap-2 transition-opacity hover:opacity-90 disabled:opacity-50"
-              style={{
-                backgroundColor: "var(--koro-accent)",
-                color: "#fff",
-              }}
+              className="flex-[2] px-4 py-3 rounded-xl text-sm font-semibold flex items-center justify-center gap-2 bg-[var(--koro-accent)] text-black hover:opacity-90 disabled:opacity-50 transition-opacity"
             >
-              {createFeature.isPending && <Loader2 className="w-3 h-3 animate-spin" />}
-              {createFeature.isPending ? "Creating..." : "Create Feature →"}
+              {createFeature.isPending ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  Processing...
+                </>
+              ) : (
+                <>
+                  <Sparkles className="w-4 h-4" />
+                  Generate Feature PRD
+                </>
+              )}
             </button>
           </div>
         </form>

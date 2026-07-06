@@ -53,7 +53,8 @@ export default function SyncRepoButton({ repoFullName, branch, syncStatus, isSyn
     return (
         <Button
             size="sm"
-            variant="outline"
+            variant={status === "synced" ? "outline" : "default"}
+            className={status === "synced" ? "bg-[var(--koro-surface-dark)] border-[var(--koro-hairline-strong)] text-[var(--koro-ash)] hover:text-[var(--koro-on-primary)] hover:bg-[var(--koro-surface-dark-elevated)]" : "bg-[var(--koro-accent)] text-black hover:bg-[var(--koro-accent)] hover:opacity-90"}
             disabled={disabled}
             onClick={() => syncRepo.mutate()}
             title={isSyncLimitReached && isUnsynced ? "Free plan limit reached. Upgrade to sync more repositories." : undefined}
