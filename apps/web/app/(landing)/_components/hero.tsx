@@ -16,7 +16,7 @@ export function Hero() {
               borderRadius: "var(--koro-rounded-sm)",
             }}
           >
-            Ship Software. Not Just Code.
+            GitHub integration is now live
           </span>
         </div>
 
@@ -25,9 +25,9 @@ export function Hero() {
           className="mt-6 text-[28px] font-bold leading-[1.5] sm:text-[32px] md:text-[38px] koro-animate-fade-up koro-delay-1"
           style={{ color: "var(--koro-ink)" }}
         >
-          The intelligent route from
+          Ship software with zero
           <br />
-          idea to shipped software
+          friction and total confidence
         </h1>
 
         {/* Subheading */}
@@ -35,9 +35,7 @@ export function Hero() {
           className="mt-4 max-w-[640px] text-[16px] font-normal leading-[1.5] koro-animate-fade-up koro-delay-2"
           style={{ color: "var(--koro-body)" }}
         >
-          Kōro manages the complete product lifecycle — from feature requests through AI-powered
-          reviews to human-approved releases. One platform connecting Product, Engineering, QA, and
-          AI.
+          Kōro translates simple feature requests into structured Product Requirements Documents (PRDs) and automatically reviews your GitHub Pull Requests to ensure every specification is met.
         </p>
 
         {/* CTAs */}
@@ -95,12 +93,12 @@ export function Hero() {
                 className="hidden sm:flex items-center gap-3 text-[12px]"
                 style={{ color: "var(--koro-ash)" }}
               >
-                <span className="cursor-pointer hover:text-[var(--koro-on-primary)]">Issues</span>
+                <span className="cursor-pointer hover:text-[var(--koro-on-primary)]">Acme Corp</span>
                 <span>/</span>
-                <span className="cursor-pointer hover:text-[var(--koro-on-primary)]">Roadmap</span>
+                <span className="cursor-pointer hover:text-[var(--koro-on-primary)]">Core API API</span>
                 <span>/</span>
-                <span className="text-[var(--koro-on-primary)] bg-[var(--koro-surface-dark-elevated)] px-2 py-0.5 rounded-sm">
-                  Active Sprint
+                <span className="text-[var(--koro-on-primary)] bg-[var(--koro-surface-dark-elevated)] px-2 py-0.5 rounded-sm border border-[var(--koro-hairline-strong)]">
+                  Feature Reviews
                 </span>
               </div>
             </div>
@@ -128,20 +126,15 @@ export function Hero() {
                   className="text-[10px] tracking-widest uppercase mb-3"
                   style={{ color: "var(--koro-ash)" }}
                 >
-                  AI Agents
+                  GitHub Status
                 </div>
                 <div className="flex flex-col gap-3 text-[12px]">
                   <div className="flex items-center justify-between">
-                    <span>Product Owner</span>
-                    <span style={{ color: "var(--koro-success)" }}>●</span>
+                    <span>Repository</span>
+                    <span style={{ color: "var(--koro-success)" }} className="koro-animate-pulse">●</span>
                   </div>
-                  <div className="flex items-center justify-between">
-                    <span>Code Reviewer</span>
-                    <span style={{ color: "var(--koro-success)" }}>●</span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span>QA Tester</span>
-                    <span style={{ color: "var(--koro-accent)" }}>●</span>
+                  <div className="text-[10px] font-mono text-[var(--koro-ash)] truncate">
+                    acme-corp/core-api
                   </div>
                 </div>
               </div>
@@ -154,101 +147,74 @@ export function Hero() {
                   Activity
                 </div>
                 <div
-                  className="flex flex-col gap-2 text-[11px]"
+                  className="flex flex-col gap-2 text-[11px] font-mono"
                   style={{ color: "var(--koro-ash)" }}
                 >
-                  <div>[+] PR #42 opened</div>
-                  <div>[+] Issue KOR-102 created</div>
-                  <div>[x] Build successful</div>
+                  <div>[+] PR #142 analyzed</div>
+                  <div>[+] PRD-92 generated</div>
+                  <div className="text-[var(--koro-success)]">[x] Review PASS</div>
                 </div>
               </div>
             </div>
 
-            {/* Main Area (Kanban) */}
-            <div className="flex-1 p-4 overflow-hidden">
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 h-full">
-                {/* Column 1 */}
+            {/* Main Area (Mock Data) */}
+            <div className="flex-1 p-6 overflow-hidden">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 h-full">
+                {/* Column 1: Feature PRD */}
                 <div className="flex flex-col gap-3">
-                  <div className="text-[12px] font-bold flex items-center justify-between">
-                    <span>Todo</span>
-                    <span style={{ color: "var(--koro-ash)" }}>[2]</span>
+                  <div className="text-[12px] font-bold flex items-center justify-between uppercase tracking-wider">
+                    <span>Active Feature</span>
                   </div>
                   <div
-                    className="p-3 rounded-sm flex flex-col gap-2"
-                    style={{ border: "1px solid var(--koro-hairline-strong)" }}
+                    className="p-4 rounded-xl flex flex-col gap-2"
+                    style={{ border: "1px solid var(--koro-hairline-strong)", backgroundColor: "var(--koro-surface-dark-elevated)" }}
                   >
-                    <div className="text-[10px]" style={{ color: "var(--koro-accent)" }}>
-                      KOR-102
+                    <div className="flex justify-between">
+                      <div className="text-[14px] font-bold">Stripe Webhooks</div>
+                      <div
+                        className="text-[9px] px-2 py-0.5 rounded-full font-bold tracking-widest border"
+                        style={{ color: "var(--koro-accent)", borderColor: "var(--koro-hairline-strong)", backgroundColor: "var(--koro-surface-dark)" }}
+                      >
+                        PRD READY
+                      </div>
                     </div>
-                    <div className="text-[12px] leading-tight">Implement webhook endpoints</div>
-                  </div>
-                  <div
-                    className="p-3 rounded-sm flex flex-col gap-2"
-                    style={{ border: "1px solid var(--koro-hairline-strong)" }}
-                  >
-                    <div className="text-[10px]" style={{ color: "var(--koro-accent)" }}>
-                      KOR-104
+                    <div className="text-[12px] mt-2" style={{ color: "var(--koro-ash)" }}>
+                      Implement webhook listener for Stripe subscription.updated and subscription.deleted events to update database.
                     </div>
-                    <div className="text-[12px] leading-tight">Design system tokens update</div>
                   </div>
                 </div>
 
-                {/* Column 2 */}
+                {/* Column 2: PR Review */}
                 <div className="flex flex-col gap-3">
-                  <div className="text-[12px] font-bold flex items-center justify-between">
-                    <span>In Review</span>
-                    <span style={{ color: "var(--koro-ash)" }}>[1]</span>
+                  <div className="text-[12px] font-bold flex items-center justify-between uppercase tracking-wider">
+                    <span>Active Review</span>
                   </div>
                   <div
-                    className="p-3 rounded-sm flex flex-col gap-2 relative overflow-hidden"
+                    className="p-4 rounded-xl flex flex-col gap-2 relative overflow-hidden"
                     style={{
-                      border: "1px solid var(--koro-success)",
+                      border: "1px solid rgba(239, 68, 68, 0.3)",
                       backgroundColor: "var(--koro-surface-dark-elevated)",
                     }}
                   >
                     <div className="flex items-center justify-between">
-                      <div className="text-[10px]" style={{ color: "var(--koro-accent)" }}>
-                        KOR-99
-                      </div>
+                      <div className="text-[14px] font-bold">PR #142</div>
                       <div
-                        className="text-[9px] px-1.5 py-0.5 rounded-sm font-bold tracking-wide"
+                        className="text-[9px] px-2 py-0.5 rounded-full font-bold tracking-widest"
                         style={{
-                          backgroundColor: "var(--koro-success)",
-                          color: "var(--koro-canvas)",
+                          backgroundColor: "rgba(239, 68, 68, 0.1)",
+                          color: "#ef4444",
+                          border: "1px solid rgba(239, 68, 68, 0.2)"
                         }}
                       >
-                        AI REVIEW
+                        FIX REQUIRED
                       </div>
                     </div>
-                    <div className="text-[12px] leading-tight">Dashboard Mockup Implementation</div>
+                    <div className="text-[12px] mt-2">feat: stripe webhooks</div>
                     <div
-                      className="mt-2 text-[10px] flex items-center gap-1.5"
+                      className="mt-3 text-[11px] p-2 rounded bg-[var(--koro-surface-dark)] border border-[var(--koro-hairline-strong)] font-mono"
                       style={{ color: "var(--koro-ash)" }}
                     >
-                      <span className="koro-animate-pulse" style={{ color: "var(--koro-success)" }}>
-                        ●
-                      </span>{" "}
-                      Analyzing PR #42...
-                    </div>
-                  </div>
-                </div>
-
-                {/* Column 3 */}
-                <div className="hidden sm:flex flex-col gap-3">
-                  <div className="text-[12px] font-bold flex items-center justify-between">
-                    <span>Done</span>
-                    <span style={{ color: "var(--koro-ash)" }}>[1]</span>
-                  </div>
-                  <div
-                    className="p-3 rounded-sm flex flex-col gap-2 opacity-50"
-                    style={{ border: "1px solid var(--koro-hairline-strong)" }}
-                  >
-                    <div className="text-[10px]" style={{ color: "var(--koro-accent)" }}>
-                      KOR-95
-                    </div>
-                    <div className="text-[12px] leading-tight">Setup CI/CD Pipeline</div>
-                    <div className="text-[10px] mt-1" style={{ color: "var(--koro-ash)" }}>
-                      [x] Merged by AI
+                      <span className="text-[#ef4444]">Error:</span> PRD requires handling signature verification (stripe-signature header) which is missing in api/webhooks/route.ts.
                     </div>
                   </div>
                 </div>

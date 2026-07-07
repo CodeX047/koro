@@ -3,12 +3,12 @@
 import { useEffect, useRef, useState } from "react";
 
 const WORKFLOW_STAGES = [
-  { label: "Request", desc: "User submits feature request" },
-  { label: "Discovery", desc: "AI asks clarifying questions" },
-  { label: "PRD", desc: "AI generates specifications" },
-  { label: "Tasks", desc: "AI plans Kanban tasks" },
-  { label: "Review", desc: "AI & Human code review" },
-  { label: "Ship", desc: "Deploy to production" },
+  { label: "Connect", desc: "Link GitHub repositories" },
+  { label: "Features", desc: "Submit product ideas" },
+  { label: "Auto-PRD", desc: "AI generates specifications" },
+  { label: "Code", desc: "Engineers open Pull Requests" },
+  { label: "AI Review", desc: "Inline comments & PR scoring" },
+  { label: "Release", desc: "Merge when PASS verdict given" },
 ];
 
 function useInView(threshold = 0.1) {
@@ -40,7 +40,7 @@ export function Workflow() {
   const renderCard = (index: number) => {
     const step = WORKFLOW_STAGES[index];
     if (!step) return null;
-    const isShip = step.label === "Ship";
+    const isShip = step.label === "Release";
     return (
       <div 
         className={`flex flex-col gap-2 p-4 w-full h-full relative ${inView ? "koro-animate-fade-up" : "opacity-0"}`}
@@ -87,8 +87,8 @@ export function Workflow() {
           className="mt-3 text-[16px] font-normal leading-[1.5] max-w-[640px]"
           style={{ color: "var(--koro-body)" }}
         >
-          Every feature follows a traceable path from idea to production. AI handles the
-          heavy lifting — humans stay in control.
+          From repository connection to production merge. Kōro seamlessly integrates 
+          into your existing GitHub workflows.
         </p>
 
         {/* S-Shape Flowchart pipeline (Desktop) */}

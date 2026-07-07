@@ -5,51 +5,39 @@ import { useEffect, useRef, useState } from "react";
 const FEATURES = [
   {
     marker: "[+]",
-    title: "Feature Request Management",
+    title: "Feature Requests & PRD Generation",
     description:
-      "Create, edit, and track feature requests with title, description, priority, and status.",
+      "Submit simple feature ideas. AI expands them into structured Product Requirements Documents (PRDs) with acceptance criteria and edge cases.",
   },
   {
     marker: "[+]",
-    title: "AI Requirement Clarification",
+    title: "GitHub App Integration",
     description:
-      "AI detects missing information, asks follow-up questions, and prevents duplicate requests.",
+      "Connect your GitHub repositories in one click. Kōro automatically syncs branches, listens to pull requests, and tracks repository events.",
   },
   {
     marker: "[+]",
-    title: "PRD Generation",
+    title: "AI Pull Request Code Reviews",
     description:
-      "AI generates structured PRDs with goals, user stories, acceptance criteria, and edge cases.",
+      "Every pull request is automatically analyzed. AI reviews the code against your PRD requirements and leaves inline comments on GitHub.",
   },
   {
     marker: "[+]",
-    title: "Task Planning & Kanban",
+    title: "Readiness Scoring & Verdicts",
     description:
-      "Approved PRDs become actionable engineering tasks on a Kanban board — Todo, In Progress, Review, Done.",
+      "Get a clear 'PASS' or 'FIX_REQUIRED' verdict for every PR. Kōro calculates a readiness score based on requirement fulfillment and code quality.",
   },
   {
     marker: "[+]",
-    title: "GitHub Integration",
+    title: "Active Project Tracking",
     description:
-      "Connect repositories, receive webhook events, fetch changed files, and analyze diffs automatically.",
+      "Organize your work into projects. Track feature counts, code review history, and overall project health in real-time.",
   },
   {
     marker: "[+]",
-    title: "AI-Powered PR Reviews",
+    title: "Continuous Repo Syncing",
     description:
-      "Every pull request validated against PRD requirements, acceptance criteria, security, and code quality.",
-  },
-  {
-    marker: "[+]",
-    title: "Re-Review Workflow",
-    description:
-      "When developers push fixes, AI re-fetches, compares findings, validates, and generates updated reports.",
-  },
-  {
-    marker: "[+]",
-    title: "Human Approval & Release",
-    description:
-      "Reviewers verify PRD, tasks, PR, and AI review history before approving features for production.",
+      "We build vector embeddings of your codebase. When AI generates PRDs or reviews code, it has full context of your existing architecture.",
   },
 ];
 
@@ -95,16 +83,15 @@ export function Features() {
           className="mt-8 text-[16px] font-bold leading-[1.5]"
           style={{ color: "var(--koro-ink)" }}
         >
-          What is Kōro?
+          Core Capabilities
         </h2>
 
         <p
           className="mt-3 text-[16px] font-normal leading-[1.5] max-w-[640px]"
           style={{ color: "var(--koro-body)" }}
         >
-          An AI-powered platform that guides software teams from feature requests to
-          production releases — connecting Product, Engineering, QA, and AI into a single
-          delivery pipeline.
+          Kōro bridges the gap between product requirements and engineering execution. It automatically 
+          translates ideas into specifications and ensures your code actually meets those requirements.
         </p>
 
         {/* Feature rows */}

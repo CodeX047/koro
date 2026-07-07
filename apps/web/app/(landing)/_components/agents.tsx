@@ -4,38 +4,38 @@ import { useEffect, useRef, useState } from "react";
 
 const AGENTS = [
   {
+    name: "Sync Agent",
+    role: "Maintains codebase context",
+    description:
+      "Constantly indexes your GitHub repositories in the background to build deep contextual awareness of your entire architecture.",
+    marker: "[+]",
+  },
+  {
     name: "Discovery Agent",
     role: "Clarifies requirements",
     description:
-      "Analyzes feature requests, detects missing information, asks follow-up questions, suggests existing features, and prevents duplicates.",
+      "Analyzes simple feature ideas, detects missing edge cases, asks follow-up questions, and ensures the product need is well-defined.",
     marker: "[+]",
   },
   {
     name: "PRD Agent",
-    role: "Generates structured product documents",
+    role: "Generates specifications",
     description:
-      "Creates problem statements, goals, non-goals, user stories, acceptance criteria, edge cases, and success metrics.",
+      "Translates clarified feature requests into structured Product Requirements Documents complete with acceptance criteria and user stories.",
     marker: "[+]",
   },
   {
-    name: "Task Agent",
-    role: "Creates engineering tasks",
+    name: "Review Agent",
+    role: "Analyzes Pull Requests",
     description:
-      "Breaks approved PRDs into frontend, backend, database, testing, and DevOps tasks displayed on a Kanban board.",
+      "Listens to GitHub webhook events, analyzes code diffs, and leaves inline comments on PRs evaluating code quality and PRD fulfillment.",
     marker: "[+]",
   },
   {
-    name: "QA Agent",
-    role: "Reviews pull requests",
+    name: "Scoring Agent",
+    role: "Calculates release readiness",
     description:
-      "Validates every PR against PRD requirements, acceptance criteria, security concerns, performance, edge cases, and code quality.",
-    marker: "[+]",
-  },
-  {
-    name: "Release Agent",
-    role: "Determines production readiness",
-    description:
-      "Evaluates overall feature completeness, review history, and outstanding issues to determine if a feature is ready to ship.",
+      "Aggregates review data to generate a final 'Readiness Score' (0-100%) and a verdict (PASS/FIX_REQUIRED) before merging.",
     marker: "[+]",
   },
 ];
@@ -82,15 +82,14 @@ export function Agents() {
           className="mt-8 text-[16px] font-bold leading-[1.5]"
           style={{ color: "var(--koro-ink)" }}
         >
-          AI Agents
+          Under the Hood: Specialized AI
         </h2>
 
         <p
           className="mt-3 text-[16px] font-normal leading-[1.5] max-w-[640px]"
           style={{ color: "var(--koro-body)" }}
         >
-          Five specialized agents work together to guide your features from idea to
-          production. Each agent handles a distinct phase of the delivery lifecycle.
+          Kōro doesn't rely on a single generic AI. It uses a suite of specialized agents, each focused on a distinct phase of the software delivery lifecycle.
         </p>
 
         {/* Agent cards */}

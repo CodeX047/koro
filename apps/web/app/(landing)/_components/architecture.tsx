@@ -1,5 +1,5 @@
 export function Architecture() {
-  const steps = ["Product", "Engineering", "AI", "Human Review", "Production"];
+  const steps = ["Feature Ideas", "Auto-PRDs", "GitHub PRs", "AI Reviews", "Production"];
 
   return (
     <section
@@ -16,7 +16,7 @@ export function Architecture() {
           className="mt-8 text-[16px] font-bold leading-[1.5]"
           style={{ color: "var(--koro-ink)" }}
         >
-          Built for Modern Teams
+          Built for Modern Engineering Teams
         </h2>
 
         {/* Desktop Pipeline */}
