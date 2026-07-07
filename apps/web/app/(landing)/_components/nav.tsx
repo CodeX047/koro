@@ -12,9 +12,9 @@ const WORDMARK = `
 
 const NAV_LINKS = [
   { label: "Features", href: "#features" },
-  { label: "Workflow", href: "#workflow" },
-  { label: "Agents", href: "#agents" },
+  { label: "How It Works", href: "#workflow" },
   { label: "Pricing", href: "#pricing" },
+  { label: "FAQ", href: "#faq" },
 ];
 
 export function Nav() {

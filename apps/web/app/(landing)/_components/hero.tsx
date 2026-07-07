@@ -54,7 +54,7 @@ export function Hero() {
             Start Shipping →
           </Link>
           <a
-            href="#features"
+            href="#workflow"
             className="inline-block text-[16px] font-medium leading-[2] px-[20px] py-[4px] transition-colors"
             style={{
               backgroundColor: "var(--koro-canvas)",
@@ -67,7 +67,7 @@ export function Hero() {
             }
             onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "var(--koro-canvas)")}
           >
-            Learn More
+            See how it works
           </a>
         </div>
 

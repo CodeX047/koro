@@ -31,6 +31,12 @@
       "skillPath": "dodo-payments/best-practices/SKILL.md",
       "computedHash": "3eff4916cbee50e3508233c7ca5f631d85e1a11a59464e7a44af479c0eb4c35a"
     },
+    "landing-page-design": {
+      "source": "halt-catch-fire/skills",
+      "sourceType": "github",
+      "skillPath": "guides/design/landing-page-design/SKILL.md",
+      "computedHash": "19ed3be1e7ee1620ecc3b5801ddcb936add37750f7cadb437afdd7394472f34b"
+    },
     "license-keys": {
       "source": "dodopayments/skills",
       "sourceType": "github",
