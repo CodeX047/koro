@@ -15,7 +15,7 @@ export async function disconnectGithubApp() {
   }
 
   await githubService.deleteInstallation(session.user.id);
-  
+
   // Revalidate the dashboard page to fetch updated installation status
   revalidatePath("/dashboard/github");
 }

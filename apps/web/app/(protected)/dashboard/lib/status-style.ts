@@ -6,7 +6,8 @@ export const statusBadgeClass = {
   warning: "border-[var(--koro-warning)]/40 bg-[var(--koro-warning)]/15 text-[var(--koro-warning)]",
   danger: "border-[var(--koro-danger)]/40 bg-[var(--koro-danger)]/15 text-[var(--koro-danger)]",
   info: "border-[var(--koro-accent)]/40 bg-[var(--koro-accent)]/15 text-[var(--koro-accent)]",
-  neutral: "border-[var(--koro-hairline-strong)]/40 bg-[var(--koro-surface-dark-elevated)] text-[var(--koro-ash)]",
+  neutral:
+    "border-[var(--koro-hairline-strong)]/40 bg-[var(--koro-surface-dark-elevated)] text-[var(--koro-ash)]",
 } as const;
 
 /** Button variants for primary actions like "Install" or "Disconnect". */
@@ -26,14 +27,11 @@ export const statusButtonClass = {
  * @param className - Optional extra classes (e.g. `gap-1` when an icon is inside).
  * @returns A merged Tailwind class string ready for a `<span>`.
  */
-export function statusBadge(
-  tone: keyof typeof statusBadgeClass,
-  className?: string
-) {
+export function statusBadge(tone: keyof typeof statusBadgeClass, className?: string) {
   return cn(
     "inline-flex items-center rounded-none border px-2 py-0.5 text-xs font-medium capitalize",
     statusBadgeClass[tone],
-    className
+    className,
   );
 }
 export default statusBadge;

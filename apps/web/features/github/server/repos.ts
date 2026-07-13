@@ -59,7 +59,7 @@ const reposCache = new Map<string, CacheEntry>();
 
 export async function getInstallationReposPage(
   installationId: number,
-  page = 1
+  page = 1,
 ): Promise<InstallationReposPage> {
   const cacheKey = `${installationId}-${page}`;
   const cached = reposCache.get(cacheKey);

@@ -6,15 +6,7 @@ import { usePathname } from "next/navigation";
 import { UserMenu } from "./_components/user-menu";
 import { OrgSelector } from "./_components/org-selector";
 import { SystemStatus } from "./_components/system-status";
-import { 
-  Home, 
-  FolderKanban, 
-  FileCheck, 
-  BookMarked, 
-  Github, 
-  Settings, 
-  Search 
-} from "lucide-react";
+import { Home, FolderKanban, FileCheck, BookMarked, Github, Settings, Search } from "lucide-react";
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -25,7 +17,11 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   // Focus search input on "/" keypress
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "/" && document.activeElement?.tagName !== "INPUT" && document.activeElement?.tagName !== "TEXTAREA") {
+      if (
+        e.key === "/" &&
+        document.activeElement?.tagName !== "INPUT" &&
+        document.activeElement?.tagName !== "TEXTAREA"
+      ) {
         e.preventDefault();
         searchInputRef.current?.focus();
       }
@@ -59,8 +55,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     { href: "/dashboard/settings", label: "Settings", icon: Settings },
   ];
 
-  const filteredNavItems = navItems.filter(item => 
-    item.label.toLowerCase().includes(searchQuery.toLowerCase())
+  const filteredNavItems = navItems.filter((item) =>
+    item.label.toLowerCase().includes(searchQuery.toLowerCase()),
   );
 
   return (
@@ -68,10 +64,15 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       {/* Dashboard Header */}
       <div
         className="flex items-center justify-between px-4 py-3 border-b flex-shrink-0"
-        style={{ borderColor: "var(--koro-hairline-strong)", backgroundColor: "var(--koro-surface-dark)" }}
+        style={{
+          borderColor: "var(--koro-hairline-strong)",
+          backgroundColor: "var(--koro-surface-dark)",
+        }}
       >
         <div className="flex items-center gap-4">
-          <div className="text-[14px] font-bold tracking-widest text-[var(--koro-on-primary)]">KŌRO</div>
+          <div className="text-[14px] font-bold tracking-widest text-[var(--koro-on-primary)]">
+            KŌRO
+          </div>
           <div
             className="hidden sm:flex items-center gap-3 text-[12px]"
             style={{ color: "var(--koro-ash)" }}
@@ -115,15 +116,18 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         {/* Sidebar */}
         <div
           className="hidden md:flex flex-col gap-6 w-[240px] p-4 border-r flex-shrink-0 overflow-y-auto"
-          style={{ borderColor: "var(--koro-hairline-strong)", backgroundColor: "var(--koro-surface-dark)" }}
+          style={{
+            borderColor: "var(--koro-hairline-strong)",
+            backgroundColor: "var(--koro-surface-dark)",
+          }}
         >
           {/* Search Bar */}
           <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--koro-ash)] pointer-events-none" />
-            <input 
+            <input
               ref={searchInputRef}
-              type="text" 
-              placeholder="Search..." 
+              type="text"
+              placeholder="Search..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="w-full bg-[var(--koro-surface-dark-elevated)] border border-[var(--koro-hairline-strong)] rounded-lg pl-9 pr-8 py-2 text-sm text-[var(--koro-on-primary)] placeholder:text-[var(--koro-ash)] focus:outline-none focus:border-[var(--koro-accent)] transition-all"
@@ -147,18 +151,22 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                 </div>
               ) : (
                 filteredNavItems.map((item) => {
-                  const isActive = pathname === item.href || (pathname.startsWith(item.href) && item.href !== "/dashboard");
+                  const isActive =
+                    pathname === item.href ||
+                    (pathname.startsWith(item.href) && item.href !== "/dashboard");
                   return (
-                    <Link 
+                    <Link
                       key={item.href}
-                      href={item.href} 
+                      href={item.href}
                       className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
-                        isActive 
-                          ? "bg-[var(--koro-surface-dark-elevated)] text-[var(--koro-on-primary)] shadow-sm" 
+                        isActive
+                          ? "bg-[var(--koro-surface-dark-elevated)] text-[var(--koro-on-primary)] shadow-sm"
                           : "text-[var(--koro-ash)] hover:bg-[var(--koro-surface-dark-elevated)] hover:text-[var(--koro-on-primary)]"
                       }`}
                     >
-                      <item.icon className={`w-4 h-4 ${isActive ? "text-[var(--koro-accent)]" : "text-[var(--koro-ash)]"}`} />
+                      <item.icon
+                        className={`w-4 h-4 ${isActive ? "text-[var(--koro-accent)]" : "text-[var(--koro-ash)]"}`}
+                      />
                       <span>{item.label}</span>
                     </Link>
                   );
@@ -174,7 +182,10 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         </div>
 
         {/* Main Area */}
-        <div className="flex-1 overflow-y-auto" style={{ backgroundColor: "var(--koro-surface-dark)" }}>
+        <div
+          className="flex-1 overflow-y-auto"
+          style={{ backgroundColor: "var(--koro-surface-dark)" }}
+        >
           {children}
         </div>
       </div>

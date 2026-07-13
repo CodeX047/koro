@@ -14,6 +14,7 @@ License keys authorize access to your digital products. Use them for software li
 ## Overview
 
 License keys are unique tokens that:
+
 - Authorize access to software, plugins, CLIs
 - Limit activations per user or device
 - Gate downloads, updates, or premium features
@@ -50,19 +51,19 @@ License keys can be automatically generated when a product is purchased:
 
 These endpoints can be called directly from client applications:
 
-| Endpoint | Description |
-|----------|-------------|
-| `POST /licenses/activate` | Activate a license key |
+| Endpoint                    | Description            |
+| --------------------------- | ---------------------- |
+| `POST /licenses/activate`   | Activate a license key |
 | `POST /licenses/deactivate` | Deactivate an instance |
-| `POST /licenses/validate` | Check if key is valid |
+| `POST /licenses/validate`   | Check if key is valid  |
 
 ### Authenticated Endpoints (API Key Required)
 
-| Endpoint | Description |
-|----------|-------------|
-| `GET /license_keys` | List all license keys |
-| `GET /license_keys/:id` | Get license key details |
-| `PATCH /license_keys/:id` | Update license key |
+| Endpoint                     | Description               |
+| ---------------------------- | ------------------------- |
+| `GET /license_keys`          | List all license keys     |
+| `GET /license_keys/:id`      | Get license key details   |
+| `PATCH /license_keys/:id`    | Update license key        |
 | `GET /license_key_instances` | List activation instances |
 
 ---
@@ -72,7 +73,7 @@ These endpoints can be called directly from client applications:
 ### Activate a License Key
 
 ```typescript
-import DodoPayments from 'dodopayments';
+import DodoPayments from "dodopayments";
 
 // No API key needed for public endpoints
 const client = new DodoPayments();
@@ -87,12 +88,12 @@ async function activateLicense(licenseKey: string, deviceName: string) {
     return {
       success: true,
       instanceId: response.id,
-      message: 'License activated successfully',
+      message: "License activated successfully",
     };
   } catch (error: any) {
     return {
       success: false,
-      message: error.message || 'Activation failed',
+      message: error.message || "Activation failed",
     };
   }
 }
@@ -101,7 +102,7 @@ async function activateLicense(licenseKey: string, deviceName: string) {
 ### Validate a License Key
 
 ```typescript
-import DodoPayments from 'dodopayments';
+import DodoPayments from "dodopayments";
 
 const client = new DodoPayments();
 
@@ -126,7 +127,7 @@ async function validateLicense(licenseKey: string) {
 ### Deactivate a License
 
 ```typescript
-import DodoPayments from 'dodopayments';
+import DodoPayments from "dodopayments";
 
 const client = new DodoPayments();
 
@@ -137,7 +138,7 @@ async function deactivateLicense(licenseKey: string, instanceId: string) {
       license_key_instance_id: instanceId,
     });
 
-    return { success: true, message: 'License deactivated' };
+    return { success: true, message: "License deactivated" };
   } catch (error: any) {
     return { success: false, message: error.message };
   }
@@ -152,8 +153,8 @@ async function deactivateLicense(licenseKey: string, instanceId: string) {
 
 ```typescript
 // main/license.ts
-import Store from 'electron-store';
-import DodoPayments from 'dodopayments';
+import Store from "electron-store";
+import DodoPayments from "dodopayments";
 
 const store = new Store();
 const client = new DodoPayments();
@@ -168,7 +169,7 @@ export async function activateLicense(licenseKey: string): Promise<boolean> {
   try {
     // Get device identifier
     const deviceName = `${os.hostname()} - ${os.platform()}`;
-    
+
     const response = await client.licenses.activate({
       license_key: licenseKey,
       name: deviceName,
@@ -180,18 +181,18 @@ export async function activateLicense(licenseKey: string): Promise<boolean> {
       instanceId: response.id,
       activatedAt: new Date().toISOString(),
     };
-    
-    store.set('license', licenseInfo);
+
+    store.set("license", licenseInfo);
     return true;
   } catch (error) {
-    console.error('Activation failed:', error);
+    console.error("Activation failed:", error);
     return false;
   }
 }
 
 export async function checkLicense(): Promise<boolean> {
-  const license = store.get('license') as LicenseInfo | undefined;
-  
+  const license = store.get("license") as LicenseInfo | undefined;
+
   if (!license) {
     return false;
   }
@@ -206,15 +207,15 @@ export async function checkLicense(): Promise<boolean> {
     // If offline, trust local license (with optional grace period)
     const activatedAt = new Date(license.activatedAt);
     const daysSinceActivation = (Date.now() - activatedAt.getTime()) / (1000 * 60 * 60 * 24);
-    
+
     // Allow 30-day offline grace period
     return daysSinceActivation < 30;
   }
 }
 
 export async function deactivateLicense(): Promise<boolean> {
-  const license = store.get('license') as LicenseInfo | undefined;
-  
+  const license = store.get("license") as LicenseInfo | undefined;
+
   if (!license) {
     return true;
   }
@@ -225,10 +226,10 @@ export async function deactivateLicense(): Promise<boolean> {
       license_key_instance_id: license.instanceId,
     });
 
-    store.delete('license');
+    store.delete("license");
     return true;
   } catch (error) {
-    console.error('Deactivation failed:', error);
+    console.error("Deactivation failed:", error);
     return false;
   }
 }
@@ -238,14 +239,14 @@ export async function deactivateLicense(): Promise<boolean> {
 
 ```tsx
 // components/LicenseActivation.tsx
-import { useState } from 'react';
+import { useState } from "react";
 
 interface Props {
   onActivated: () => void;
 }
 
 export function LicenseActivation({ onActivated }: Props) {
-  const [licenseKey, setLicenseKey] = useState('');
+  const [licenseKey, setLicenseKey] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -256,14 +257,14 @@ export function LicenseActivation({ onActivated }: Props) {
     try {
       // Call main process (Electron IPC)
       const success = await window.electronAPI.activateLicense(licenseKey);
-      
+
       if (success) {
         onActivated();
       } else {
-        setError('Invalid license key. Please check and try again.');
+        setError("Invalid license key. Please check and try again.");
       }
     } catch (err) {
-      setError('Activation failed. Please try again.');
+      setError("Activation failed. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -273,7 +274,7 @@ export function LicenseActivation({ onActivated }: Props) {
     <div className="license-form">
       <h2>Activate Your License</h2>
       <p>Enter your license key to unlock all features.</p>
-      
+
       <input
         type="text"
         value={licenseKey}
@@ -281,13 +282,13 @@ export function LicenseActivation({ onActivated }: Props) {
         placeholder="XXXX-XXXX-XXXX-XXXX"
         disabled={loading}
       />
-      
+
       {error && <p className="error">{error}</p>}
-      
+
       <button onClick={handleActivate} disabled={loading || !licenseKey}>
-        {loading ? 'Activating...' : 'Activate License'}
+        {loading ? "Activating..." : "Activate License"}
       </button>
-      
+
       <a href="https://yoursite.com/purchase" target="_blank">
         Don't have a license? Purchase here
       </a>
@@ -304,11 +305,11 @@ export function LicenseActivation({ onActivated }: Props) {
 
 ```typescript
 // src/license.ts
-import Conf from 'conf';
-import DodoPayments from 'dodopayments';
-import { machineIdSync } from 'node-machine-id';
+import Conf from "conf";
+import DodoPayments from "dodopayments";
+import { machineIdSync } from "node-machine-id";
 
-const config = new Conf({ projectName: 'your-cli' });
+const config = new Conf({ projectName: "your-cli" });
 const client = new DodoPayments();
 
 export async function activate(licenseKey: string): Promise<void> {
@@ -321,27 +322,27 @@ export async function activate(licenseKey: string): Promise<void> {
       name: deviceName,
     });
 
-    config.set('license', {
+    config.set("license", {
       key: licenseKey,
       instanceId: response.id,
       machineId,
     });
 
-    console.log('License activated successfully!');
+    console.log("License activated successfully!");
   } catch (error: any) {
     if (error.status === 400) {
-      console.error('Invalid license key.');
+      console.error("Invalid license key.");
     } else if (error.status === 403) {
-      console.error('Activation limit reached. Deactivate another device first.');
+      console.error("Activation limit reached. Deactivate another device first.");
     } else {
-      console.error('Activation failed:', error.message);
+      console.error("Activation failed:", error.message);
     }
     process.exit(1);
   }
 }
 
 export async function checkLicense(): Promise<boolean> {
-  const license = config.get('license') as any;
+  const license = config.get("license") as any;
 
   if (!license) {
     return false;
@@ -359,10 +360,10 @@ export async function checkLicense(): Promise<boolean> {
 }
 
 export async function deactivate(): Promise<void> {
-  const license = config.get('license') as any;
+  const license = config.get("license") as any;
 
   if (!license) {
-    console.log('No active license found.');
+    console.log("No active license found.");
     return;
   }
 
@@ -372,10 +373,10 @@ export async function deactivate(): Promise<void> {
       license_key_instance_id: license.instanceId,
     });
 
-    config.delete('license');
-    console.log('License deactivated.');
+    config.delete("license");
+    console.log("License deactivated.");
   } catch (error: any) {
-    console.error('Deactivation failed:', error.message);
+    console.error("Deactivation failed:", error.message);
   }
 }
 
@@ -384,8 +385,8 @@ export function requireLicense() {
   return async () => {
     const valid = await checkLicense();
     if (!valid) {
-      console.error('This command requires a valid license.');
-      console.error('Run: your-cli activate <license-key>');
+      console.error("This command requires a valid license.");
+      console.error("Run: your-cli activate <license-key>");
       process.exit(1);
     }
   };
@@ -396,34 +397,28 @@ export function requireLicense() {
 
 ```typescript
 // src/cli.ts
-import { Command } from 'commander';
-import { activate, deactivate, checkLicense, requireLicense } from './license';
+import { Command } from "commander";
+import { activate, deactivate, checkLicense, requireLicense } from "./license";
 
 const program = new Command();
 
-program
-  .command('activate <license-key>')
-  .description('Activate your license')
-  .action(activate);
+program.command("activate <license-key>").description("Activate your license").action(activate);
+
+program.command("deactivate").description("Deactivate license on this device").action(deactivate);
 
 program
-  .command('deactivate')
-  .description('Deactivate license on this device')
-  .action(deactivate);
-
-program
-  .command('status')
-  .description('Check license status')
+  .command("status")
+  .description("Check license status")
   .action(async () => {
     const valid = await checkLicense();
-    console.log(valid ? 'License: Active' : 'License: Not activated');
+    console.log(valid ? "License: Active" : "License: Not activated");
   });
 
 // Protected command example
 program
-  .command('generate')
-  .description('Generate something (requires license)')
-  .hook('preAction', requireLicense())
+  .command("generate")
+  .description("Generate something (requires license)")
+  .hook("preAction", requireLicense())
   .action(async () => {
     // Premium feature
   });
@@ -442,7 +437,7 @@ program.parse();
 export async function POST(req: NextRequest) {
   const event = await req.json();
 
-  if (event.type === 'license_key.created') {
+  if (event.type === "license_key.created") {
     const { id, key, product_id, customer_id, expires_at } = event.data;
 
     // Store in your database
@@ -453,7 +448,7 @@ export async function POST(req: NextRequest) {
         productId: product_id,
         customerId: customer_id,
         expiresAt: expires_at ? new Date(expires_at) : null,
-        status: 'active',
+        status: "active",
       },
     });
 
@@ -473,8 +468,8 @@ For sensitive operations, validate server-side with your API key:
 
 ```typescript
 // app/api/validate-license/route.ts
-import { NextRequest, NextResponse } from 'next/server';
-import DodoPayments from 'dodopayments';
+import { NextRequest, NextResponse } from "next/server";
+import DodoPayments from "dodopayments";
 
 const client = new DodoPayments({
   bearerToken: process.env.DODO_PAYMENTS_API_KEY!,
@@ -490,14 +485,14 @@ export async function POST(req: NextRequest) {
     });
 
     if (licenses.items.length === 0) {
-      return NextResponse.json({ valid: false, error: 'License not found' });
+      return NextResponse.json({ valid: false, error: "License not found" });
     }
 
     const license = licenses.items[0];
 
     // Check various conditions
-    const valid = 
-      license.status === 'active' &&
+    const valid =
+      license.status === "active" &&
       (!license.expires_at || new Date(license.expires_at) > new Date());
 
     return NextResponse.json({
@@ -518,24 +513,31 @@ export async function POST(req: NextRequest) {
 ## Best Practices
 
 ### 1. Keep Limits Clear
+
 Choose sensible defaults for expiry and activations based on your product type.
 
 ### 2. Guide Users
+
 Provide precise activation instructions:
+
 - "Paste the key in Settings → License"
 - "Run: `mycli activate <key>`"
 - Include self-serve documentation links
 
 ### 3. Validate Server-Side
+
 For critical access control, always validate on your server before granting access.
 
 ### 4. Handle Offline Gracefully
+
 Allow a grace period for offline use in desktop/CLI apps.
 
 ### 5. Monitor Events
+
 Use webhooks to detect abuse patterns and automate revocations.
 
 ### 6. Provide Easy Deactivation
+
 Let users deactivate devices themselves to manage their activation slots.
 
 ---
@@ -547,14 +549,14 @@ Let users deactivate devices themselves to manage their activation slots.
 ```typescript
 async function canAccessFeature(feature: string, licenseKey: string) {
   const { valid } = await validateLicense(licenseKey);
-  
+
   if (!valid) return false;
 
   // Map features to license tiers
   const featureTiers = {
-    'basic-export': ['starter', 'pro', 'enterprise'],
-    'advanced-export': ['pro', 'enterprise'],
-    'api-access': ['enterprise'],
+    "basic-export": ["starter", "pro", "enterprise"],
+    "advanced-export": ["pro", "enterprise"],
+    "api-access": ["enterprise"],
   };
 
   const license = await getLicenseDetails(licenseKey);
@@ -568,15 +570,15 @@ When license is linked to a subscription:
 
 ```typescript
 // Handle subscription.cancelled webhook
-if (event.type === 'subscription.cancelled') {
+if (event.type === "subscription.cancelled") {
   const { customer_id } = event.data;
-  
+
   // Disable associated license keys
   const licenses = await client.licenseKeys.list({ customer_id });
-  
+
   for (const license of licenses.items) {
     await client.licenseKeys.update(license.id, {
-      status: 'disabled',
+      status: "disabled",
     });
   }
 }

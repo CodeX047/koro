@@ -25,14 +25,14 @@ export async function POST(request: NextRequest) {
 
   if (eventName === "pull_request") {
     const event = JSON.parse(payload);
-    
+
     // We emit an event, then Inngest handles processing the PR metadata & changed files
     await inngest.send({
       name: "github/pr.event", // Let's use a unified event or split them. Let's use github/pr.event
       data: {
         installationId: event.installation.id,
         repositoryFullName: event.repository.full_name,
-        payload: event
+        payload: event,
       },
     });
 

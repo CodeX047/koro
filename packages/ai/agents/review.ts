@@ -58,14 +58,16 @@ export class ReviewAgent {
       buildContextSection(input.repoContextSnippets, "Repository Context (Neighbor Files)"),
       buildContextSection(input.contextSnippets, "PR Context Snippets"),
       buildContextSection(input.frameworkContext, "Framework & Package Info"),
-      buildContextSection(input.diff, "Code Diff (The changes to review)")
+      buildContextSection(input.diff, "Code Diff (The changes to review)"),
     ].join("");
 
     let text = "";
     try {
       const result = await generateText({
         model: openrouter(process.env.REVIEW_MODEL || process.env.AI_MODEL || "openrouter/free"),
-        system: REVIEW_SYSTEM_PROMPT + `\n\nCRITICAL INSTRUCTION: Respond ONLY with a valid JSON object matching exactly this schema:
+        system:
+          REVIEW_SYSTEM_PROMPT +
+          `\n\nCRITICAL INSTRUCTION: Respond ONLY with a valid JSON object matching exactly this schema:
 {
   "verdict": "APPROVE" | "COMMENT" | "REQUEST_CHANGES",
   "score": number,
@@ -92,7 +94,13 @@ Do not include explanations or markdown.`,
       return {
         verdict: "COMMENT",
         score: 0,
-        scoreBreakdown: { correctness: 0, security: 0, performance: 0, maintainability: 0, requirements: 0 },
+        scoreBreakdown: {
+          correctness: 0,
+          security: 0,
+          performance: 0,
+          maintainability: 0,
+          requirements: 0,
+        },
         summary: "Failed to generate review due to API error.",
         findings: [],
         securityIssues: false,
@@ -104,7 +112,13 @@ Do not include explanations or markdown.`,
       return {
         verdict: parsed.verdict || "COMMENT",
         score: parsed.score || 0,
-        scoreBreakdown: parsed.scoreBreakdown || { correctness: 0, security: 0, performance: 0, maintainability: 0, requirements: 0 },
+        scoreBreakdown: parsed.scoreBreakdown || {
+          correctness: 0,
+          security: 0,
+          performance: 0,
+          maintainability: 0,
+          requirements: 0,
+        },
         summary: parsed.summary || "",
         findings: Array.isArray(parsed.findings) ? parsed.findings : [],
         securityIssues: !!parsed.securityIssues,
@@ -114,7 +128,13 @@ Do not include explanations or markdown.`,
       return {
         verdict: "COMMENT",
         score: 0,
-        scoreBreakdown: { correctness: 0, security: 0, performance: 0, maintainability: 0, requirements: 0 },
+        scoreBreakdown: {
+          correctness: 0,
+          security: 0,
+          performance: 0,
+          maintainability: 0,
+          requirements: 0,
+        },
         summary: "Failed to parse review.",
         findings: [],
         securityIssues: false,

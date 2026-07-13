@@ -13,14 +13,16 @@ export default async function BillingPage() {
             <CreditCard className="text-indigo-400 w-6 h-6" />
             Billing
           </h1>
-          <p className="text-slate-400 text-xs">Manage your subscription plans and review usage quotas.</p>
+          <p className="text-slate-400 text-xs">
+            Manage your subscription plans and review usage quotas.
+          </p>
         </header>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {/* Current Usage Quota */}
           <div className="bg-slate-950 border border-slate-900 rounded-2xl p-6 space-y-4">
             <h3 className="font-bold text-slate-200 text-sm">Monthly Quota</h3>
-            
+
             <div className="space-y-2">
               <div className="flex justify-between text-xs text-slate-400 font-medium">
                 <span>AI Reviews Used</span>
@@ -32,7 +34,10 @@ export default async function BillingPage() {
             </div>
 
             <div className="pt-4 border-t border-slate-900 flex justify-between items-center text-xs text-slate-500 font-medium">
-              <span>Current plan: <strong className="text-slate-300 font-bold uppercase">Free Tier</strong></span>
+              <span>
+                Current plan:{" "}
+                <strong className="text-slate-300 font-bold uppercase">Free Tier</strong>
+              </span>
               <span>Resets in 8 days</span>
             </div>
           </div>
@@ -43,11 +48,13 @@ export default async function BillingPage() {
               <Sparkles className="w-3.5 h-3.5" />
               Recommended
             </div>
-            
+
             <div className="space-y-4">
               <div>
                 <h3 className="font-bold text-slate-100 text-base">Pro Plan</h3>
-                <p className="text-slate-400 text-xs mt-1">For growing teams requiring continuous automated validation.</p>
+                <p className="text-slate-400 text-xs mt-1">
+                  For growing teams requiring continuous automated validation.
+                </p>
               </div>
 
               <div className="text-2xl font-extrabold text-slate-100 mt-2">

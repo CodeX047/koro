@@ -10,6 +10,6 @@ export async function getCustomerPortalUrl({
   const portal = await dodo.customers.customerPortal.create(customerId, {
     return_url: returnUrl,
   });
-  
+
   return portal.link;
 }

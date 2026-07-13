@@ -6,9 +6,9 @@ export async function POST(req: NextRequest) {
   const body = await req.text();
   const signature = req.headers.get("webhook-signature") || "";
   const timestamp = req.headers.get("webhook-timestamp") || "";
-  
+
   const webhookSecret = process.env.DODO_PAYMENTS_WEBHOOK_SECRET;
-  
+
   if (!webhookSecret) {
     return NextResponse.json({ error: "Webhook secret not configured" }, { status: 500 });
   }

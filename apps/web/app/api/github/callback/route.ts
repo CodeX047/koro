@@ -23,7 +23,7 @@ export async function GET(request: NextRequest) {
   if (!session) {
     const callbackUrl = buildSignInCallbackUrl(installationId);
     return NextResponse.redirect(
-      new URL(`/sign-in?callbackUrl=${encodeURIComponent(callbackUrl)}`, baseUrl)
+      new URL(`/sign-in?callbackUrl=${encodeURIComponent(callbackUrl)}`, baseUrl),
     );
   }
 

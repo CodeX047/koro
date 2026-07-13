@@ -22,11 +22,16 @@ export default async function DashboardGithubPage() {
           GitHub Integration
         </h1>
         <p className="text-[var(--koro-ash)] mt-2 text-sm max-w-2xl">
-          Connect Kōro to your GitHub account to enable AI-powered pull request reviews and deep codebase analysis.
+          Connect Kōro to your GitHub account to enable AI-powered pull request reviews and deep
+          codebase analysis.
         </p>
       </div>
 
-      <GithubConnectCard userId={session.user.id} installation={installation} installUrl={installUrl} />
+      <GithubConnectCard
+        userId={session.user.id}
+        installation={installation}
+        installUrl={installUrl}
+      />
     </div>
   );
 }

@@ -41,9 +41,7 @@ export const clarificationRouter = router({
 
       // Persist all answers in parallel
       await Promise.all(
-        input.answers.map(({ clarificationId, answer }) =>
-          submitAnswer(clarificationId, answer),
-        ),
+        input.answers.map(({ clarificationId, answer }) => submitAnswer(clarificationId, answer)),
       );
 
       // Transition feature status → CLARIFICATION_COMPLETE → fire Inngest
@@ -67,7 +65,7 @@ export const clarificationRouter = router({
     .mutation(async ({ input, ctx }) => {
       const { db, eq } = await import("@repo/database");
       const { clarificationsTable } = await import("@repo/database/schema");
-      
+
       const [clarification] = await db
         .select()
         .from(clarificationsTable)

@@ -67,12 +67,7 @@ export function Agents() {
   const { ref, inView } = useInView();
 
   return (
-    <section
-      id="agents"
-      className="px-6"
-      style={{ paddingTop: "var(--koro-section)" }}
-      ref={ref}
-    >
+    <section id="agents" className="px-6" style={{ paddingTop: "var(--koro-section)" }} ref={ref}>
       <div className="mx-auto max-w-[960px]">
         {/* Section divider */}
         <div style={{ borderTop: "1px solid var(--koro-hairline)" }} />
@@ -89,7 +84,8 @@ export function Agents() {
           className="mt-3 text-[16px] font-normal leading-[1.5] max-w-[640px]"
           style={{ color: "var(--koro-body)" }}
         >
-          Kōro doesn't rely on a single generic AI. It uses a suite of specialized agents, each focused on a distinct phase of the software delivery lifecycle.
+          Kōro doesn't rely on a single generic AI. It uses a suite of specialized agents, each
+          focused on a distinct phase of the software delivery lifecycle.
         </p>
 
         {/* Agent cards */}

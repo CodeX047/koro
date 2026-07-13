@@ -11,7 +11,7 @@ export function OrgSelector() {
   return (
     <div className="flex items-center gap-2 text-[12px]">
       <span style={{ color: "var(--koro-ash)" }}>Org:</span>
-      <select 
+      <select
         className="bg-transparent text-[var(--koro-on-primary)] outline-none cursor-pointer font-medium"
         style={{ appearance: "none" }}
         value={activeOrg?.id || ""}
@@ -25,11 +25,17 @@ export function OrgSelector() {
       >
         {!orgs?.length && <option value="">Personal Workspace</option>}
         {orgs?.map((org) => (
-          <option key={org.id} value={org.id}>{org.name}</option>
+          <option key={org.id} value={org.id}>
+            {org.name}
+          </option>
         ))}
       </select>
       <span style={{ color: "var(--koro-ash)" }}>▼</span>
-      <Link href="/dashboard/settings/organization" className="ml-2 text-[var(--koro-ash)] hover:text-white transition-colors flex items-center" title="Manage Organizations">
+      <Link
+        href="/dashboard/settings/organization"
+        className="ml-2 text-[var(--koro-ash)] hover:text-white transition-colors flex items-center"
+        title="Manage Organizations"
+      >
         <Settings className="w-3.5 h-3.5" />
       </Link>
     </div>

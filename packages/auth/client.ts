@@ -10,7 +10,5 @@ const getBaseURL = () => {
 
 export const authClient = createAuthClient({
   baseURL: getBaseURL(),
-  plugins: [
-    organizationClient(),
-  ],
+  plugins: [organizationClient()],
 });

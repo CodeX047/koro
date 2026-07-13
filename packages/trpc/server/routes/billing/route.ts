@@ -6,10 +6,12 @@ import { TRPCError } from "@trpc/server";
 
 export const billingRouter = router({
   createCheckoutSession: protectedProcedure
-    .input(z.object({
-      planId: z.string(),
-      returnUrl: z.string().url(),
-    }))
+    .input(
+      z.object({
+        planId: z.string(),
+        returnUrl: z.string().url(),
+      }),
+    )
     .mutation(async ({ ctx, input }) => {
       const organizationId = ctx.session.activeOrganizationId;
       if (!organizationId) {
@@ -30,10 +32,12 @@ export const billingRouter = router({
     }),
 
   getCustomerPortalUrl: protectedProcedure
-    .input(z.object({
-      customerId: z.string(), // Wait, usually we look up customerId from subscription table using orgId
-      returnUrl: z.string().url(),
-    }))
+    .input(
+      z.object({
+        customerId: z.string(), // Wait, usually we look up customerId from subscription table using orgId
+        returnUrl: z.string().url(),
+      }),
+    )
     .mutation(async ({ ctx, input }) => {
       const organizationId = ctx.session.activeOrganizationId;
       if (!organizationId) {

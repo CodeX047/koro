@@ -4,7 +4,7 @@ import { trpc } from "~/trpc/client";
 
 export function SystemStatus() {
   const { data: health, isLoading } = trpc.health.getHealth.useQuery();
-  
+
   const isHealthy = health?.status === "healthy";
   const statusColor = isLoading ? "var(--koro-ash)" : isHealthy ? "var(--koro-success)" : "red";
 
@@ -19,7 +19,9 @@ export function SystemStatus() {
       <div className="flex flex-col gap-3 text-[12px]">
         <div className="flex items-center justify-between">
           <span style={{ color: "var(--koro-ash)" }}>AI Services</span>
-          <span style={{ color: statusColor }} className={isHealthy ? "koro-animate-pulse" : ""}>●</span>
+          <span style={{ color: statusColor }} className={isHealthy ? "koro-animate-pulse" : ""}>
+            ●
+          </span>
         </div>
         <div className="flex items-center justify-between">
           <span style={{ color: "var(--koro-ash)" }}>GitHub Sync</span>

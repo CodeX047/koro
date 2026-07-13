@@ -12,7 +12,7 @@ import { KanbanBoard } from "./_components/kanban-board";
 
 const POLL_STATUSES = new Set([
   "DRAFT",
-  "CLARIFICATION_PENDING",  // waiting for Inngest to finish saving questions
+  "CLARIFICATION_PENDING", // waiting for Inngest to finish saving questions
   "CLARIFICATION_COMPLETE",
   "PRD_GENERATING",
   "TASKS_GENERATING",
@@ -39,17 +39,18 @@ export default function FeatureDetailPage() {
   );
 
   // ── PRD + clarifications query ─────────────────────────────────────────
-  const {
-    data: prdData,
-    isLoading: prdLoading,
-  } = trpc.prd.getByFeatureId.useQuery(
+  const { data: prdData, isLoading: prdLoading } = trpc.prd.getByFeatureId.useQuery(
     { featureId: id },
     {
       enabled: !!feature,
       refetchInterval: (query) => {
         const status = feature?.status ?? "DRAFT";
         // Poll while generating PRD or waiting for clarifications to be saved
-        return (status === "PRD_GENERATING" || status === "CLARIFICATION_PENDING" || status === "DRAFT") ? 2000 : false;
+        return status === "PRD_GENERATING" ||
+          status === "CLARIFICATION_PENDING" ||
+          status === "DRAFT"
+          ? 2000
+          : false;
       },
     },
   );
@@ -75,7 +76,7 @@ export default function FeatureDetailPage() {
 
   const { data: devTimeline } = trpc.pullRequest.timeline.useQuery(
     { featureId: id },
-    { enabled: feature?.status === "PLANNING_COMPLETE" }
+    { enabled: feature?.status === "PLANNING_COMPLETE" },
   );
 
   const approvePlanMutation = trpc.task.approvePlan.useMutation({
@@ -93,7 +94,10 @@ export default function FeatureDetailPage() {
   // ── Loading state ─────────────────────────────────────────────────────
   if (featureLoading) {
     return (
-      <div className="flex items-center justify-center min-h-[60vh] gap-2 text-xs" style={{ color: "var(--koro-ash)" }}>
+      <div
+        className="flex items-center justify-center min-h-[60vh] gap-2 text-xs"
+        style={{ color: "var(--koro-ash)" }}
+      >
         <Loader2 className="w-4 h-4 animate-spin" />
         Loading…
       </div>
@@ -116,7 +120,6 @@ export default function FeatureDetailPage() {
   return (
     <div className="min-h-screen p-6 md:p-8 font-sans" style={{ color: "var(--koro-on-primary)" }}>
       <div className="max-w-3xl mx-auto space-y-8">
-
         {/* Back nav */}
         <Link
           href="/dashboard/features"
@@ -157,7 +160,10 @@ export default function FeatureDetailPage() {
               border: "1px solid var(--koro-hairline-strong)",
             }}
           >
-            <Loader2 className="w-6 h-6 animate-spin mx-auto mb-3" style={{ color: "var(--koro-accent)" }} />
+            <Loader2
+              className="w-6 h-6 animate-spin mx-auto mb-3"
+              style={{ color: "var(--koro-accent)" }}
+            />
             <p className="text-sm font-semibold" style={{ color: "var(--koro-on-primary)" }}>
               Starting AI Discovery…
             </p>
@@ -176,7 +182,10 @@ export default function FeatureDetailPage() {
               border: "1px solid var(--koro-hairline-strong)",
             }}
           >
-            <Loader2 className="w-6 h-6 animate-spin mx-auto mb-3" style={{ color: "var(--koro-warning)" }} />
+            <Loader2
+              className="w-6 h-6 animate-spin mx-auto mb-3"
+              style={{ color: "var(--koro-warning)" }}
+            />
             <p className="text-sm font-semibold" style={{ color: "var(--koro-on-primary)" }}>
               Generating Clarification Questions…
             </p>
@@ -197,7 +206,8 @@ export default function FeatureDetailPage() {
                 AI Discovery Questions
               </h2>
               <p className="text-[11px] mt-1" style={{ color: "var(--koro-ash)" }}>
-                Answer these questions to help the AI write a more accurate PRD. You can skip any question.
+                Answer these questions to help the AI write a more accurate PRD. You can skip any
+                question.
               </p>
             </div>
             <ClarificationForm
@@ -217,17 +227,24 @@ export default function FeatureDetailPage() {
               border: "1px solid var(--koro-hairline-strong)",
             }}
           >
-            <Loader2 className="w-6 h-6 animate-spin mx-auto mb-3" style={{ color: "var(--koro-accent)" }} />
+            <Loader2
+              className="w-6 h-6 animate-spin mx-auto mb-3"
+              style={{ color: "var(--koro-accent)" }}
+            />
             <p className="text-sm font-semibold" style={{ color: "var(--koro-on-primary)" }}>
               Generating PRD…
             </p>
             <p className="text-[11px] mt-1" style={{ color: "var(--koro-ash)" }}>
-              The AI is writing your Product Requirements Document. This usually takes 10–20 seconds.
+              The AI is writing your Product Requirements Document. This usually takes 10–20
+              seconds.
             </p>
             {/* Show submitted answers while waiting */}
             {clarifications.filter((c) => c.status === "ANSWERED").length > 0 && (
               <div className="mt-5 text-left space-y-3">
-                <p className="text-[10px] uppercase tracking-wider" style={{ color: "var(--koro-ash)" }}>
+                <p
+                  className="text-[10px] uppercase tracking-wider"
+                  style={{ color: "var(--koro-ash)" }}
+                >
                   Your answers
                 </p>
                 {clarifications
@@ -237,7 +254,13 @@ export default function FeatureDetailPage() {
                       <p className="text-[11px] font-medium" style={{ color: "var(--koro-ash)" }}>
                         {c.question}
                       </p>
-                      <p className="text-[11px] mt-0.5 px-3 py-1.5 rounded-lg" style={{ backgroundColor: "var(--koro-surface-dark)", color: "var(--koro-on-primary)" }}>
+                      <p
+                        className="text-[11px] mt-0.5 px-3 py-1.5 rounded-lg"
+                        style={{
+                          backgroundColor: "var(--koro-surface-dark)",
+                          color: "var(--koro-on-primary)",
+                        }}
+                      >
                         {c.answer}
                       </p>
                     </div>
@@ -259,7 +282,10 @@ export default function FeatureDetailPage() {
                   border: "1px solid var(--koro-hairline-strong)",
                 }}
               >
-                <h2 className="text-xs font-bold uppercase tracking-wider mb-3" style={{ color: "var(--koro-ash)" }}>
+                <h2
+                  className="text-xs font-bold uppercase tracking-wider mb-3"
+                  style={{ color: "var(--koro-ash)" }}
+                >
                   Discovery Q&amp;A
                 </h2>
                 <div className="space-y-3">
@@ -270,7 +296,10 @@ export default function FeatureDetailPage() {
                         <p className="text-[11px] font-medium" style={{ color: "var(--koro-ash)" }}>
                           {c.question}
                         </p>
-                        <p className="text-[11px] mt-0.5" style={{ color: "var(--koro-on-primary)" }}>
+                        <p
+                          className="text-[11px] mt-0.5"
+                          style={{ color: "var(--koro-on-primary)" }}
+                        >
                           {c.answer}
                         </p>
                       </div>
@@ -284,16 +313,12 @@ export default function FeatureDetailPage() {
               <div className="flex items-center justify-between mb-3">
                 <h2 className="text-sm font-bold">Generated PRD</h2>
                 <button
-                  onClick={() =>
-                    generateTasksMutation.mutate({ featureId: id, prdId: prd.id })
-                  }
+                  onClick={() => generateTasksMutation.mutate({ featureId: id, prdId: prd.id })}
                   disabled={generateTasksMutation.isPending}
                   className="px-4 py-2 rounded-lg text-xs font-bold transition-opacity hover:opacity-90 disabled:opacity-50 flex items-center gap-2"
                   style={{ backgroundColor: "var(--koro-accent)", color: "#fff" }}
                 >
-                  {generateTasksMutation.isPending && (
-                    <Loader2 className="w-3 h-3 animate-spin" />
-                  )}
+                  {generateTasksMutation.isPending && <Loader2 className="w-3 h-3 animate-spin" />}
                   Generate Engineering Plan
                 </button>
               </div>
@@ -304,7 +329,10 @@ export default function FeatureDetailPage() {
 
         {/* ── Stage: PRD_READY but PRD not loaded yet ───────────────────── */}
         {status === "PRD_READY" && !prd && prdLoading && (
-          <div className="flex items-center justify-center gap-2 text-xs py-8" style={{ color: "var(--koro-ash)" }}>
+          <div
+            className="flex items-center justify-center gap-2 text-xs py-8"
+            style={{ color: "var(--koro-ash)" }}
+          >
             <Loader2 className="w-4 h-4 animate-spin" />
             Loading PRD…
           </div>
@@ -319,7 +347,10 @@ export default function FeatureDetailPage() {
               border: "1px solid var(--koro-hairline-strong)",
             }}
           >
-            <Loader2 className="w-6 h-6 animate-spin mx-auto mb-3" style={{ color: "var(--koro-accent)" }} />
+            <Loader2
+              className="w-6 h-6 animate-spin mx-auto mb-3"
+              style={{ color: "var(--koro-accent)" }}
+            />
             <p className="text-sm font-semibold" style={{ color: "var(--koro-on-primary)" }}>
               Generating Engineering Plan…
             </p>
@@ -328,9 +359,8 @@ export default function FeatureDetailPage() {
             </p>
           </div>
         )}
-
-      </div> {/* Close max-w-3xl mx-auto space-y-8 */}
-
+      </div>{" "}
+      {/* Close max-w-3xl mx-auto space-y-8 */}
       {/* ── Stage: TASKS_DRAFT or PLANNING_COMPLETE ────────────────────── */}
       {(status === "TASKS_DRAFT" || status === "PLANNING_COMPLETE") && (
         <div className="mt-12 space-y-6 max-w-[1600px] mx-auto">
@@ -339,7 +369,8 @@ export default function FeatureDetailPage() {
               <h2 className="text-lg font-bold">Engineering Plan</h2>
               {status === "TASKS_DRAFT" && (
                 <p className="text-[11px] mt-1" style={{ color: "var(--koro-ash)" }}>
-                  Draft plan generated by AI. Drag tasks to update status, or click a task to edit it before approving.
+                  Draft plan generated by AI. Drag tasks to update status, or click a task to edit
+                  it before approving.
                 </p>
               )}
               {status === "PLANNING_COMPLETE" && (
@@ -355,9 +386,7 @@ export default function FeatureDetailPage() {
                 className="px-4 py-2 rounded-lg text-xs font-bold transition-opacity hover:opacity-90 disabled:opacity-50 flex items-center gap-2"
                 style={{ backgroundColor: "var(--koro-success)", color: "#fff" }}
               >
-                {approvePlanMutation.isPending && (
-                  <Loader2 className="w-3 h-3 animate-spin" />
-                )}
+                {approvePlanMutation.isPending && <Loader2 className="w-3 h-3 animate-spin" />}
                 Approve Plan
               </button>
             )}
@@ -367,14 +396,12 @@ export default function FeatureDetailPage() {
                 disabled={syncTasksMutation.isPending}
                 className="px-4 py-2 rounded-lg text-xs font-bold transition-opacity hover:opacity-90 disabled:opacity-50 flex items-center gap-2 border border-slate-700 bg-slate-900 text-slate-200"
               >
-                {syncTasksMutation.isPending && (
-                  <Loader2 className="w-3 h-3 animate-spin" />
-                )}
+                {syncTasksMutation.isPending && <Loader2 className="w-3 h-3 animate-spin" />}
                 Sync Issues to GitHub
               </button>
             )}
           </div>
-          
+
           <KanbanBoard featureId={id} projectId={feature.projectId} />
 
           {/* Development Timeline */}
@@ -383,22 +410,32 @@ export default function FeatureDetailPage() {
               <h2 className="text-lg font-bold">Development Timeline</h2>
               <div className="border border-slate-800 rounded-xl bg-slate-950 p-6">
                 {devTimeline?.length === 0 ? (
-                  <p className="text-sm text-slate-400 text-center py-4">No development activity yet. Sync tasks to GitHub to get started.</p>
+                  <p className="text-sm text-slate-400 text-center py-4">
+                    No development activity yet. Sync tasks to GitHub to get started.
+                  </p>
                 ) : (
                   <div className="space-y-6 relative before:absolute before:inset-0 before:ml-5 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-slate-800 before:to-transparent">
                     {devTimeline?.map((event: any) => (
-                      <div key={event.id} className="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active">
+                      <div
+                        key={event.id}
+                        className="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active"
+                      >
                         <div className="flex items-center justify-center w-10 h-10 rounded-full border border-slate-800 bg-slate-900 shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 shadow">
                           <Clock className="w-4 h-4 text-indigo-400" />
                         </div>
                         <div className="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] p-4 rounded-xl border border-slate-800 bg-slate-900 shadow">
                           <div className="flex items-center justify-between mb-1">
                             <h3 className="font-bold text-slate-200 text-sm">{event.eventType}</h3>
-                            <time className="text-xs text-slate-400">{new Date(event.createdAt).toLocaleDateString()}</time>
+                            <time className="text-xs text-slate-400">
+                              {new Date(event.createdAt).toLocaleDateString()}
+                            </time>
                           </div>
                           <div className="text-sm text-slate-400 mt-1">
                             {event.metadata.title && (
-                              <Link href={`/dashboard/prs/${event.metadata.prId}`} className="text-indigo-400 hover:underline">
+                              <Link
+                                href={`/dashboard/prs/${event.metadata.prId}`}
+                                className="text-indigo-400 hover:underline"
+                              >
                                 #{event.metadata.prNumber} {event.metadata.title}
                               </Link>
                             )}
@@ -413,7 +450,6 @@ export default function FeatureDetailPage() {
           )}
         </div>
       )}
-
       {/* ── Stage: FAILED ─────────────────────────────────────────────── */}
       {status === "FAILED" && (
         <div className="max-w-3xl mx-auto mt-8">
@@ -437,9 +473,7 @@ export default function FeatureDetailPage() {
               className="px-4 py-2 rounded-lg text-xs font-bold transition-opacity hover:opacity-90 disabled:opacity-50 inline-flex items-center gap-2"
               style={{ backgroundColor: "var(--koro-accent)", color: "#fff" }}
             >
-              {retryMutation.isPending && (
-                <Loader2 className="w-3 h-3 animate-spin" />
-              )}
+              {retryMutation.isPending && <Loader2 className="w-3 h-3 animate-spin" />}
               Rerun Generation
             </button>
           </div>

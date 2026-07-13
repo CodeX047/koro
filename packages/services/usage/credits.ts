@@ -14,11 +14,13 @@ export async function reserveAICredit(organizationId: string): Promise<boolean> 
   if (!canRun) return false;
 
   const currentMonth = new Date().toISOString().slice(0, 7); // YYYY-MM
-  
+
   // Upsert usage record
-  const existing = await db.select().from(usageTable).where(
-    and(eq(usageTable.organizationId, organizationId), eq(usageTable.month, currentMonth))
-  ).limit(1);
+  const existing = await db
+    .select()
+    .from(usageTable)
+    .where(and(eq(usageTable.organizationId, organizationId), eq(usageTable.month, currentMonth)))
+    .limit(1);
 
   if (existing.length === 0) {
     await db.insert(usageTable).values({
@@ -29,7 +31,8 @@ export async function reserveAICredit(organizationId: string): Promise<boolean> 
     });
   } else if (existing[0]) {
     // Increment usage to reserve
-    await db.update(usageTable)
+    await db
+      .update(usageTable)
       .set({ aiReviewsUsed: existing[0].aiReviewsUsed + 1 })
       .where(eq(usageTable.id, existing[0].id));
   }
@@ -38,14 +41,17 @@ export async function reserveAICredit(organizationId: string): Promise<boolean> 
 
 export async function releaseAICreditReservation(organizationId: string): Promise<void> {
   const currentMonth = new Date().toISOString().slice(0, 7);
-  
-  const existing = await db.select().from(usageTable).where(
-    and(eq(usageTable.organizationId, organizationId), eq(usageTable.month, currentMonth))
-  ).limit(1);
+
+  const existing = await db
+    .select()
+    .from(usageTable)
+    .where(and(eq(usageTable.organizationId, organizationId), eq(usageTable.month, currentMonth)))
+    .limit(1);
 
   if (existing.length > 0 && existing[0] && existing[0].aiReviewsUsed > 0) {
     // Decrement
-    await db.update(usageTable)
+    await db
+      .update(usageTable)
       .set({ aiReviewsUsed: existing[0].aiReviewsUsed - 1 })
       .where(eq(usageTable.id, existing[0].id));
   }

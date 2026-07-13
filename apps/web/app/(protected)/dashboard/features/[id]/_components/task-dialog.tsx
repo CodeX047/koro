@@ -136,7 +136,7 @@ export function TaskDialog({ task, onClose, onUpdated }: TaskDialogProps) {
               <label className="block text-[11px] font-semibold mb-1.5 uppercase tracking-wider text-[var(--koro-ash)]">
                 AI Reasoning
               </label>
-              <div 
+              <div
                 className="w-full px-3 py-2 rounded-lg text-[11px] leading-relaxed italic"
                 style={{
                   backgroundColor: "var(--koro-surface-dark)",
@@ -169,7 +169,7 @@ export function TaskDialog({ task, onClose, onUpdated }: TaskDialogProps) {
 
           {task.githubIssueUrl && (
             <div className="flex items-center gap-4 py-2 border-t border-slate-800 mt-4 pt-4">
-              <a 
+              <a
                 href={task.githubIssueUrl}
                 target="_blank"
                 rel="noreferrer"
@@ -182,14 +182,18 @@ export function TaskDialog({ task, onClose, onUpdated }: TaskDialogProps) {
               <button
                 type="button"
                 onClick={() => {
-                  const branchName = `feature/${task.id.slice(0, 8)}-${task.title.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`;
+                  const branchName = `feature/${task.id.slice(0, 8)}-${task.title.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`;
                   navigator.clipboard.writeText(branchName);
                   setCopied(true);
                   setTimeout(() => setCopied(false), 2000);
                 }}
                 className="flex items-center gap-1.5 text-xs text-slate-300 hover:text-slate-100 transition bg-slate-800 px-3 py-1.5 rounded-lg border border-slate-700"
               >
-                {copied ? <Check className="w-3 h-3 text-green-400" /> : <Copy className="w-3 h-3" />}
+                {copied ? (
+                  <Check className="w-3 h-3 text-green-400" />
+                ) : (
+                  <Copy className="w-3 h-3" />
+                )}
                 Copy Branch Name
               </button>
             </div>
@@ -243,7 +247,9 @@ export function TaskDialog({ task, onClose, onUpdated }: TaskDialogProps) {
                 type="number"
                 min="0"
                 value={estimatedHours}
-                onChange={(e) => setEstimatedHours(e.target.value === "" ? "" : Number(e.target.value))}
+                onChange={(e) =>
+                  setEstimatedHours(e.target.value === "" ? "" : Number(e.target.value))
+                }
                 className="w-full px-3 py-2 rounded-lg text-xs focus:outline-none"
                 style={{
                   backgroundColor: "var(--koro-surface-dark)",

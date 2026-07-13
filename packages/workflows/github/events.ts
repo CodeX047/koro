@@ -1,15 +1,15 @@
 export type GithubEvents = {
   "github/sync.requested": {
-    data: { repoSyncId: string; };
+    data: { repoSyncId: string };
   };
   "github/repository.connected": {
-    data: { repositoryId: string; };
+    data: { repositoryId: string };
   };
   "github/issues.sync.requested": {
-    data: { featureId: string; };
+    data: { featureId: string };
   };
   "github/issues.created": {
-    data: { featureId: string; count: number; };
+    data: { featureId: string; count: number };
   };
   "github/pr.event": {
     data: {

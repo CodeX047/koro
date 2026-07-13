@@ -64,13 +64,13 @@ pnpm db:migrate          # apply migrations to DATABASE_URL
 
 See [.env.example](.env.example) for the full list of variables. The key ones:
 
-| Variable              | Used by         | Description                                |
-| --------------------- | --------------- | ------------------------------------------ |
-| `DATABASE_URL`        | database        | Postgres/Neon connection string            |
-| `JWT_SECRET`          | services        | Secret for signing/verifying JWT tokens    |
-| `BASE_URL`            | api             | Public base URL of the API (OpenAPI/docs)  |
-| `NODE_ENV`            | api, cookies    | `development` \| `prod`                     |
-| `NEXT_PUBLIC_API_URL` | web             | API tRPC endpoint the browser calls (`…/trpc`) |
+| Variable              | Used by      | Description                                    |
+| --------------------- | ------------ | ---------------------------------------------- |
+| `DATABASE_URL`        | database     | Postgres/Neon connection string                |
+| `JWT_SECRET`          | services     | Secret for signing/verifying JWT tokens        |
+| `BASE_URL`            | api          | Public base URL of the API (OpenAPI/docs)      |
+| `NODE_ENV`            | api, cookies | `development` \| `prod`                        |
+| `NEXT_PUBLIC_API_URL` | web          | API tRPC endpoint the browser calls (`…/trpc`) |
 
 ## Development
 
@@ -80,28 +80,28 @@ pnpm dev                 # runs all apps (web + api) via Turborepo
 
 Local URLs:
 
-| What            | URL                                  |
-| --------------- | ------------------------------------ |
-| Web app         | http://localhost:3000                |
-| API root        | http://localhost:8000                |
-| Health check    | http://localhost:8000/health         |
+| What              | URL                                |
+| ----------------- | ---------------------------------- |
+| Web app           | http://localhost:3000              |
+| API root          | http://localhost:8000              |
+| Health check      | http://localhost:8000/health       |
 | API docs (Scalar) | http://localhost:8000/docs         |
-| OpenAPI spec    | http://localhost:8000/openapi.json   |
-| REST endpoints  | http://localhost:8000/api            |
-| tRPC endpoint   | http://localhost:8000/trpc           |
+| OpenAPI spec      | http://localhost:8000/openapi.json |
+| REST endpoints    | http://localhost:8000/api          |
+| tRPC endpoint     | http://localhost:8000/trpc         |
 
 ## Common scripts
 
-| Command                          | Description                              |
-| -------------------------------- | ---------------------------------------- |
-| `pnpm dev`                       | Run all apps in dev mode                 |
-| `pnpm build`                     | Build all apps and packages              |
-| `pnpm lint`                      | Lint via Turborepo                       |
-| `pnpm check-types`               | Type-check via Turborepo                 |
-| `pnpm format`                    | Prettier across the repo                 |
-| `pnpm db:generate`               | Generate Drizzle migrations              |
-| `pnpm db:migrate`                | Apply Drizzle migrations                 |
-| `pnpm --filter @repo/services test` | Run the service-layer test suite      |
+| Command                             | Description                      |
+| ----------------------------------- | -------------------------------- |
+| `pnpm dev`                          | Run all apps in dev mode         |
+| `pnpm build`                        | Build all apps and packages      |
+| `pnpm lint`                         | Lint via Turborepo               |
+| `pnpm check-types`                  | Type-check via Turborepo         |
+| `pnpm format`                       | Prettier across the repo         |
+| `pnpm db:generate`                  | Generate Drizzle migrations      |
+| `pnpm db:migrate`                   | Apply Drizzle migrations         |
+| `pnpm --filter @repo/services test` | Run the service-layer test suite |
 
 ## Authentication
 

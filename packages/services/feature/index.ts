@@ -1,8 +1,5 @@
 import { db, eq } from "@repo/database";
-import {
-  featuresTable,
-  type FeatureStatus,
-} from "@repo/database/schema";
+import { featuresTable, type FeatureStatus } from "@repo/database/schema";
 import { featureEventsTable, type FeatureEventType } from "@repo/database/schema";
 
 // ─── Feature Repository ───────────────────────────────────────────────
@@ -28,10 +25,7 @@ export async function createFeature(input: {
 }
 
 export async function getFeatureById(featureId: string) {
-  const [feature] = await db
-    .select()
-    .from(featuresTable)
-    .where(eq(featuresTable.id, featureId));
+  const [feature] = await db.select().from(featuresTable).where(eq(featuresTable.id, featureId));
 
   return feature ?? null;
 }

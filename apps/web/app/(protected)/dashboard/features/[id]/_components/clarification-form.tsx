@@ -66,7 +66,10 @@ export function ClarificationForm({
       {/* Pending questions */}
       {pending.length > 0 && (
         <div className="space-y-4">
-          <p className="text-[11px] font-semibold uppercase tracking-wider" style={{ color: "var(--koro-ash)" }}>
+          <p
+            className="text-[11px] font-semibold uppercase tracking-wider"
+            style={{ color: "var(--koro-ash)" }}
+          >
             <MessageSquare className="inline w-3.5 h-3.5 mr-1 mb-0.5" />
             {pending.length} question{pending.length !== 1 ? "s" : ""} from the AI
           </p>
@@ -86,9 +89,7 @@ export function ClarificationForm({
               <textarea
                 id={`answer-${c.id}`}
                 value={answers[c.id] ?? ""}
-                onChange={(e) =>
-                  setAnswers((prev) => ({ ...prev, [c.id]: e.target.value }))
-                }
+                onChange={(e) => setAnswers((prev) => ({ ...prev, [c.id]: e.target.value }))}
                 rows={3}
                 placeholder="Your answer…"
                 className="w-full px-3 py-2 rounded-lg text-xs resize-none focus:outline-none"
@@ -114,7 +115,13 @@ export function ClarificationForm({
               <p className="text-xs font-medium" style={{ color: "var(--koro-ash)" }}>
                 {c.question}
               </p>
-              <p className="text-xs px-3 py-2 rounded-lg" style={{ backgroundColor: "var(--koro-surface-dark)", color: "var(--koro-on-primary)" }}>
+              <p
+                className="text-xs px-3 py-2 rounded-lg"
+                style={{
+                  backgroundColor: "var(--koro-surface-dark)",
+                  color: "var(--koro-on-primary)",
+                }}
+              >
                 {c.answer}
               </p>
             </div>
@@ -122,9 +129,7 @@ export function ClarificationForm({
         </div>
       )}
 
-      {error && (
-        <p className="text-[11px] text-red-400">{error}</p>
-      )}
+      {error && <p className="text-[11px] text-red-400">{error}</p>}
 
       {pending.length > 0 && (
         <button

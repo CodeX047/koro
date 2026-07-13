@@ -29,7 +29,9 @@ export class PRDAgent {
     try {
       const result = await generateText({
         model: openrouter(process.env.AI_MODEL || "openrouter/free"),
-        system: PRD_SYSTEM_PROMPT + `\n\nCRITICAL INSTRUCTION: Respond ONLY with a valid JSON object. Do not include any explanations or markdown. Use EXACTLY these properties:\n{
+        system:
+          PRD_SYSTEM_PROMPT +
+          `\n\nCRITICAL INSTRUCTION: Respond ONLY with a valid JSON object. Do not include any explanations or markdown. Use EXACTLY these properties:\n{
   "problemStatement": "string",
   "goals": ["string"],
   "nonGoals": ["string"],
@@ -68,7 +70,10 @@ export class PRDAgent {
     const getStr = (keys: string[]) => {
       for (const key of keys) {
         if (parsed[key] !== undefined) return String(parsed[key]);
-        const lowerKey = Object.keys(parsed).find(k => k.toLowerCase().replace(/[^a-z]/g, '') === key.toLowerCase().replace(/[^a-z]/g, ''));
+        const lowerKey = Object.keys(parsed).find(
+          (k) =>
+            k.toLowerCase().replace(/[^a-z]/g, "") === key.toLowerCase().replace(/[^a-z]/g, ""),
+        );
         if (lowerKey) return String(parsed[lowerKey]);
       }
       return "";
@@ -77,7 +82,10 @@ export class PRDAgent {
     const getArr = (keys: string[]) => {
       for (const key of keys) {
         if (Array.isArray(parsed[key])) return parsed[key];
-        const lowerKey = Object.keys(parsed).find(k => k.toLowerCase().replace(/[^a-z]/g, '') === key.toLowerCase().replace(/[^a-z]/g, ''));
+        const lowerKey = Object.keys(parsed).find(
+          (k) =>
+            k.toLowerCase().replace(/[^a-z]/g, "") === key.toLowerCase().replace(/[^a-z]/g, ""),
+        );
         if (lowerKey && Array.isArray(parsed[lowerKey])) return parsed[lowerKey];
       }
       return [];
@@ -92,17 +100,17 @@ export class PRDAgent {
     const successMetrics = getArr(["successMetrics", "metrics"]);
 
     if (problemStatement || goals.length > 0 || userStories.length > 0) {
-       return {
-         problemStatement,
-         goals,
-         nonGoals,
-         userStories,
-         acceptanceCriteria,
-         edgeCases,
-         successMetrics,
-       };
+      return {
+        problemStatement,
+        goals,
+        nonGoals,
+        userStories,
+        acceptanceCriteria,
+        edgeCases,
+        successMetrics,
+      };
     }
-    
+
     // Fallback
     return {
       problemStatement: `[Raw Output, failed to parse]\n\n${text}`,

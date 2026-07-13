@@ -1,17 +1,25 @@
 import { db } from "@repo/database";
 import { billingEventTable, invoiceTable } from "@repo/database/schema";
 import { eq } from "drizzle-orm";
-import { createSubscription, updateSubscription, getSubscriptionByOrgId } from "./repositories/subscription";
+import {
+  createSubscription,
+  updateSubscription,
+  getSubscriptionByOrgId,
+} from "./repositories/subscription";
 
-// The event payload types would normally be typed accurately from dodopayments SDK, 
+// The event payload types would normally be typed accurately from dodopayments SDK,
 // using any here for brevity but assuming typical structures.
 
 export async function handleWebhookEvent(event: any) {
   const { webhook_id, type, data } = event;
 
   // Idempotency check
-  const existingEvent = await db.select().from(billingEventTable).where(eq(billingEventTable.eventId, webhook_id)).limit(1);
-  
+  const existingEvent = await db
+    .select()
+    .from(billingEventTable)
+    .where(eq(billingEventTable.eventId, webhook_id))
+    .limit(1);
+
   if (existingEvent.length > 0) {
     if (existingEvent[0]?.status === "processed") {
       return { status: "already_processed" };
@@ -47,11 +55,16 @@ export async function handleWebhookEvent(event: any) {
     }
 
     // Mark as processed
-    await db.update(billingEventTable).set({ status: "processed", processedAt: new Date() }).where(eq(billingEventTable.eventId, webhook_id));
-    
+    await db
+      .update(billingEventTable)
+      .set({ status: "processed", processedAt: new Date() })
+      .where(eq(billingEventTable.eventId, webhook_id));
   } catch (error: any) {
     // Mark as failed
-    await db.update(billingEventTable).set({ status: "failed", error: error.message }).where(eq(billingEventTable.eventId, webhook_id));
+    await db
+      .update(billingEventTable)
+      .set({ status: "failed", error: error.message })
+      .where(eq(billingEventTable.eventId, webhook_id));
     throw error;
   }
 }
@@ -92,7 +105,9 @@ async function handleSubscriptionUpdated(data: any) {
 
 async function handleSubscriptionCancelled(data: any) {
   const subscriptionId = data.subscription_id;
-  const cancelAt = data.cancel_at_next_billing_date ? new Date(data.current_period_end) : new Date();
+  const cancelAt = data.cancel_at_next_billing_date
+    ? new Date(data.current_period_end)
+    : new Date();
 
   await updateSubscription(subscriptionId, {
     status: "cancelled",

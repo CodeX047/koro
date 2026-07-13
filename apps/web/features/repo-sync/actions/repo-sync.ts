@@ -8,17 +8,17 @@ import { githubService } from "~/features/github/utils/service";
 import { triggerRepoSync } from "../server/repo-sync";
 
 export async function syncRepoCodebase(repoFullName: string, branch: string) {
-    const session = await auth.api.getSession({ headers: await headers() });
+  const session = await auth.api.getSession({ headers: await headers() });
 
-    if (!session) {
-        redirect("/sign-in");
-    }
+  if (!session) {
+    redirect("/sign-in");
+  }
 
-    const installationId = await githubService.getUserInstallationId(session.user.id);
+  const installationId = await githubService.getUserInstallationId(session.user.id);
 
-    if (!installationId) {
-        redirect("/dashboard/github");
-    }
+  if (!installationId) {
+    redirect("/dashboard/github");
+  }
 
-    await triggerRepoSync(installationId, repoFullName, branch);
+  await triggerRepoSync(installationId, repoFullName, branch);
 }

@@ -1,5 +1,12 @@
 import { eq, and, db, inArray } from "@repo/database";
-import { pullRequestsTable, changedFilesTable, commitsTable, repositoriesTable, tasksTable, githubIssuesTable } from "@repo/database/schema";
+import {
+  pullRequestsTable,
+  changedFilesTable,
+  commitsTable,
+  repositoriesTable,
+  tasksTable,
+  githubIssuesTable,
+} from "@repo/database/schema";
 import { GithubService } from "./index";
 
 export class GithubPullRequestService {
@@ -22,7 +29,7 @@ export class GithubPullRequestService {
     const issueNumbers: number[] = [];
     const bodyMatches = pr.body ? [...pr.body.matchAll(/#(\d+)/g)] : [];
     const titleMatches = pr.title ? [...pr.title.matchAll(/#(\d+)/g)] : [];
-    
+
     for (const m of [...bodyMatches, ...titleMatches]) {
       const num = parseInt(m[1]);
       if (!issueNumbers.includes(num)) {
@@ -36,14 +43,11 @@ export class GithubPullRequestService {
         .select()
         .from(githubIssuesTable)
         .where(inArray(githubIssuesTable.issueNumber, issueNumbers));
-      
-      const taskIds = issues.map(i => i.taskId);
+
+      const taskIds = issues.map((i) => i.taskId);
       if (taskIds.length > 0) {
-        matchedTasks = await db
-          .select()
-          .from(tasksTable)
-          .where(inArray(tasksTable.id, taskIds));
-        
+        matchedTasks = await db.select().from(tasksTable).where(inArray(tasksTable.id, taskIds));
+
         if (matchedTasks.length > 0) {
           taskId = matchedTasks[0].id;
           featureId = matchedTasks[0].featureId;
@@ -68,7 +72,7 @@ export class GithubPullRequestService {
       }
 
       if (newTaskStatus) {
-        const taskIdsToUpdate = matchedTasks.map(t => t.id);
+        const taskIdsToUpdate = matchedTasks.map((t) => t.id);
         await db
           .update(tasksTable)
           .set({ status: newTaskStatus, updatedAt: new Date() })
@@ -94,7 +98,12 @@ export class GithubPullRequestService {
     let [existingPr] = await db
       .select()
       .from(pullRequestsTable)
-      .where(and(eq(pullRequestsTable.repoFullName, repoFullName), eq(pullRequestsTable.prNumber, pr.number)))
+      .where(
+        and(
+          eq(pullRequestsTable.repoFullName, repoFullName),
+          eq(pullRequestsTable.prNumber, pr.number),
+        ),
+      )
       .limit(1);
 
     if (existingPr) {
@@ -139,22 +148,30 @@ export class GithubPullRequestService {
     return existingPr;
   }
 
-  private async syncPullRequestDetails(installationId: number, prId: string, repoFullName: string, prNumber: number) {
+  private async syncPullRequestDetails(
+    installationId: number,
+    prId: string,
+    repoFullName: string,
+    prNumber: number,
+  ) {
     const app = this.githubService.getGithubApp();
     const octokit = await app.getInstallationOctokit(installationId);
     const [owner, repo] = repoFullName.split("/") as [string, string];
 
     // Sync Files
-    const { data: files } = await octokit.request("GET /repos/{owner}/{repo}/pulls/{pull_number}/files", {
-      owner,
-      repo,
-      pull_number: prNumber,
-    });
+    const { data: files } = await octokit.request(
+      "GET /repos/{owner}/{repo}/pulls/{pull_number}/files",
+      {
+        owner,
+        repo,
+        pull_number: prNumber,
+      },
+    );
 
     await db.delete(changedFilesTable).where(eq(changedFilesTable.prId, prId));
-    
+
     if (files.length > 0) {
-      const filesToInsert = files.map(f => ({
+      const filesToInsert = files.map((f) => ({
         prId,
         filename: f.filename,
         status: f.status,
@@ -166,16 +183,19 @@ export class GithubPullRequestService {
     }
 
     // Sync Commits
-    const { data: commits } = await octokit.request("GET /repos/{owner}/{repo}/pulls/{pull_number}/commits", {
-      owner,
-      repo,
-      pull_number: prNumber,
-    });
+    const { data: commits } = await octokit.request(
+      "GET /repos/{owner}/{repo}/pulls/{pull_number}/commits",
+      {
+        owner,
+        repo,
+        pull_number: prNumber,
+      },
+    );
 
     await db.delete(commitsTable).where(eq(commitsTable.prId, prId));
 
     if (commits.length > 0) {
-      const commitsToInsert = commits.map(c => ({
+      const commitsToInsert = commits.map((c) => ({
         prId,
         sha: c.sha,
         message: c.commit.message,

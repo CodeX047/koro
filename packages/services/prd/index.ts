@@ -51,8 +51,7 @@ export async function getPrdByFeatureId(featureId: string) {
 // ─── Helpers ──────────────────────────────────────────────────────────
 
 function prdToMarkdown(prd: GeneratedPRD): string {
-  const list = (items: string[]) =>
-    items.map((item) => `- ${item}`).join("\n");
+  const list = (items: string[]) => items.map((item) => `- ${item}`).join("\n");
 
   return [
     "## Problem Statement",

@@ -15,7 +15,8 @@ export function NewProjectDialog({ onClose }: { onClose: () => void }) {
   const utils = trpc.useUtils();
 
   // Fetch synced repositories
-  const { data: syncedRepos = [], isLoading: isReposLoading } = trpc.github.getSyncedRepositories.useQuery();
+  const { data: syncedRepos = [], isLoading: isReposLoading } =
+    trpc.github.getSyncedRepositories.useQuery();
 
   useEffect(() => {
     if (syncedRepos.length > 0 && !repoFullName) {
@@ -84,7 +85,10 @@ export function NewProjectDialog({ onClose }: { onClose: () => void }) {
           </div>
         ) : syncedRepos.length === 0 ? (
           <div className="flex flex-col items-center text-center py-6 px-4">
-            <div className="w-12 h-12 rounded-full flex items-center justify-center mb-4" style={{ backgroundColor: "var(--koro-surface-dark)" }}>
+            <div
+              className="w-12 h-12 rounded-full flex items-center justify-center mb-4"
+              style={{ backgroundColor: "var(--koro-surface-dark)" }}
+            >
               <GitFork className="w-6 h-6 text-slate-400" />
             </div>
             <h3 className="text-sm font-semibold mb-2">No Synced Repositories</h3>

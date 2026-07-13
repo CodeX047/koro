@@ -9,13 +9,16 @@ export class GithubIssueService {
     this.githubService = new GithubService();
   }
 
-  async syncTasksToIssues(repositoryId: string, installationId: number, owner: string, name: string, taskIds: string[]) {
+  async syncTasksToIssues(
+    repositoryId: string,
+    installationId: number,
+    owner: string,
+    name: string,
+    taskIds: string[],
+  ) {
     if (taskIds.length === 0) return [];
 
-    const tasks = await db
-      .select()
-      .from(tasksTable)
-      .where(inArray(tasksTable.id, taskIds));
+    const tasks = await db.select().from(tasksTable).where(inArray(tasksTable.id, taskIds));
 
     const app = this.githubService.getGithubApp();
     const octokit = await app.getInstallationOctokit(installationId);

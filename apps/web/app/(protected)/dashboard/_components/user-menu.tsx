@@ -39,33 +39,37 @@ export function UserMenu() {
     <div className="mt-auto pt-4 border-t" style={{ borderColor: "var(--koro-hairline-strong)" }}>
       <div className="flex items-center gap-3 mb-3">
         {/* Avatar */}
-        <div 
+        <div
           className="w-8 h-8 flex-shrink-0 rounded-sm flex items-center justify-center text-[12px] font-bold"
-          style={{ 
-            backgroundColor: "var(--koro-surface-dark-elevated)", 
+          style={{
+            backgroundColor: "var(--koro-surface-dark-elevated)",
             color: "var(--koro-on-primary)",
-            border: "1px solid var(--koro-hairline-strong)"
+            border: "1px solid var(--koro-hairline-strong)",
           }}
         >
           {user.image ? (
-            <Image 
-              src={user.image} 
-              alt={displayName} 
+            <Image
+              src={user.image}
+              alt={displayName}
               width={32}
               height={32}
-              className="w-full h-full object-cover rounded-sm" 
+              className="w-full h-full object-cover rounded-sm"
             />
           ) : (
             displayName.slice(0, 2).toUpperCase()
           )}
         </div>
         <div className="flex flex-col overflow-hidden">
-          <span className="text-[12px] font-bold truncate text-[var(--koro-on-primary)]">{displayName}</span>
-          <span className="text-[10px] truncate" style={{ color: "var(--koro-ash)" }}>{user.email}</span>
+          <span className="text-[12px] font-bold truncate text-[var(--koro-on-primary)]">
+            {displayName}
+          </span>
+          <span className="text-[10px] truncate" style={{ color: "var(--koro-ash)" }}>
+            {user.email}
+          </span>
         </div>
       </div>
 
-      <button 
+      <button
         onClick={handleSignOut}
         className="w-full text-[10px] font-bold tracking-widest uppercase py-1.5 rounded-sm transition-colors text-left px-2 flex items-center justify-between group"
         style={{ color: "var(--koro-ash)" }}

@@ -3,9 +3,7 @@ import { getAuthenticationCookie } from "./cookie";
 
 import type { TRPCContext } from "../context";
 
-export type ContextUser =
-  | Awaited<ReturnType<typeof userService.verifyAndDecodeUserToken>>
-  | null;
+export type ContextUser = Awaited<ReturnType<typeof userService.verifyAndDecodeUserToken>> | null;
 
 export async function getContextUser(ctx: TRPCContext): Promise<ContextUser> {
   const userToken = getAuthenticationCookie(ctx);

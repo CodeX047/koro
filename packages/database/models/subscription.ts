@@ -2,7 +2,9 @@ import { pgTable, text, timestamp, varchar } from "drizzle-orm/pg-core";
 import { organizationTable } from "./auth";
 
 export const subscriptionTable = pgTable("subscription", {
-  id: text("id").primaryKey().$defaultFn(() => crypto.randomUUID()),
+  id: text("id")
+    .primaryKey()
+    .$defaultFn(() => crypto.randomUUID()),
   organizationId: text("organization_id")
     .references(() => organizationTable.id, { onDelete: "cascade" })
     .notNull(),
@@ -13,5 +15,8 @@ export const subscriptionTable = pgTable("subscription", {
   currentPeriodEnd: timestamp("current_period_end").notNull(),
   cancelAtPeriodEnd: timestamp("cancel_at_period_end"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
-  updatedAt: timestamp("updated_at").defaultNow().$onUpdate(() => new Date()).notNull(),
+  updatedAt: timestamp("updated_at")
+    .defaultNow()
+    .$onUpdate(() => new Date())
+    .notNull(),
 });

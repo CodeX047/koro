@@ -39,11 +39,7 @@ export function FAQ() {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
 
   return (
-    <section
-      id="faq"
-      className="px-6"
-      style={{ paddingTop: "var(--koro-section)" }}
-    >
+    <section id="faq" className="px-6" style={{ paddingTop: "var(--koro-section)" }}>
       <div className="mx-auto max-w-[960px]">
         {/* Section divider */}
         <div style={{ borderTop: "1px solid var(--koro-hairline)" }} />
@@ -61,10 +57,7 @@ export function FAQ() {
           {FAQS.map((faq, i) => {
             const isOpen = openIndex === i;
             return (
-              <div
-                key={faq.question}
-                style={{ borderBottom: "1px solid var(--koro-hairline)" }}
-              >
+              <div key={faq.question} style={{ borderBottom: "1px solid var(--koro-hairline)" }}>
                 <button
                   className="w-full py-[16px] flex items-center justify-between gap-4 text-left transition-colors"
                   onClick={() => setOpenIndex(isOpen ? null : i)}
@@ -72,9 +65,7 @@ export function FAQ() {
                   onMouseEnter={(e) => (e.currentTarget.style.color = "var(--koro-ink-deep)")}
                   onMouseLeave={(e) => (e.currentTarget.style.color = "var(--koro-ink)")}
                 >
-                  <span className="text-[16px] font-bold leading-[1.5]">
-                    {faq.question}
-                  </span>
+                  <span className="text-[16px] font-bold leading-[1.5]">{faq.question}</span>
                   <span
                     className="shrink-0 text-[18px] font-light transition-transform duration-200"
                     style={{
@@ -86,9 +77,7 @@ export function FAQ() {
                   </span>
                 </button>
                 {isOpen && (
-                  <div
-                    className="pb-[16px] koro-animate-fade-in"
-                  >
+                  <div className="pb-[16px] koro-animate-fade-in">
                     <p
                       className="text-[16px] font-normal leading-[1.6] max-w-[720px]"
                       style={{ color: "var(--koro-body)" }}

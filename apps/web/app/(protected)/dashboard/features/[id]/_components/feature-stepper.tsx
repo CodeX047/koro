@@ -14,7 +14,8 @@ const STAGES: { id: Stage; label: string }[] = [
 
 function getActiveStage(status: string): Stage {
   if (status === "DRAFT") return "feature";
-  if (status === "CLARIFICATION_PENDING" || status === "CLARIFICATION_COMPLETE") return "clarification";
+  if (status === "CLARIFICATION_PENDING" || status === "CLARIFICATION_COMPLETE")
+    return "clarification";
   if (status === "PRD_GENERATING" || status === "PRD_READY") return "prd";
   return "plan";
 }
@@ -30,11 +31,9 @@ function isStageComplete(stage: Stage, status: string): boolean {
       status === "TASKS_DRAFT" ||
       status === "PLANNING_COMPLETE"
     );
-  if (stage === "prd") 
+  if (stage === "prd")
     return (
-      status === "TASKS_GENERATING" || 
-      status === "TASKS_DRAFT" || 
-      status === "PLANNING_COMPLETE"
+      status === "TASKS_GENERATING" || status === "TASKS_DRAFT" || status === "PLANNING_COMPLETE"
     );
   if (stage === "plan") return status === "PLANNING_COMPLETE";
   return false;
@@ -58,10 +57,7 @@ export function FeatureStepper({ status }: { status: string }) {
             <div className="flex flex-col items-center">
               <div className="flex items-center justify-center w-8 h-8">
                 {isComplete ? (
-                  <CheckCircle2
-                    className="w-6 h-6"
-                    style={{ color: "var(--koro-success)" }}
-                  />
+                  <CheckCircle2 className="w-6 h-6" style={{ color: "var(--koro-success)" }} />
                 ) : isGenerating ? (
                   <Loader2
                     className="w-5 h-5 animate-spin"
@@ -71,9 +67,7 @@ export function FeatureStepper({ status }: { status: string }) {
                   <Circle
                     className="w-5 h-5"
                     style={{
-                      color: isActive
-                        ? "var(--koro-accent)"
-                        : "var(--koro-hairline-strong)",
+                      color: isActive ? "var(--koro-accent)" : "var(--koro-hairline-strong)",
                     }}
                   />
                 )}
@@ -81,9 +75,7 @@ export function FeatureStepper({ status }: { status: string }) {
               <span
                 className="text-[10px] font-semibold mt-1 uppercase tracking-wider"
                 style={{
-                  color: isActive || isComplete
-                    ? "var(--koro-on-primary)"
-                    : "var(--koro-mute)",
+                  color: isActive || isComplete ? "var(--koro-on-primary)" : "var(--koro-mute)",
                 }}
               >
                 {stage.label}

@@ -17,13 +17,13 @@ export const githubRouter = router({
   getSyncedRepositories: organizationProcedure.query(async ({ ctx }) => {
     const installationId = await githubService.getUserInstallationId(ctx.user.id);
     if (!installationId) return [];
-    
+
     const syncedRepos = await db
       .select({ repoFullName: repoSyncTable.repoFullName })
       .from(repoSyncTable)
       .where(eq(repoSyncTable.installationId, installationId));
-      
-    return syncedRepos.map(r => r.repoFullName);
+
+    return syncedRepos.map((r) => r.repoFullName);
   }),
 
   getConnectedRepository: organizationProcedure
@@ -40,11 +40,13 @@ export const githubRouter = router({
     }),
 
   connectRepository: roleProcedure("admin")
-    .input(z.object({ 
-      organizationId: z.string(), 
-      projectId: z.string(), 
-      repoFullName: z.string() 
-    }))
+    .input(
+      z.object({
+        organizationId: z.string(),
+        projectId: z.string(),
+        repoFullName: z.string(),
+      }),
+    )
     .mutation(async ({ ctx, input }) => {
       const isAuthorized = await checkAuthorization({
         resource: "project",
@@ -57,7 +59,7 @@ export const githubRouter = router({
         input.organizationId,
         input.projectId,
         ctx.user.id,
-        input.repoFullName
+        input.repoFullName,
       );
     }),
 

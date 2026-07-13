@@ -68,12 +68,7 @@ export function Features() {
   const { ref, inView } = useInView();
 
   return (
-    <section
-      id="features"
-      className="px-6"
-      style={{ paddingTop: "var(--koro-section)" }}
-      ref={ref}
-    >
+    <section id="features" className="px-6" style={{ paddingTop: "var(--koro-section)" }} ref={ref}>
       <div className="mx-auto max-w-[960px]">
         {/* Section divider */}
         <div style={{ borderTop: "1px solid var(--koro-hairline)" }} />
@@ -90,8 +85,9 @@ export function Features() {
           className="mt-3 text-[16px] font-normal leading-[1.5] max-w-[640px]"
           style={{ color: "var(--koro-body)" }}
         >
-          Kōro bridges the gap between product requirements and engineering execution. It automatically 
-          translates ideas into specifications and ensures your code actually meets those requirements.
+          Kōro bridges the gap between product requirements and engineering execution. It
+          automatically translates ideas into specifications and ensures your code actually meets
+          those requirements.
         </p>
 
         {/* Feature rows */}

@@ -35,12 +35,8 @@ export function Footer() {
                 href={link.href}
                 className="px-3 py-2 text-[14px] font-normal leading-[2] transition-colors sm:px-0"
                 style={{ color: "var(--koro-mute)" }}
-                onMouseEnter={(e) =>
-                  (e.currentTarget.style.color = "var(--koro-ink)")
-                }
-                onMouseLeave={(e) =>
-                  (e.currentTarget.style.color = "var(--koro-mute)")
-                }
+                onMouseEnter={(e) => (e.currentTarget.style.color = "var(--koro-ink)")}
+                onMouseLeave={(e) => (e.currentTarget.style.color = "var(--koro-mute)")}
               >
                 {link.label}
               </a>
@@ -63,12 +59,8 @@ export function Footer() {
               href="#"
               className="text-[14px] font-normal leading-[2] transition-colors"
               style={{ color: "var(--koro-mute)" }}
-              onMouseEnter={(e) =>
-                (e.currentTarget.style.color = "var(--koro-ink)")
-              }
-              onMouseLeave={(e) =>
-                (e.currentTarget.style.color = "var(--koro-mute)")
-              }
+              onMouseEnter={(e) => (e.currentTarget.style.color = "var(--koro-ink)")}
+              onMouseLeave={(e) => (e.currentTarget.style.color = "var(--koro-mute)")}
             >
               Privacy
             </a>
@@ -77,12 +69,8 @@ export function Footer() {
               href="#"
               className="text-[14px] font-normal leading-[2] transition-colors"
               style={{ color: "var(--koro-mute)" }}
-              onMouseEnter={(e) =>
-                (e.currentTarget.style.color = "var(--koro-ink)")
-              }
-              onMouseLeave={(e) =>
-                (e.currentTarget.style.color = "var(--koro-mute)")
-              }
+              onMouseEnter={(e) => (e.currentTarget.style.color = "var(--koro-ink)")}
+              onMouseLeave={(e) => (e.currentTarget.style.color = "var(--koro-mute)")}
             >
               Terms
             </a>

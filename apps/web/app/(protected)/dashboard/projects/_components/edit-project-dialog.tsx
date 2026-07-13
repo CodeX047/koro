@@ -4,12 +4,12 @@ import React, { useState } from "react";
 import { X, Loader2 } from "lucide-react";
 import { trpc } from "~/trpc/client";
 
-export function EditProjectDialog({ 
-  project, 
-  onClose 
-}: { 
+export function EditProjectDialog({
+  project,
+  onClose,
+}: {
   project: { id: string; name: string; description: string | null };
-  onClose: () => void 
+  onClose: () => void;
 }) {
   const [name, setName] = useState(project.name);
   const [description, setDescription] = useState(project.description || "");

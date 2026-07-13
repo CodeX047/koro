@@ -23,12 +23,12 @@ export function Architecture() {
         <div className="mt-12 hidden md:flex items-center justify-between w-full">
           {steps.map((step, index) => (
             <div key={step} className="flex items-center flex-1">
-              <div 
+              <div
                 className="flex-1 flex items-center justify-center p-4 rounded-sm border border-[var(--koro-hairline-strong)] text-[14px] font-medium whitespace-nowrap"
-                style={{ 
+                style={{
                   backgroundColor: "var(--koro-canvas)",
                   color: "var(--koro-ink)",
-                  boxShadow: "0 2px 4px rgba(0,0,0,0.02)"
+                  boxShadow: "0 2px 4px rgba(0,0,0,0.02)",
                 }}
               >
                 {step}
@@ -44,12 +44,12 @@ export function Architecture() {
         <div className="mt-8 flex flex-col md:hidden items-center gap-4">
           {steps.map((step, index) => (
             <div key={step} className="flex flex-col items-center gap-4 w-full max-w-[240px]">
-              <div 
+              <div
                 className="w-full flex items-center justify-center p-4 rounded-sm border border-[var(--koro-hairline-strong)] text-[14px] font-medium"
-                style={{ 
+                style={{
                   backgroundColor: "var(--koro-canvas)",
                   color: "var(--koro-ink)",
-                  boxShadow: "0 2px 4px rgba(0,0,0,0.02)"
+                  boxShadow: "0 2px 4px rgba(0,0,0,0.02)",
                 }}
               >
                 {step}

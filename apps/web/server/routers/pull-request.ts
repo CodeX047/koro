@@ -3,7 +3,13 @@ import { featureProcedure, organizationProcedure, router } from "../trpc";
 import { checkAuthorization } from "@repo/services/security/authorize";
 import { TRPCError } from "@trpc/server";
 import { db, eq, desc } from "@repo/database";
-import { pullRequestsTable, changedFilesTable, commitsTable, developmentEventsTable, reviewRunsTable } from "@repo/database/schema";
+import {
+  pullRequestsTable,
+  changedFilesTable,
+  commitsTable,
+  developmentEventsTable,
+  reviewRunsTable,
+} from "@repo/database/schema";
 
 export const pullRequestRouter = router({
   listByFeature: featureProcedure
@@ -54,13 +60,11 @@ export const pullRequestRouter = router({
       return { ...pr, files, commits, reviewRuns };
     }),
 
-  timeline: featureProcedure
-    .input(z.object({ featureId: z.string() }))
-    .query(async ({ input }) => {
-      return await db
-        .select()
-        .from(developmentEventsTable)
-        .where(eq(developmentEventsTable.featureId, input.featureId))
-        .orderBy(desc(developmentEventsTable.createdAt));
-    }),
+  timeline: featureProcedure.input(z.object({ featureId: z.string() })).query(async ({ input }) => {
+    return await db
+      .select()
+      .from(developmentEventsTable)
+      .where(eq(developmentEventsTable.featureId, input.featureId))
+      .orderBy(desc(developmentEventsTable.createdAt));
+  }),
 });

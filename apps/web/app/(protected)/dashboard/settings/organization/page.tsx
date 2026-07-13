@@ -153,7 +153,8 @@ export default function OrganizationSettingsPage() {
                 <li>Delete stored installation metadata</li>
               </ul>
               <span className="text-xs italic opacity-80">
-                Note: Kōro cannot uninstall the GitHub App from your GitHub account automatically. It only disconnects the integration.
+                Note: Kōro cannot uninstall the GitHub App from your GitHub account automatically.
+                It only disconnects the integration.
               </span>
             </div>
             <Button variant="destructive" onClick={handleDelete} disabled={isDeleting}>

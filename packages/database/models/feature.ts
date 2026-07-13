@@ -12,18 +12,21 @@ export type FeatureStatus =
   | "PLANNING_COMPLETE"
   | "FAILED";
 
-export const featuresTable = pgTable("features", {
-  id: uuid("id").primaryKey().defaultRandom(),
-  title: varchar("title", { length: 255 }).notNull(),
-  description: text("description"),
-  status: varchar("status", { length: 50 })
-    .$type<FeatureStatus>()
-    .default("DRAFT")
-    .notNull(),
-  projectId: uuid("project_id").references(() => projectsTable.id).notNull(),
-  createdAt: timestamp("created_at").defaultNow(),
-  updatedAt: timestamp("updated_at").$onUpdate(() => new Date()),
-}, (t) => [
-  index("features_project_id_idx").on(t.projectId),
-  index("features_project_id_created_at_idx").on(t.projectId, t.createdAt),
-]);
+export const featuresTable = pgTable(
+  "features",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    title: varchar("title", { length: 255 }).notNull(),
+    description: text("description"),
+    status: varchar("status", { length: 50 }).$type<FeatureStatus>().default("DRAFT").notNull(),
+    projectId: uuid("project_id")
+      .references(() => projectsTable.id)
+      .notNull(),
+    createdAt: timestamp("created_at").defaultNow(),
+    updatedAt: timestamp("updated_at").$onUpdate(() => new Date()),
+  },
+  (t) => [
+    index("features_project_id_idx").on(t.projectId),
+    index("features_project_id_created_at_idx").on(t.projectId, t.createdAt),
+  ],
+);

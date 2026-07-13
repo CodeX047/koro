@@ -8,10 +8,13 @@ export function PlanningMetrics({ tasks }: { tasks: any[] }) {
   const totalTasks = tasks.length;
   const totalHours = tasks.reduce((sum, t) => sum + (t.estimatedHours || 0), 0);
 
-  const categories = tasks.reduce((acc, t) => {
-    acc[t.category] = (acc[t.category] || 0) + 1;
-    return acc;
-  }, {} as Record<string, number>);
+  const categories = tasks.reduce(
+    (acc, t) => {
+      acc[t.category] = (acc[t.category] || 0) + 1;
+      return acc;
+    },
+    {} as Record<string, number>,
+  );
 
   return (
     <div
@@ -22,7 +25,10 @@ export function PlanningMetrics({ tasks }: { tasks: any[] }) {
       }}
     >
       <div className="flex-1 min-w-[120px]">
-        <p className="text-[10px] font-bold uppercase tracking-wider mb-1" style={{ color: "var(--koro-ash)" }}>
+        <p
+          className="text-[10px] font-bold uppercase tracking-wider mb-1"
+          style={{ color: "var(--koro-ash)" }}
+        >
           Total Tasks
         </p>
         <p className="text-xl font-bold" style={{ color: "var(--koro-on-primary)" }}>
@@ -33,7 +39,10 @@ export function PlanningMetrics({ tasks }: { tasks: any[] }) {
       <div className="w-px self-stretch bg-[var(--koro-hairline-strong)]" />
 
       <div className="flex-1 min-w-[120px]">
-        <p className="text-[10px] font-bold uppercase tracking-wider mb-1" style={{ color: "var(--koro-ash)" }}>
+        <p
+          className="text-[10px] font-bold uppercase tracking-wider mb-1"
+          style={{ color: "var(--koro-ash)" }}
+        >
           Est. Hours
         </p>
         <p className="text-xl font-bold" style={{ color: "var(--koro-accent)" }}>
@@ -49,7 +58,10 @@ export function PlanningMetrics({ tasks }: { tasks: any[] }) {
           .slice(0, 4) // show top 4 categories
           .map(([cat, count]) => (
             <div key={cat}>
-              <p className="text-[10px] font-bold uppercase tracking-wider mb-1" style={{ color: "var(--koro-ash)" }}>
+              <p
+                className="text-[10px] font-bold uppercase tracking-wider mb-1"
+                style={{ color: "var(--koro-ash)" }}
+              >
                 {cat}
               </p>
               <p className="text-xl font-bold" style={{ color: "var(--koro-on-primary)" }}>

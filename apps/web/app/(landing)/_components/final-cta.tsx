@@ -24,8 +24,8 @@ export function FinalCTA() {
             className="mt-4 text-[16px] font-normal leading-[1.5] max-w-[520px] mx-auto"
             style={{ color: "var(--koro-body)" }}
           >
-            Connect your GitHub, submit your first feature request, and get an AI-powered
-            code review — all in under 5 minutes. Free forever for solo developers.
+            Connect your GitHub, submit your first feature request, and get an AI-powered code
+            review — all in under 5 minutes. Free forever for solo developers.
           </p>
 
           <div className="mt-8 flex flex-wrap items-center justify-center gap-3">

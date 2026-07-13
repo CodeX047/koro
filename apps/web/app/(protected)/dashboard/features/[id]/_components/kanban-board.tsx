@@ -35,15 +35,11 @@ const COLUMNS = [
 ] as const;
 
 // ── Sortable Task Item Component ──────────────────────────────────────────
-function SortableTaskItem({
-  task,
-  onClick,
-}: {
-  task: any;
-  onClick: (task: any) => void;
-}) {
-  const { attributes, listeners, setNodeRef, transform, transition, isDragging } =
-    useSortable({ id: task.id, data: { type: "Task", task } });
+function SortableTaskItem({ task, onClick }: { task: any; onClick: (task: any) => void }) {
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
+    id: task.id,
+    data: { type: "Task", task },
+  });
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -73,17 +69,22 @@ function SortableTaskItem({
           <GripVertical className="w-3.5 h-3.5" />
         </div>
         <div className="flex-1 min-w-0">
-          <h4 className="text-xs font-semibold leading-snug" style={{ color: "var(--koro-on-primary)" }}>
+          <h4
+            className="text-xs font-semibold leading-snug"
+            style={{ color: "var(--koro-on-primary)" }}
+          >
             {task.title}
           </h4>
           <div className="flex items-center gap-2 mt-2">
             {task.githubIssueNumber ? (
-              <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded uppercase ${
-                task.githubIssueState === "open" 
-                  ? "bg-green-500/20 text-green-400 border border-green-500/30" 
-                  : "bg-purple-500/20 text-purple-400 border border-purple-500/30"
-              }`}>
-                #{task.githubIssueNumber} {task.githubIssueState?.toUpperCase() || 'OPEN'}
+              <span
+                className={`text-[9px] font-bold px-1.5 py-0.5 rounded uppercase ${
+                  task.githubIssueState === "open"
+                    ? "bg-green-500/20 text-green-400 border border-green-500/30"
+                    : "bg-purple-500/20 text-purple-400 border border-purple-500/30"
+                }`}
+              >
+                #{task.githubIssueNumber} {task.githubIssueState?.toUpperCase() || "OPEN"}
               </span>
             ) : (
               <span className="text-[9px] font-semibold uppercase text-[var(--koro-ash)] bg-[var(--koro-surface-dark)] px-1.5 py-0.5 rounded">
@@ -108,7 +109,10 @@ function SortableTaskItem({
               {task.priority}
             </span>
             {task.estimatedHours && (
-              <span className="text-[9px] font-semibold uppercase" style={{ color: "var(--koro-ash)" }}>
+              <span
+                className="text-[9px] font-semibold uppercase"
+                style={{ color: "var(--koro-ash)" }}
+              >
                 {task.estimatedHours}h
               </span>
             )}
@@ -132,10 +136,16 @@ function Column({
   return (
     <div className="flex flex-col flex-1 min-w-[250px] shrink-0">
       <div className="flex items-center justify-between mb-3 px-1">
-        <h3 className="text-[11px] font-bold uppercase tracking-wider" style={{ color: "var(--koro-ash)" }}>
+        <h3
+          className="text-[11px] font-bold uppercase tracking-wider"
+          style={{ color: "var(--koro-ash)" }}
+        >
           {column.title}
         </h3>
-        <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full" style={{ backgroundColor: "var(--koro-surface-dark)", color: "var(--koro-mute)" }}>
+        <span
+          className="text-[10px] font-semibold px-2 py-0.5 rounded-full"
+          style={{ backgroundColor: "var(--koro-surface-dark)", color: "var(--koro-mute)" }}
+        >
           {tasks.length}
         </span>
       </div>
@@ -154,14 +164,14 @@ function Column({
 }
 
 // ── Main Kanban Board ────────────────────────────────────────────────────
-export function KanbanBoard({ featureId, projectId }: { featureId: string, projectId: string }) {
+export function KanbanBoard({ featureId, projectId }: { featureId: string; projectId: string }) {
   const utils = trpc.useUtils();
   const { data: initialTasks, isLoading } = trpc.task.listByFeature.useQuery({ featureId });
   const moveTask = trpc.task.move.useMutation({
     onSettled: () => {
       // Invalidate to ensure consistency, but we rely on optimistic updates mostly
       utils.task.listByFeature.invalidate({ featureId });
-    }
+    },
   });
 
   const [tasks, setTasks] = useState<any[]>([]);
@@ -178,7 +188,7 @@ export function KanbanBoard({ featureId, projectId }: { featureId: string, proje
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
-    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
+    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }),
   );
 
   if (isLoading) {
@@ -245,16 +255,16 @@ export function KanbanBoard({ featureId, projectId }: { featureId: string, proje
     setTasks((tasks) => {
       const activeIndex = tasks.findIndex((t) => t.id === activeId);
       const overIndex = tasks.findIndex((t) => t.id === overId);
-      
+
       let newTasks = tasks;
       if (activeIndex !== overIndex) {
         newTasks = arrayMove(tasks, activeIndex, overIndex);
       }
 
       // Find the final status and new order array for that status
-      const movedTask = newTasks.find(t => t.id === activeId)!;
-      const statusTasks = newTasks.filter(t => t.status === movedTask.status);
-      const newOrder = statusTasks.findIndex(t => t.id === activeId);
+      const movedTask = newTasks.find((t) => t.id === activeId)!;
+      const statusTasks = newTasks.filter((t) => t.status === movedTask.status);
+      const newOrder = statusTasks.findIndex((t) => t.id === activeId);
 
       // Persist the move optimistically
       moveTask.mutate({
@@ -278,48 +288,50 @@ export function KanbanBoard({ featureId, projectId }: { featureId: string, proje
           onDragOver={handleDragOver}
           onDragEnd={handleDragEnd}
         >
-        {COLUMNS.map((col) => (
-          <div key={col.id} className="flex flex-col">
-            <Column
-              column={col}
-              tasks={tasks.filter((t) => t.status === col.id)}
-              onTaskClick={setSelectedTask}
-            />
-            {col.id === "TODO" && (
-              <button
-                onClick={() => setSelectedTask({
-                  isNew: true,
-                  title: "",
-                  description: "",
-                  priority: "MEDIUM",
-                  complexity: "MEDIUM",
-                  status: "TODO",
-                  estimatedHours: null,
-                  assigneeId: "",
-                  featureId,
-                  projectId,
-                })}
-                className="mt-3 py-2 rounded-lg text-[11px] font-semibold flex items-center justify-center gap-1.5 transition-colors hover:opacity-80 border-dashed"
-                style={{
-                  color: "var(--koro-on-primary)",
-                  backgroundColor: "var(--koro-surface-dark)",
-                  border: "1px dashed var(--koro-hairline-strong)",
-                }}
-              >
-                + New Task
-              </button>
-            )}
-          </div>
-        ))}
-
-        <DragOverlay>
-          {activeTask ? (
-            <div className="opacity-80 scale-105 shadow-xl">
-              <SortableTaskItem task={activeTask} onClick={() => {}} />
+          {COLUMNS.map((col) => (
+            <div key={col.id} className="flex flex-col">
+              <Column
+                column={col}
+                tasks={tasks.filter((t) => t.status === col.id)}
+                onTaskClick={setSelectedTask}
+              />
+              {col.id === "TODO" && (
+                <button
+                  onClick={() =>
+                    setSelectedTask({
+                      isNew: true,
+                      title: "",
+                      description: "",
+                      priority: "MEDIUM",
+                      complexity: "MEDIUM",
+                      status: "TODO",
+                      estimatedHours: null,
+                      assigneeId: "",
+                      featureId,
+                      projectId,
+                    })
+                  }
+                  className="mt-3 py-2 rounded-lg text-[11px] font-semibold flex items-center justify-center gap-1.5 transition-colors hover:opacity-80 border-dashed"
+                  style={{
+                    color: "var(--koro-on-primary)",
+                    backgroundColor: "var(--koro-surface-dark)",
+                    border: "1px dashed var(--koro-hairline-strong)",
+                  }}
+                >
+                  + New Task
+                </button>
+              )}
             </div>
-          ) : null}
-        </DragOverlay>
-      </DndContext>
+          ))}
+
+          <DragOverlay>
+            {activeTask ? (
+              <div className="opacity-80 scale-105 shadow-xl">
+                <SortableTaskItem task={activeTask} onClick={() => {}} />
+              </div>
+            ) : null}
+          </DragOverlay>
+        </DndContext>
       </div>
 
       {selectedTask && (

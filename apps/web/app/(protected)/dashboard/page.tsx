@@ -12,7 +12,17 @@ import {
 } from "@repo/database/schema";
 import { getActivePlan } from "@repo/services/billing/access";
 import { CreateOrgCard } from "./_components/create-org-card";
-import { Activity, BarChart3, Github, Target, FolderKanban, Plus, FileCheck, GitPullRequest, ArrowRight } from "lucide-react";
+import {
+  Activity,
+  BarChart3,
+  Github,
+  Target,
+  FolderKanban,
+  Plus,
+  FileCheck,
+  GitPullRequest,
+  ArrowRight,
+} from "lucide-react";
 
 export default async function DashboardPage() {
   const session = await requireAuth();
@@ -156,7 +166,10 @@ export default async function DashboardPage() {
               AI Usage
             </div>
             <div className="text-3xl font-semibold text-[var(--koro-on-primary)] tracking-tight">
-              {reviewsUsed} <span className="text-lg text-[var(--koro-ash)] font-normal tracking-normal">/ {reviewsLimit}</span>
+              {reviewsUsed}{" "}
+              <span className="text-lg text-[var(--koro-ash)] font-normal tracking-normal">
+                / {reviewsLimit}
+              </span>
             </div>
             <div className="text-sm text-[var(--koro-ash)] opacity-80 mt-auto">
               Reset in {daysRemaining} days
@@ -187,7 +200,10 @@ export default async function DashboardPage() {
                   <span className="w-2.5 h-2.5 rounded-full bg-[var(--koro-ash)]" />
                   Disconnected
                 </div>
-                <Link href="/dashboard/github" className="text-sm text-[var(--koro-accent)] hover:underline mt-auto">
+                <Link
+                  href="/dashboard/github"
+                  className="text-sm text-[var(--koro-accent)] hover:underline mt-auto"
+                >
                   Connect GitHub in settings →
                 </Link>
               </>
@@ -249,10 +265,16 @@ export default async function DashboardPage() {
                   </div>
                 </div>
                 <div className="text-sm leading-relaxed text-[var(--koro-ash)]">
-                  {project.featureCount} features defined • {project.reviewCount} code reviews conducted
+                  {project.featureCount} features defined • {project.reviewCount} code reviews
+                  conducted
                 </div>
                 <div className="text-xs mt-1 text-[var(--koro-ash)] opacity-70">
-                  Created on {new Date(project.createdAt || "").toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' })}
+                  Created on{" "}
+                  {new Date(project.createdAt || "").toLocaleDateString(undefined, {
+                    year: "numeric",
+                    month: "short",
+                    day: "numeric",
+                  })}
                 </div>
               </Link>
             ))}
@@ -272,14 +294,13 @@ export default async function DashboardPage() {
               href="/dashboard/features"
               className="text-sm font-medium text-[var(--koro-ash)] hover:text-[var(--koro-on-primary)] transition-colors flex items-center gap-1 group"
             >
-              View all <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+              View all{" "}
+              <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
             </Link>
           </div>
           {featuresWithPrd.length === 0 ? (
             <div className="p-10 text-center border border-dashed border-[var(--koro-hairline-strong)] rounded-xl bg-[var(--koro-surface-dark-elevated)]">
-              <p className="text-sm text-[var(--koro-ash)]">
-                No features defined yet.
-              </p>
+              <p className="text-sm text-[var(--koro-ash)]">No features defined yet.</p>
             </div>
           ) : (
             <div className="flex flex-col gap-4">
@@ -289,7 +310,9 @@ export default async function DashboardPage() {
                   className="p-5 bg-[var(--koro-surface-dark)] border border-[var(--koro-hairline-strong)] rounded-xl flex flex-col gap-3"
                 >
                   <div className="flex justify-between items-start gap-4">
-                    <div className="text-sm font-semibold text-[var(--koro-on-primary)]">{feature.title}</div>
+                    <div className="text-sm font-semibold text-[var(--koro-on-primary)]">
+                      {feature.title}
+                    </div>
                     <div className="text-[10px] px-2 py-0.5 rounded-full font-bold tracking-widest uppercase bg-[var(--koro-surface-dark-elevated)] text-[var(--koro-accent)] border border-[var(--koro-hairline-strong)] shrink-0">
                       {feature.status.replace(/_/g, " ")}
                     </div>
@@ -314,9 +337,7 @@ export default async function DashboardPage() {
           </div>
           {recentReviews.length === 0 ? (
             <div className="p-10 text-center border border-dashed border-[var(--koro-hairline-strong)] rounded-xl bg-[var(--koro-surface-dark-elevated)]">
-              <p className="text-sm text-[var(--koro-ash)]">
-                No reviews completed yet.
-              </p>
+              <p className="text-sm text-[var(--koro-ash)]">No reviews completed yet.</p>
             </div>
           ) : (
             <div className="flex flex-col gap-4">
@@ -330,19 +351,28 @@ export default async function DashboardPage() {
                     className="p-5 bg-[var(--koro-surface-dark)] border border-[var(--koro-hairline-strong)] rounded-xl flex flex-col gap-3"
                   >
                     <div className="flex justify-between items-start gap-4">
-                      <div className="text-sm font-semibold text-[var(--koro-on-primary)]">{review.title}</div>
-                      <div className="text-sm font-mono font-bold mt-0.5" style={{ color: isPass ? "var(--koro-success)" : "#ff4444" }}>
+                      <div className="text-sm font-semibold text-[var(--koro-on-primary)]">
+                        {review.title}
+                      </div>
+                      <div
+                        className="text-sm font-mono font-bold mt-0.5"
+                        style={{ color: isPass ? "var(--koro-success)" : "#ff4444" }}
+                      >
                         {score}%
                       </div>
                     </div>
                     <div className="text-sm text-[var(--koro-ash)] flex items-center gap-2">
                       Verdict:{" "}
-                      <span className="font-semibold text-[10px] px-2 py-0.5 rounded-full tracking-widest uppercase border" 
-                        style={{ 
+                      <span
+                        className="font-semibold text-[10px] px-2 py-0.5 rounded-full tracking-widest uppercase border"
+                        style={{
                           color: isPass ? "var(--koro-success)" : "#ff4444",
-                          backgroundColor: isPass ? "rgba(34, 197, 94, 0.1)" : "rgba(239, 68, 68, 0.1)",
-                          borderColor: isPass ? "rgba(34, 197, 94, 0.2)" : "rgba(239, 68, 68, 0.2)"
-                        }}>
+                          backgroundColor: isPass
+                            ? "rgba(34, 197, 94, 0.1)"
+                            : "rgba(239, 68, 68, 0.1)",
+                          borderColor: isPass ? "rgba(34, 197, 94, 0.2)" : "rgba(239, 68, 68, 0.2)",
+                        }}
+                      >
                         {verdict}
                       </span>
                     </div>

@@ -7,21 +7,25 @@ import GithubService from "@repo/services/github";
 const githubService = new GithubService();
 
 export const syncIssues = inngest.createFunction(
-  { 
-    id: "github-sync-issues", 
+  {
+    id: "github-sync-issues",
     name: "Sync GitHub Issues",
     triggers: [{ event: "github/issues.sync.requested" }],
     concurrency: {
       limit: 1,
-      key: "event.data.featureId"
-    }
+      key: "event.data.featureId",
+    },
   },
   async ({ event, step }: { event: any; step: any }) => {
     const { featureId } = event.data;
 
     // 1. Get Project and Repository
     const repo = await step.run("get-repository", async () => {
-      const [feature] = await db.select().from(featuresTable).where(eq(featuresTable.id, featureId)).limit(1);
+      const [feature] = await db
+        .select()
+        .from(featuresTable)
+        .where(eq(featuresTable.id, featureId))
+        .limit(1);
       if (!feature) throw new Error("Feature not found");
 
       return await githubService.getConnectedRepository(feature.projectId);
@@ -43,8 +47,8 @@ export const syncIssues = inngest.createFunction(
         .select()
         .from(tasksTable)
         .where(eq(tasksTable.featureId, featureId));
-        
-      return allTasks.filter(t => t.syncStatus !== "SYNCED").map(t => t.id);
+
+      return allTasks.filter((t) => t.syncStatus !== "SYNCED").map((t) => t.id);
     });
 
     // 4. Batch Create Issues
@@ -54,7 +58,7 @@ export const syncIssues = inngest.createFunction(
         repo.installationId,
         repo.owner,
         repo.name,
-        tasks
+        tasks,
       );
     });
 
@@ -70,5 +74,5 @@ export const syncIssues = inngest.createFunction(
     });
 
     return { created: created.length };
-  }
+  },
 );

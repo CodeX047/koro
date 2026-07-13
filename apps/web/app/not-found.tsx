@@ -1,10 +1,13 @@
 "use client";
 
-import Link from 'next/link';
+import Link from "next/link";
 
 export default function NotFound() {
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen koro-landing font-[family-name:var(--font-mono)] antialiased selection:bg-[var(--koro-ink)] selection:text-[var(--koro-canvas)]" style={{ backgroundColor: "var(--koro-canvas)" }}>
+    <div
+      className="flex flex-col items-center justify-center min-h-screen koro-landing font-[family-name:var(--font-mono)] antialiased selection:bg-[var(--koro-ink)] selection:text-[var(--koro-canvas)]"
+      style={{ backgroundColor: "var(--koro-canvas)" }}
+    >
       <div className="text-center max-w-[600px] px-6">
         {/* Badge */}
         <div className="koro-animate-fade-up">
@@ -33,7 +36,8 @@ export default function NotFound() {
           className="mt-4 text-[16px] font-normal leading-[1.5] koro-animate-fade-up koro-delay-2 mx-auto"
           style={{ color: "var(--koro-body)" }}
         >
-          The page you are looking for doesn't exist, has been moved, or is temporarily unavailable. Let's get you back on track.
+          The page you are looking for doesn't exist, has been moved, or is temporarily unavailable.
+          Let's get you back on track.
         </p>
 
         {/* CTAs */}

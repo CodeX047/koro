@@ -58,22 +58,24 @@ export default async function ReposPage() {
           Repositories
         </h1>
         <p className="text-[var(--koro-ash)] mt-2 text-sm max-w-2xl">
-          Repositories accessible by the Kōro GitHub App. Connect and sync their codebases to improve AI review quality and enable repository-wide intelligence.
+          Repositories accessible by the Kōro GitHub App. Connect and sync their codebases to
+          improve AI review quality and enable repository-wide intelligence.
         </p>
-        
+
         {isSyncLimitReached && (
           <div className="mt-6 flex items-start gap-3 bg-[var(--koro-surface-dark-elevated)] border border-yellow-500/30 rounded-xl p-4">
             <Info className="w-5 h-5 text-yellow-500 shrink-0 mt-0.5" />
             <div className="text-sm">
               <span className="font-medium text-yellow-500">Free Plan Limit Reached</span>
               <p className="text-[var(--koro-ash)] mt-1 leading-relaxed">
-                You are currently on the Free plan, which supports syncing exactly 1 repository at a time. Upgrade your plan to unlock organization-wide sync limits.
+                You are currently on the Free plan, which supports syncing exactly 1 repository at a
+                time. Upgrade your plan to unlock organization-wide sync limits.
               </p>
             </div>
           </div>
         )}
       </div>
-      
+
       <HydrationBoundary state={dehydrate(queryClient)}>
         <RepoList isSyncLimitReached={isSyncLimitReached} />
       </HydrationBoundary>

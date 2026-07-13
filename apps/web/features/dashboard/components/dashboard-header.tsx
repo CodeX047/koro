@@ -15,7 +15,7 @@ type DashboardHeaderProps = {
  */
 export function DashboardHeader({ title, description }: DashboardHeaderProps) {
   return (
-    <header 
+    <header
       className="flex h-16 shrink-0 items-center border-b px-6 mb-6"
       style={{ borderColor: "var(--koro-hairline-strong)" }}
     >

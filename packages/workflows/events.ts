@@ -6,11 +6,10 @@ import type { GithubEvents } from "./github/events";
 import type { NotificationEvents } from "./notification/events";
 import type { BillingEvents } from "./billing/events";
 
-export type Events = 
-  & PRDEvents 
-  & TaskEvents 
-  & ReviewEvents 
-  & ReleaseEvents 
-  & GithubEvents 
-  & NotificationEvents
-  & BillingEvents;
+export type Events = PRDEvents &
+  TaskEvents &
+  ReviewEvents &
+  ReleaseEvents &
+  GithubEvents &
+  NotificationEvents &
+  BillingEvents;

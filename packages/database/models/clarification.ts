@@ -1,11 +1,4 @@
-import {
-  pgTable,
-  uuid,
-  text,
-  varchar,
-  timestamp,
-  integer,
-} from "drizzle-orm/pg-core";
+import { pgTable, uuid, text, varchar, timestamp, integer } from "drizzle-orm/pg-core";
 import { featuresTable } from "./feature";
 
 export type ClarificationStatus = "PENDING" | "ANSWERED" | "SKIPPED";
@@ -25,5 +18,8 @@ export const clarificationsTable = pgTable("clarifications", {
   createdBy: varchar("created_by", { length: 50 }).default("ai").notNull(),
   answeredAt: timestamp("answered_at"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
-  updatedAt: timestamp("updated_at").$onUpdate(() => new Date()).defaultNow().notNull(),
+  updatedAt: timestamp("updated_at")
+    .$onUpdate(() => new Date())
+    .defaultNow()
+    .notNull(),
 });

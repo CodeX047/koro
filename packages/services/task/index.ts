@@ -33,7 +33,7 @@ export async function getTasksByFeatureId(featureId: string) {
 
   // Map dependencies back to tasks
   return tasks.map((task) => {
-    const issue = issues.find(i => i.taskId === task.id);
+    const issue = issues.find((i) => i.taskId === task.id);
     return {
       ...task,
       dependencies: dependencies.filter((d) => d.taskId === task.id).map((d) => d.dependsOnTaskId),

@@ -3,8 +3,8 @@ import GithubService from "./index";
 import { getPineconeIndex } from "../pinecone/client";
 
 export type RepoFile = {
-    filePath: string;
-    content: string;
+  filePath: string;
+  content: string;
 };
 
 const githubService = new GithubService();

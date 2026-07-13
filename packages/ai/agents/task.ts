@@ -28,7 +28,9 @@ export class TaskAgent {
     try {
       const result = await generateText({
         model: openrouter(process.env.AI_MODEL || "openrouter/free"),
-        system: TASK_SYSTEM_PROMPT + `\n\nCRITICAL INSTRUCTION: Respond ONLY with a valid JSON object matching exactly this schema:
+        system:
+          TASK_SYSTEM_PROMPT +
+          `\n\nCRITICAL INSTRUCTION: Respond ONLY with a valid JSON object matching exactly this schema:
 {
   "tasks": [
     {

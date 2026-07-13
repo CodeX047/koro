@@ -75,8 +75,15 @@ function Section({
       {items && items.length > 0 && (
         <ul className="space-y-2">
           {items.map((item, i) => (
-            <li key={i} className="flex gap-2 text-[13px] leading-relaxed" style={{ color: "var(--koro-ash)" }}>
-              <span className="mt-1.5 w-1.5 h-1.5 rounded-full shrink-0" style={{ backgroundColor: accentColor }} />
+            <li
+              key={i}
+              className="flex gap-2 text-[13px] leading-relaxed"
+              style={{ color: "var(--koro-ash)" }}
+            >
+              <span
+                className="mt-1.5 w-1.5 h-1.5 rounded-full shrink-0"
+                style={{ backgroundColor: accentColor }}
+              />
               <span>{item}</span>
             </li>
           ))}
@@ -87,9 +94,7 @@ function Section({
 }
 
 export function PrdView({ prd }: PrdViewProps) {
-  const genDate = prd.generatedAt
-    ? new Date(prd.generatedAt).toLocaleString()
-    : null;
+  const genDate = prd.generatedAt ? new Date(prd.generatedAt).toLocaleString() : null;
 
   return (
     <div className="space-y-4">
@@ -120,7 +125,10 @@ export function PrdView({ prd }: PrdViewProps) {
             {genDate}
           </span>
         )}
-        <span className="flex items-center gap-1.5 ml-auto font-semibold" style={{ color: "var(--koro-success)" }}>
+        <span
+          className="flex items-center gap-1.5 ml-auto font-semibold"
+          style={{ color: "var(--koro-success)" }}
+        >
           v{prd.version}
         </span>
       </div>

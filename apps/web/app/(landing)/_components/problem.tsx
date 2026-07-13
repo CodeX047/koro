@@ -6,17 +6,20 @@ const PAIN_POINTS = [
   {
     marker: "✕",
     pain: "Writing PRDs manually takes hours",
-    detail: "Product managers spend days crafting requirements documents that still miss edge cases and acceptance criteria.",
+    detail:
+      "Product managers spend days crafting requirements documents that still miss edge cases and acceptance criteria.",
   },
   {
     marker: "✕",
     pain: "Code reviews miss requirement gaps",
-    detail: "Reviewers check code quality but rarely verify if the implementation actually matches the original product spec.",
+    detail:
+      "Reviewers check code quality but rarely verify if the implementation actually matches the original product spec.",
   },
   {
     marker: "✕",
     pain: "PRs ship without context",
-    detail: "Engineers open pull requests with no traceable link between the feature request, the spec, and the code changes.",
+    detail:
+      "Engineers open pull requests with no traceable link between the feature request, the spec, and the code changes.",
   },
 ];
 
@@ -47,12 +50,7 @@ export function Problem() {
   const { ref, inView } = useInView();
 
   return (
-    <section
-      id="problem"
-      className="px-6"
-      style={{ paddingTop: "var(--koro-section)" }}
-      ref={ref}
-    >
+    <section id="problem" className="px-6" style={{ paddingTop: "var(--koro-section)" }} ref={ref}>
       <div className="mx-auto max-w-[960px]">
         {/* Section divider */}
         <div style={{ borderTop: "1px solid var(--koro-hairline)" }} />

@@ -8,13 +8,7 @@ import {
   pullRequestsTable,
 } from "@repo/database/schema";
 
-export type ResourceType =
-  | "project"
-  | "feature"
-  | "task"
-  | "prd"
-  | "repository"
-  | "pull-request";
+export type ResourceType = "project" | "feature" | "task" | "prd" | "repository" | "pull-request";
 
 export async function checkAuthorization({
   resource,
@@ -32,15 +26,15 @@ export async function checkAuthorization({
       const [project] = await db
         .select({ id: projectsTable.id, orgId: projectsTable.organizationId })
         .from(projectsTable)
-        .where(
-          and(
-            eq(projectsTable.id, id)
-          )
-        )
+        .where(and(eq(projectsTable.id, id)))
         .limit(1);
-      
-      console.log("[authorize.ts] Project lookup:", { queryId: id, orgId: organizationId, foundProject: project });
-      
+
+      console.log("[authorize.ts] Project lookup:", {
+        queryId: id,
+        orgId: organizationId,
+        foundProject: project,
+      });
+
       if (!project) return false;
       return project.orgId === organizationId;
     }
@@ -50,12 +44,7 @@ export async function checkAuthorization({
         .select({ id: featuresTable.id })
         .from(featuresTable)
         .innerJoin(projectsTable, eq(featuresTable.projectId, projectsTable.id))
-        .where(
-          and(
-            eq(featuresTable.id, id),
-            eq(projectsTable.organizationId, organizationId)
-          )
-        )
+        .where(and(eq(featuresTable.id, id), eq(projectsTable.organizationId, organizationId)))
         .limit(1);
       return !!feature;
     }
@@ -65,12 +54,7 @@ export async function checkAuthorization({
         .select({ id: tasksTable.id })
         .from(tasksTable)
         .innerJoin(projectsTable, eq(tasksTable.projectId, projectsTable.id))
-        .where(
-          and(
-            eq(tasksTable.id, id),
-            eq(projectsTable.organizationId, organizationId)
-          )
-        )
+        .where(and(eq(tasksTable.id, id), eq(projectsTable.organizationId, organizationId)))
         .limit(1);
       return !!task;
     }
@@ -81,12 +65,7 @@ export async function checkAuthorization({
         .from(prdsTable)
         .innerJoin(featuresTable, eq(prdsTable.featureId, featuresTable.id))
         .innerJoin(projectsTable, eq(featuresTable.projectId, projectsTable.id))
-        .where(
-          and(
-            eq(prdsTable.id, id),
-            eq(projectsTable.organizationId, organizationId)
-          )
-        )
+        .where(and(eq(prdsTable.id, id), eq(projectsTable.organizationId, organizationId)))
         .limit(1);
       return !!prd;
     }
@@ -96,10 +75,7 @@ export async function checkAuthorization({
         .select({ id: repositoriesTable.id })
         .from(repositoriesTable)
         .where(
-          and(
-            eq(repositoriesTable.id, id),
-            eq(repositoriesTable.organizationId, organizationId)
-          )
+          and(eq(repositoriesTable.id, id), eq(repositoriesTable.organizationId, organizationId)),
         )
         .limit(1);
       return !!repo;
@@ -111,10 +87,7 @@ export async function checkAuthorization({
         .from(pullRequestsTable)
         .innerJoin(repositoriesTable, eq(pullRequestsTable.repositoryId, repositoriesTable.id))
         .where(
-          and(
-            eq(pullRequestsTable.id, id),
-            eq(repositoriesTable.organizationId, organizationId)
-          )
+          and(eq(pullRequestsTable.id, id), eq(repositoriesTable.organizationId, organizationId)),
         )
         .limit(1);
       return !!pr;

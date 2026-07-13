@@ -39,10 +39,9 @@ export function NewFeatureDialog({ projects, onClose }: NewFeatureDialogProps) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
       <div className="relative w-full max-w-xl rounded-2xl p-6 md:p-8 bg-[var(--koro-surface-dark-elevated)] border border-[var(--koro-hairline-strong)] shadow-2xl overflow-hidden">
-        
         {/* Subtle decorative glow */}
         <div className="absolute top-0 right-0 w-64 h-64 bg-[var(--koro-accent)]/10 rounded-full blur-3xl pointer-events-none -translate-y-1/2 translate-x-1/2" />
-        
+
         {/* Header */}
         <div className="relative flex items-center justify-between mb-8">
           <div>
@@ -77,9 +76,7 @@ export function NewFeatureDialog({ projects, onClose }: NewFeatureDialogProps) {
               onChange={(e) => setProjectId(e.target.value)}
               className="w-full px-4 py-3 rounded-xl text-sm bg-[var(--koro-surface-dark)] border border-[var(--koro-hairline-strong)] text-[var(--koro-on-primary)] focus:outline-none focus:border-[var(--koro-accent)] transition-colors appearance-none cursor-pointer"
             >
-              {projects.length === 0 && (
-                <option value="">No projects — create one first</option>
-              )}
+              {projects.length === 0 && <option value="">No projects — create one first</option>}
               {projects.map((p) => (
                 <option key={p.id} value={p.id}>
                   {p.name} {p.repoName ? `(Repo: ${p.repoName})` : ""}

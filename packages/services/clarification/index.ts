@@ -3,10 +3,7 @@ import { clarificationsTable, type ClarificationStatus } from "@repo/database/sc
 
 // ─── Clarification Repository ──────────────────────────────────────────
 
-export async function saveClarificationQuestions(
-  featureId: string,
-  questions: string[],
-) {
+export async function saveClarificationQuestions(featureId: string, questions: string[]) {
   if (questions.length === 0) return [];
 
   const rows = questions.map((question, i) => ({
@@ -33,17 +30,11 @@ export async function getPendingClarifications(featureId: string) {
     .select()
     .from(clarificationsTable)
     .where(
-      and(
-        eq(clarificationsTable.featureId, featureId),
-        eq(clarificationsTable.status, "PENDING"),
-      ),
+      and(eq(clarificationsTable.featureId, featureId), eq(clarificationsTable.status, "PENDING")),
     );
 }
 
-export async function submitAnswer(
-  clarificationId: string,
-  answer: string,
-) {
+export async function submitAnswer(clarificationId: string, answer: string) {
   const [updated] = await db
     .update(clarificationsTable)
     .set({

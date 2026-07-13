@@ -35,7 +35,9 @@ export function Hero() {
           className="mt-4 max-w-[640px] text-[16px] font-normal leading-[1.5] koro-animate-fade-up koro-delay-2"
           style={{ color: "var(--koro-body)" }}
         >
-          Kōro translates simple feature requests into structured Product Requirements Documents (PRDs) and automatically reviews your GitHub Pull Requests to ensure every specification is met.
+          Kōro translates simple feature requests into structured Product Requirements Documents
+          (PRDs) and automatically reviews your GitHub Pull Requests to ensure every specification
+          is met.
         </p>
 
         {/* CTAs */}
@@ -93,9 +95,13 @@ export function Hero() {
                 className="hidden sm:flex items-center gap-3 text-[12px]"
                 style={{ color: "var(--koro-ash)" }}
               >
-                <span className="cursor-pointer hover:text-[var(--koro-on-primary)]">Acme Corp</span>
+                <span className="cursor-pointer hover:text-[var(--koro-on-primary)]">
+                  Acme Corp
+                </span>
                 <span>/</span>
-                <span className="cursor-pointer hover:text-[var(--koro-on-primary)]">Core API API</span>
+                <span className="cursor-pointer hover:text-[var(--koro-on-primary)]">
+                  Core API API
+                </span>
                 <span>/</span>
                 <span className="text-[var(--koro-on-primary)] bg-[var(--koro-surface-dark-elevated)] px-2 py-0.5 rounded-sm border border-[var(--koro-hairline-strong)]">
                   Feature Reviews
@@ -131,7 +137,9 @@ export function Hero() {
                 <div className="flex flex-col gap-3 text-[12px]">
                   <div className="flex items-center justify-between">
                     <span>Repository</span>
-                    <span style={{ color: "var(--koro-success)" }} className="koro-animate-pulse">●</span>
+                    <span style={{ color: "var(--koro-success)" }} className="koro-animate-pulse">
+                      ●
+                    </span>
                   </div>
                   <div className="text-[10px] font-mono text-[var(--koro-ash)] truncate">
                     acme-corp/core-api
@@ -167,19 +175,27 @@ export function Hero() {
                   </div>
                   <div
                     className="p-4 rounded-xl flex flex-col gap-2"
-                    style={{ border: "1px solid var(--koro-hairline-strong)", backgroundColor: "var(--koro-surface-dark-elevated)" }}
+                    style={{
+                      border: "1px solid var(--koro-hairline-strong)",
+                      backgroundColor: "var(--koro-surface-dark-elevated)",
+                    }}
                   >
                     <div className="flex justify-between">
                       <div className="text-[14px] font-bold">Stripe Webhooks</div>
                       <div
                         className="text-[9px] px-2 py-0.5 rounded-full font-bold tracking-widest border"
-                        style={{ color: "var(--koro-accent)", borderColor: "var(--koro-hairline-strong)", backgroundColor: "var(--koro-surface-dark)" }}
+                        style={{
+                          color: "var(--koro-accent)",
+                          borderColor: "var(--koro-hairline-strong)",
+                          backgroundColor: "var(--koro-surface-dark)",
+                        }}
                       >
                         PRD READY
                       </div>
                     </div>
                     <div className="text-[12px] mt-2" style={{ color: "var(--koro-ash)" }}>
-                      Implement webhook listener for Stripe subscription.updated and subscription.deleted events to update database.
+                      Implement webhook listener for Stripe subscription.updated and
+                      subscription.deleted events to update database.
                     </div>
                   </div>
                 </div>
@@ -203,7 +219,7 @@ export function Hero() {
                         style={{
                           backgroundColor: "rgba(239, 68, 68, 0.1)",
                           color: "#ef4444",
-                          border: "1px solid rgba(239, 68, 68, 0.2)"
+                          border: "1px solid rgba(239, 68, 68, 0.2)",
                         }}
                       >
                         FIX REQUIRED
@@ -214,7 +230,9 @@ export function Hero() {
                       className="mt-3 text-[11px] p-2 rounded bg-[var(--koro-surface-dark)] border border-[var(--koro-hairline-strong)] font-mono"
                       style={{ color: "var(--koro-ash)" }}
                     >
-                      <span className="text-[#ef4444]">Error:</span> PRD requires handling signature verification (stripe-signature header) which is missing in api/webhooks/route.ts.
+                      <span className="text-[#ef4444]">Error:</span> PRD requires handling signature
+                      verification (stripe-signature header) which is missing in
+                      api/webhooks/route.ts.
                     </div>
                   </div>
                 </div>

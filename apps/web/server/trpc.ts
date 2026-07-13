@@ -76,10 +76,7 @@ export const roleProcedure = (minRole: "owner" | "admin" | "member") => {
       .select({ role: memberTable.role })
       .from(memberTable)
       .where(
-        and(
-          eq(memberTable.organizationId, activeOrganizationId),
-          eq(memberTable.userId, user.id)
-        )
+        and(eq(memberTable.organizationId, activeOrganizationId), eq(memberTable.userId, user.id)),
       )
       .limit(1);
 
@@ -99,34 +96,38 @@ export const roleProcedure = (minRole: "owner" | "admin" | "member") => {
   });
 };
 
-const createResourceProcedure = (resource: "project" | "feature" | "task" | "prd" | "repository" | "pull-request", idKey: string) => {
-  return organizationProcedure
-    .input(z.object({}).passthrough())
-    .use(async (opts) => {
-      const { activeOrganizationId } = opts.ctx;
-      
-      const input = opts.input as any;
-      const id = input?.[idKey] || input?.id || input?.[`${resource}Id`];
-      
-      if (typeof id !== "string") {
-        console.error("TRPC Middleware - Missing ID! idKey:", idKey, "input:", input);
-        throw new TRPCError({ code: "BAD_REQUEST", message: `Missing or invalid ${idKey}` });
-      }
-      
-      const isAuthorized = await checkAuthorization({
-        resource,
-        id,
-        organizationId: activeOrganizationId,
-      });
+const createResourceProcedure = (
+  resource: "project" | "feature" | "task" | "prd" | "repository" | "pull-request",
+  idKey: string,
+) => {
+  return organizationProcedure.input(z.object({}).passthrough()).use(async (opts) => {
+    const { activeOrganizationId } = opts.ctx;
 
-      console.log(`[TRPC Auth Debug] resource: ${resource}, idKey: ${idKey}, id: ${id}, activeOrg: ${activeOrganizationId}, isAuthorized: ${isAuthorized}, input:`, input);
+    const input = opts.input as any;
+    const id = input?.[idKey] || input?.id || input?.[`${resource}Id`];
 
-      if (!isAuthorized) {
-        throw new TRPCError({ code: "NOT_FOUND", message: "Resource not found" });
-      }
+    if (typeof id !== "string") {
+      console.error("TRPC Middleware - Missing ID! idKey:", idKey, "input:", input);
+      throw new TRPCError({ code: "BAD_REQUEST", message: `Missing or invalid ${idKey}` });
+    }
 
-      return opts.next();
+    const isAuthorized = await checkAuthorization({
+      resource,
+      id,
+      organizationId: activeOrganizationId,
     });
+
+    console.log(
+      `[TRPC Auth Debug] resource: ${resource}, idKey: ${idKey}, id: ${id}, activeOrg: ${activeOrganizationId}, isAuthorized: ${isAuthorized}, input:`,
+      input,
+    );
+
+    if (!isAuthorized) {
+      throw new TRPCError({ code: "NOT_FOUND", message: "Resource not found" });
+    }
+
+    return opts.next();
+  });
 };
 
 export const projectProcedure = createResourceProcedure("project", "id");
