@@ -3,10 +3,22 @@
 import { authClient } from "@repo/auth/client";
 import Link from "next/link";
 import { Settings } from "lucide-react";
+import { useEffect, useState } from "react";
 
 export function OrgSelector() {
-  const { data: orgs } = authClient.useListOrganizations();
-  const { data: activeOrg } = authClient.useActiveOrganization();
+  const { data: orgs, isPending: orgsPending } = authClient.useListOrganizations();
+  const { data: activeOrg, isPending: activeOrgPending } = authClient.useActiveOrganization();
+  const [isAutoSelecting, setIsAutoSelecting] = useState(false);
+
+  useEffect(() => {
+    const firstOrg = orgs?.[0];
+    if (!orgsPending && !activeOrgPending && firstOrg && !activeOrg && !isAutoSelecting) {
+      setIsAutoSelecting(true);
+      void authClient.organization.setActive({ organizationId: firstOrg.id }).then(() => {
+        window.location.reload();
+      });
+    }
+  }, [orgs, activeOrg, orgsPending, activeOrgPending, isAutoSelecting]);
 
   return (
     <div className="flex items-center gap-2 text-[12px]">
@@ -15,13 +27,15 @@ export function OrgSelector() {
         className="bg-transparent text-[var(--koro-on-primary)] outline-none cursor-pointer font-medium"
         style={{ appearance: "none" }}
         value={activeOrg?.id || ""}
-        onChange={async (e) => {
+        onChange={(e) => {
           if (e.target.value) {
-            await authClient.organization.setActive({ organizationId: e.target.value });
-            window.location.reload();
+            void authClient.organization.setActive({ organizationId: e.target.value }).then(() => {
+              window.location.reload();
+            });
           }
         }}
         aria-label="Organization"
+        disabled={isAutoSelecting}
       >
         {!orgs?.length && <option value="">Personal Workspace</option>}
         {orgs?.map((org) => (
