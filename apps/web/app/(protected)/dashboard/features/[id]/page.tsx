@@ -85,6 +85,19 @@ export default function FeatureDetailPage() {
     },
   });
 
+  const { data: tasks } = trpc.task.listByFeature.useQuery(
+    { featureId: id },
+    { enabled: feature?.status === "PLANNING_COMPLETE" },
+  );
+  const isSynced = tasks?.some((t) => t.githubIssueNumber != null) ?? false;
+
+  const fetchUpdatesMutation = trpc.task.fetchGithubUpdates.useMutation({
+    onSuccess: () => {
+      utils.task.listByFeature.invalidate({ featureId: id });
+      utils.feature.get.invalidate({ featureId: id });
+    },
+  });
+
   // When clarification form is submitted, immediately re-fetch feature
   const handleAnswersSubmitted = () => {
     utils.feature.get.invalidate({ featureId: id });
@@ -392,12 +405,20 @@ export default function FeatureDetailPage() {
             )}
             {status === "PLANNING_COMPLETE" && (
               <button
-                onClick={() => syncTasksMutation.mutate({ featureId: id })}
-                disabled={syncTasksMutation.isPending}
+                onClick={() => {
+                  if (isSynced) {
+                    fetchUpdatesMutation.mutate({ featureId: id });
+                  } else {
+                    syncTasksMutation.mutate({ featureId: id });
+                  }
+                }}
+                disabled={syncTasksMutation.isPending || fetchUpdatesMutation.isPending}
                 className="px-4 py-2 rounded-lg text-xs font-bold transition-opacity hover:opacity-90 disabled:opacity-50 flex items-center gap-2 border border-slate-700 bg-slate-900 text-slate-200"
               >
-                {syncTasksMutation.isPending && <Loader2 className="w-3 h-3 animate-spin" />}
-                Sync Issues to GitHub
+                {(syncTasksMutation.isPending || fetchUpdatesMutation.isPending) && (
+                  <Loader2 className="w-3 h-3 animate-spin" />
+                )}
+                {isSynced ? "Fetch Updates" : "Sync Issues to GitHub"}
               </button>
             )}
           </div>

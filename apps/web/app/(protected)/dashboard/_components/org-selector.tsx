@@ -14,9 +14,11 @@ export function OrgSelector() {
     const firstOrg = orgs?.[0];
     if (!orgsPending && !activeOrgPending && firstOrg && !activeOrg && !isAutoSelecting) {
       setIsAutoSelecting(true);
-      void authClient.organization.setActive({ organizationId: firstOrg.id }).then(() => {
+      const autoSelect = async () => {
+        await authClient.organization.setActive({ organizationId: firstOrg.id });
         window.location.reload();
-      });
+      };
+      autoSelect();
     }
   }, [orgs, activeOrg, orgsPending, activeOrgPending, isAutoSelecting]);
 
@@ -27,11 +29,10 @@ export function OrgSelector() {
         className="bg-transparent text-[var(--koro-on-primary)] outline-none cursor-pointer font-medium"
         style={{ appearance: "none" }}
         value={activeOrg?.id || ""}
-        onChange={(e) => {
+        onChange={async (e) => {
           if (e.target.value) {
-            void authClient.organization.setActive({ organizationId: e.target.value }).then(() => {
-              window.location.reload();
-            });
+            await authClient.organization.setActive({ organizationId: e.target.value });
+            window.location.reload();
           }
         }}
         aria-label="Organization"

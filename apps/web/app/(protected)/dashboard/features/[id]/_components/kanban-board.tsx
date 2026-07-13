@@ -192,7 +192,29 @@ export function KanbanBoard({ featureId, projectId }: { featureId: string; proje
   );
 
   if (isLoading) {
-    return <div className="p-8 text-center text-xs text-[var(--koro-ash)]">Loading board...</div>;
+    return (
+      <div className="flex flex-col gap-2">
+        <div className="h-20 w-full rounded-xl border border-[var(--koro-surface-border)] bg-[var(--koro-surface-dark-elevated)] animate-pulse" />
+        <div className="flex overflow-x-auto gap-4 pb-4 h-[600px]">
+          {[1, 2, 3, 4].map((i) => (
+            <div key={i} className="flex flex-col flex-1 min-w-[250px] shrink-0">
+              <div className="flex items-center justify-between mb-3 px-1">
+                <div className="w-16 h-4 bg-slate-800 rounded animate-pulse" />
+                <div className="w-6 h-4 bg-slate-800 rounded-full animate-pulse" />
+              </div>
+              <div className="flex-1 p-2 rounded-xl bg-[var(--koro-surface-dark)] flex flex-col gap-2">
+                {[1, 2, 3].map((j) => (
+                  <div
+                    key={j}
+                    className="h-24 w-full rounded-lg bg-[var(--koro-surface-dark-elevated)] border border-[var(--koro-hairline-strong)] animate-pulse"
+                  />
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
   }
 
   // Handle Drag Start

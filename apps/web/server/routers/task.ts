@@ -13,6 +13,9 @@ import {
   createTask,
 } from "@repo/services/task";
 import { updateFeatureStatus } from "@repo/services/feature";
+import { db, eq } from "@repo/database";
+import { featuresTable, githubIssuesTable } from "@repo/database/schema";
+import { githubService } from "@repo/services/github";
 
 export const taskRouter = router({
   listByFeature: featureProcedure
@@ -127,5 +130,62 @@ export const taskRouter = router({
         data: { featureId: input.featureId },
       });
       return { success: true };
+    }),
+
+  fetchGithubUpdates: featureProcedure
+    .input(z.object({ featureId: z.string().uuid() }))
+    .mutation(async ({ input }) => {
+      const feature = await db
+        .select()
+        .from(featuresTable)
+        .where(eq(featuresTable.id, input.featureId))
+        .limit(1);
+
+      if (!feature[0]) throw new TRPCError({ code: "NOT_FOUND" });
+
+      const repo = await githubService.getConnectedRepository(feature[0].projectId);
+      if (!repo) return { success: false, message: "No connected repository" };
+
+      const tasks = await getTasksByFeatureId(input.featureId);
+      const app = githubService.getGithubApp();
+      const octokit = await app.getInstallationOctokit(repo.installationId);
+
+      let updatedCount = 0;
+
+      for (const task of tasks) {
+        if (task.githubIssueNumber) {
+          try {
+            const { data: issue } = await octokit.request(
+              "GET /repos/{owner}/{repo}/issues/{issue_number}",
+              {
+                owner: repo.owner,
+                repo: repo.name,
+                issue_number: task.githubIssueNumber,
+              },
+            );
+
+            let newStatus = task.status;
+            if (issue.state === "closed") {
+              newStatus = "DONE";
+            } else if (issue.state === "open" && task.status === "DONE") {
+              newStatus = "IN_PROGRESS";
+            }
+
+            if (newStatus !== task.status) {
+              await updateTaskStatus(task.id, newStatus);
+              updatedCount++;
+            }
+
+            await db
+              .update(githubIssuesTable)
+              .set({ state: issue.state, updatedAt: new Date() })
+              .where(eq(githubIssuesTable.taskId, task.id));
+          } catch (err) {
+            console.error(`Failed to fetch issue ${task.githubIssueNumber}:`, err);
+          }
+        }
+      }
+
+      return { success: true, updatedCount };
     }),
 });
