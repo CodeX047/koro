@@ -5,7 +5,6 @@ export * from "./models/clarification";
 export * from "./models/feature-event";
 export * from "./models/prd";
 export * from "./models/task";
-export * from "./models/review";
 export * from "./models/pull-request";
 export * from "./models/github";
 export * from "./models/auth";

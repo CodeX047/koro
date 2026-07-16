@@ -7,7 +7,6 @@ import {
   repositoriesTable,
   featuresTable,
   tasksTable,
-  reviewsTable,
 } from "@repo/database/schema";
 import { githubService } from "@repo/services/github";
 
@@ -109,7 +108,6 @@ export const projectRouter = router({
       await Promise.all([
         db.delete(tasksTable).where(eq(tasksTable.projectId, input.id)),
         db.delete(featuresTable).where(eq(featuresTable.projectId, input.id)),
-        db.delete(reviewsTable).where(eq(reviewsTable.projectId, input.id)),
         db.delete(repositoriesTable).where(eq(repositoriesTable.projectId, input.id)),
       ]);
 

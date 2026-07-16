@@ -5,10 +5,12 @@ import { db, eq, and, desc, inArray, count } from "@repo/database";
 import {
   projectsTable,
   featuresTable,
-  reviewsTable,
   githubInstallationsTable,
   repoSyncTable,
   usageTable,
+  reviewRunsTable,
+  pullRequestsTable,
+  repositoriesTable,
 } from "@repo/database/schema";
 import { getActivePlan } from "@repo/services/billing/access";
 import { CreateOrgCard } from "./_components/create-org-card";
@@ -90,10 +92,12 @@ export default async function DashboardPage() {
       : Promise.resolve([]),
     projectIds.length > 0
       ? db
-          .select({ projectId: reviewsTable.projectId, count: count() })
-          .from(reviewsTable)
-          .where(inArray(reviewsTable.projectId, projectIds))
-          .groupBy(reviewsTable.projectId)
+          .select({ projectId: repositoriesTable.projectId, count: count() })
+          .from(reviewRunsTable)
+          .innerJoin(pullRequestsTable, eq(reviewRunsTable.prId, pullRequestsTable.id))
+          .innerJoin(repositoriesTable, eq(pullRequestsTable.repositoryId, repositoriesTable.id))
+          .where(inArray(repositoriesTable.projectId, projectIds))
+          .groupBy(repositoriesTable.projectId)
       : Promise.resolve([]),
     projectIds.length > 0
       ? db
@@ -105,17 +109,28 @@ export default async function DashboardPage() {
       : Promise.resolve([]),
     projectIds.length > 0
       ? db
-          .select()
-          .from(reviewsTable)
-          .where(inArray(reviewsTable.projectId, projectIds))
-          .orderBy(desc(reviewsTable.createdAt))
+          .select({
+            id: reviewRunsTable.id,
+            title: pullRequestsTable.title,
+            verdict: reviewRunsTable.verdict,
+            score: reviewRunsTable.score,
+            createdAt: reviewRunsTable.createdAt,
+            projectId: repositoriesTable.projectId,
+          })
+          .from(reviewRunsTable)
+          .innerJoin(pullRequestsTable, eq(reviewRunsTable.prId, pullRequestsTable.id))
+          .innerJoin(repositoriesTable, eq(pullRequestsTable.repositoryId, repositoriesTable.id))
+          .where(inArray(repositoriesTable.projectId, projectIds))
+          .orderBy(desc(reviewRunsTable.createdAt))
           .limit(3)
       : Promise.resolve([]),
     projectIds.length > 0
       ? db
-          .select({ status: reviewsTable.status })
-          .from(reviewsTable)
-          .where(inArray(reviewsTable.projectId, projectIds))
+          .select({ verdict: reviewRunsTable.verdict })
+          .from(reviewRunsTable)
+          .innerJoin(pullRequestsTable, eq(reviewRunsTable.prId, pullRequestsTable.id))
+          .innerJoin(repositoriesTable, eq(pullRequestsTable.repositoryId, repositoriesTable.id))
+          .where(inArray(repositoriesTable.projectId, projectIds))
       : Promise.resolve([]),
   ]);
 
@@ -146,7 +161,7 @@ export default async function DashboardPage() {
 
   let readinessScore = 100;
   if ((allReviews as any[]).length > 0) {
-    const passingCount = (allReviews as any[]).filter((r) => r.status !== "pending").length;
+    const passingCount = (allReviews as any[]).filter((r) => r.verdict === "APPROVE").length;
     readinessScore = Math.round((passingCount / (allReviews as any[]).length) * 100);
   }
 
@@ -341,9 +356,9 @@ export default async function DashboardPage() {
             </div>
           ) : (
             <div className="flex flex-col gap-4">
-              {recentReviews.map((review) => {
-                const verdict = review.status === "pending" ? "FIX_REQUIRED" : "PASS";
-                const score = review.status === "pending" ? 85 : 95;
+              {recentReviews.map((review: any) => {
+                const verdict = review.verdict === "APPROVE" ? "PASS" : "FIX_REQUIRED";
+                const score = review.score ?? 0;
                 const isPass = verdict === "PASS";
                 return (
                   <div
