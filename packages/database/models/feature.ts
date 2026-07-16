@@ -10,6 +10,10 @@ export type FeatureStatus =
   | "TASKS_GENERATING"
   | "TASKS_DRAFT"
   | "PLANNING_COMPLETE"
+  | "RELEASE_PENDING"
+  | "READY_FOR_RELEASE"
+  | "RELEASE_IN_PROGRESS"
+  | "RELEASED"
   | "FAILED";
 
 export const featuresTable = pgTable(

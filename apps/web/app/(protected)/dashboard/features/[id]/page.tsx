@@ -9,13 +9,17 @@ import { FeatureStepper } from "./_components/feature-stepper";
 import { ClarificationForm } from "./_components/clarification-form";
 import { PrdView } from "./_components/prd-view";
 import { KanbanBoard } from "./_components/kanban-board";
+import { ReleaseReadinessView } from "./_components/release-readiness-view";
 
 const POLL_STATUSES = new Set([
   "DRAFT",
-  "CLARIFICATION_PENDING", // waiting for Inngest to finish saving questions
+  "CLARIFICATION_PENDING",
   "CLARIFICATION_COMPLETE",
   "PRD_GENERATING",
   "TASKS_GENERATING",
+  "RELEASE_PENDING",
+  "READY_FOR_RELEASE",
+  "RELEASED",
 ]);
 
 export default function FeatureDetailPage() {
@@ -129,6 +133,26 @@ export default function FeatureDetailPage() {
   const status = feature.status;
   const clarifications = prdData?.clarifications ?? [];
   const prd = prdData?.prd ?? null;
+
+  const { data: latestReleaseRun } = trpc.release.latest.useQuery(
+    { featureId: id },
+    {
+      enabled:
+        status === "READY_FOR_RELEASE" || status === "RELEASE_IN_PROGRESS" || status === "RELEASED",
+    },
+  );
+
+  const evaluateReleaseMutation = trpc.release.evaluate.useMutation({
+    onSuccess: () => {
+      utils.feature.get.invalidate({ featureId: id });
+    },
+  });
+
+  const releaseFeatureMutation = trpc.release.release.useMutation({
+    onSuccess: () => {
+      utils.feature.get.invalidate({ featureId: id });
+    },
+  });
 
   return (
     <div className="min-h-screen p-6 md:p-8 font-sans" style={{ color: "var(--koro-on-primary)" }}>
@@ -470,6 +494,20 @@ export default function FeatureDetailPage() {
             </div>
           )}
         </div>
+      )}
+      {/* ── Stage: RELEASE READINESS ──────────────────────────────────── */}
+      {(status === "READY_FOR_RELEASE" ||
+        status === "RELEASE_PENDING" ||
+        status === "RELEASE_IN_PROGRESS" ||
+        status === "RELEASED" ||
+        status === "PLANNING_COMPLETE") && (
+        <ReleaseReadinessView
+          featureId={id}
+          status={status}
+          releaseRun={latestReleaseRun}
+          evaluateMutation={evaluateReleaseMutation}
+          releaseMutation={releaseFeatureMutation}
+        />
       )}
       {/* ── Stage: FAILED ─────────────────────────────────────────────── */}
       {status === "FAILED" && (

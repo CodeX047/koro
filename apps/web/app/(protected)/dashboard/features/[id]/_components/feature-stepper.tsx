@@ -3,13 +3,15 @@
 import React from "react";
 import { CheckCircle2, Circle, Loader2 } from "lucide-react";
 
-type Stage = "feature" | "clarification" | "prd" | "plan";
+type Stage = "feature" | "clarification" | "prd" | "plan" | "release" | "released";
 
 const STAGES: { id: Stage; label: string }[] = [
   { id: "feature", label: "Feature" },
   { id: "clarification", label: "Discovery" },
   { id: "prd", label: "PRD" },
   { id: "plan", label: "Plan" },
+  { id: "release", label: "Readiness" },
+  { id: "released", label: "Released" },
 ];
 
 function getActiveStage(status: string): Stage {
@@ -17,25 +19,58 @@ function getActiveStage(status: string): Stage {
   if (status === "CLARIFICATION_PENDING" || status === "CLARIFICATION_COMPLETE")
     return "clarification";
   if (status === "PRD_GENERATING" || status === "PRD_READY") return "prd";
+  if (
+    status === "RELEASE_PENDING" ||
+    status === "READY_FOR_RELEASE" ||
+    status === "RELEASE_IN_PROGRESS"
+  )
+    return "release";
+  if (status === "RELEASED") return "released";
   return "plan";
 }
 
 function isStageComplete(stage: Stage, status: string): boolean {
   if (stage === "feature") return status !== "DRAFT";
-  if (stage === "clarification")
-    return (
-      status === "CLARIFICATION_COMPLETE" ||
-      status === "PRD_GENERATING" ||
-      status === "PRD_READY" ||
-      status === "TASKS_GENERATING" ||
-      status === "TASKS_DRAFT" ||
-      status === "PLANNING_COMPLETE"
-    );
-  if (stage === "prd")
-    return (
-      status === "TASKS_GENERATING" || status === "TASKS_DRAFT" || status === "PLANNING_COMPLETE"
-    );
-  if (stage === "plan") return status === "PLANNING_COMPLETE";
+
+  const postClarificationStatuses = [
+    "CLARIFICATION_COMPLETE",
+    "PRD_GENERATING",
+    "PRD_READY",
+    "TASKS_GENERATING",
+    "TASKS_DRAFT",
+    "PLANNING_COMPLETE",
+    "RELEASE_PENDING",
+    "READY_FOR_RELEASE",
+    "RELEASE_IN_PROGRESS",
+    "RELEASED",
+  ];
+  if (stage === "clarification") return postClarificationStatuses.includes(status);
+
+  const postPrdStatuses = [
+    "TASKS_GENERATING",
+    "TASKS_DRAFT",
+    "PLANNING_COMPLETE",
+    "RELEASE_PENDING",
+    "READY_FOR_RELEASE",
+    "RELEASE_IN_PROGRESS",
+    "RELEASED",
+  ];
+  if (stage === "prd") return postPrdStatuses.includes(status);
+
+  const postPlanStatuses = [
+    "PLANNING_COMPLETE",
+    "RELEASE_PENDING",
+    "READY_FOR_RELEASE",
+    "RELEASE_IN_PROGRESS",
+    "RELEASED",
+  ];
+  if (stage === "plan") return postPlanStatuses.includes(status);
+
+  const postReleaseStatuses = ["READY_FOR_RELEASE", "RELEASE_IN_PROGRESS", "RELEASED"];
+  if (stage === "release") return postReleaseStatuses.includes(status);
+
+  if (stage === "released") return status === "RELEASED";
+
   return false;
 }
 

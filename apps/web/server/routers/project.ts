@@ -2,12 +2,7 @@ import { z } from "zod";
 import { organizationProcedure, roleProcedure, projectProcedure, router } from "../trpc";
 import { TRPCError } from "@trpc/server";
 import { db, eq, desc } from "@repo/database";
-import {
-  projectsTable,
-  repositoriesTable,
-  featuresTable,
-  tasksTable,
-} from "@repo/database/schema";
+import { projectsTable, repositoriesTable, featuresTable, tasksTable } from "@repo/database/schema";
 import { githubService } from "@repo/services/github";
 
 export const projectRouter = router({
