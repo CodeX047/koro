@@ -48,7 +48,6 @@
     "@repo/billing": "workspace:*",
     "@repo/database": "workspace:*",
     "@repo/services": "workspace:*",
-    "@repo/trpc": "workspace:*",
     "@repo/workflows": "workspace:*",
     "@t3-oss/env-nextjs": "^0.13.10",
     "@tailwindcss/postcss": "^4.1.18",
