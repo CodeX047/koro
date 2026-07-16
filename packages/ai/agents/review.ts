@@ -78,9 +78,9 @@ export class ReviewAgent {
       "file": "string",
       "severity": "Blocking" | "Major" | "Minor" | "Nit",
       "category": "Security" | "Performance" | "Correctness" | "Style" | "Architecture",
-      "description": "string",
-      "suggestion": "string",
-      "line": number
+      "title": "string",
+      "explanation": "string",
+      "suggestion": "string"
     }
   ],
   "securityIssues": boolean
