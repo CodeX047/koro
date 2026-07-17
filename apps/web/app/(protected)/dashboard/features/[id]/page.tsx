@@ -93,6 +93,29 @@ export default function FeatureDetailPage() {
     { featureId: id },
     { enabled: feature?.status === "PLANNING_COMPLETE" },
   );
+
+  const { data: latestReleaseRun } = trpc.release.latest.useQuery(
+    { featureId: id },
+    {
+      enabled:
+        feature?.status === "READY_FOR_RELEASE" ||
+        feature?.status === "RELEASE_IN_PROGRESS" ||
+        feature?.status === "RELEASED",
+    },
+  );
+
+  const evaluateReleaseMutation = trpc.release.evaluate.useMutation({
+    onSuccess: () => {
+      utils.feature.get.invalidate({ featureId: id });
+    },
+  });
+
+  const releaseFeatureMutation = trpc.release.release.useMutation({
+    onSuccess: () => {
+      utils.feature.get.invalidate({ featureId: id });
+    },
+  });
+
   const isSynced = tasks?.some((t) => t.githubIssueNumber != null) ?? false;
 
   const fetchUpdatesMutation = trpc.task.fetchGithubUpdates.useMutation({
@@ -133,26 +156,6 @@ export default function FeatureDetailPage() {
   const status = feature.status;
   const clarifications = prdData?.clarifications ?? [];
   const prd = prdData?.prd ?? null;
-
-  const { data: latestReleaseRun } = trpc.release.latest.useQuery(
-    { featureId: id },
-    {
-      enabled:
-        status === "READY_FOR_RELEASE" || status === "RELEASE_IN_PROGRESS" || status === "RELEASED",
-    },
-  );
-
-  const evaluateReleaseMutation = trpc.release.evaluate.useMutation({
-    onSuccess: () => {
-      utils.feature.get.invalidate({ featureId: id });
-    },
-  });
-
-  const releaseFeatureMutation = trpc.release.release.useMutation({
-    onSuccess: () => {
-      utils.feature.get.invalidate({ featureId: id });
-    },
-  });
 
   return (
     <div className="min-h-screen p-6 md:p-8 font-sans" style={{ color: "var(--koro-on-primary)" }}>

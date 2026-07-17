@@ -12,6 +12,7 @@ import {
   repoSyncTable,
   commitsTable,
   releaseRunsTable,
+  projectsTable,
 } from "@repo/database/schema";
 import { ReleaseAgent } from "@repo/ai/agents/release";
 
@@ -20,15 +21,26 @@ export const releaseReadiness = inngest.createFunction(
     id: "release-readiness",
     triggers: [{ event: "release/readiness.requested" }],
     retries: 3,
+    onFailure: async ({ event }) => {
+      const featureId = event.data.event.data.featureId;
+      if (featureId) {
+        await db
+          .update(featuresTable)
+          .set({ status: "FAILED" })
+          .where(eq(featuresTable.id, featureId));
+      }
+    },
   },
   async ({ event, step }: { event: any; step: any }) => {
     const { featureId, triggeredBy, triggerType } = event.data;
 
-    // 1. Fetch Feature
-    const feature = await step.run("fetch-feature", async () => {
+    // 1. Fetch Feature & Project
+    const { feature, project } = await step.run("fetch-feature", async () => {
       const [f] = await db.select().from(featuresTable).where(eq(featuresTable.id, featureId));
       if (!f) throw new Error(`Feature ${featureId} not found`);
-      return f;
+      const [p] = await db.select().from(projectsTable).where(eq(projectsTable.id, f.projectId));
+      if (!p) throw new Error(`Project ${f.projectId} not found`);
+      return { feature: f, project: p };
     });
 
     // Update status to pending
@@ -262,7 +274,7 @@ export const releaseReadiness = inngest.createFunction(
     await step.run("persist-release-run", async () => {
       await db.insert(releaseRunsTable).values({
         featureId,
-        organizationId: repository?.organizationId || "unknown", // Should handle missing repo better but this is fine for now
+        organizationId: project.organizationId,
         overallScore: score,
         scoreBreakdown: breakdown,
         verdict: deterministicVerdict,
