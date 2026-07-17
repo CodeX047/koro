@@ -15,6 +15,7 @@ export default function OrganizationSettingsPage() {
   const [updateName, setUpdateName] = useState("");
   const [isUpdating, setIsUpdating] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   // Initialize update name when active org loads
   useState(() => {
@@ -54,13 +55,8 @@ export default function OrganizationSettingsPage() {
     }
   };
 
-  const handleDelete = async () => {
+  const executeDelete = async () => {
     if (!activeOrg) return;
-    const confirmed = window.confirm(
-      "Are you sure you want to delete this organization? All projects, features, and repositories will be permanently deleted. This action cannot be undone.",
-    );
-    if (!confirmed) return;
-
     setIsDeleting(true);
 
     // Fire the async cleanup workflow
@@ -90,6 +86,11 @@ export default function OrganizationSettingsPage() {
       toast.success("Organization deleted successfully");
       window.location.href = "/dashboard";
     }
+  };
+
+  const handleDelete = async () => {
+    if (!activeOrg) return;
+    setShowDeleteConfirm(true);
   };
 
   return (
@@ -202,6 +203,51 @@ export default function OrganizationSettingsPage() {
           </div>
         )}
       </div>
+
+      {showDeleteConfirm && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center p-4"
+          style={{ backgroundColor: "rgba(0,0,0,0.7)" }}
+        >
+          <div
+            className="relative w-full max-w-sm rounded-xl p-6 shadow-2xl animate-in fade-in zoom-in-95 duration-150 text-left"
+            style={{
+              backgroundColor: "var(--koro-surface-dark-elevated)",
+              border: "1px solid var(--koro-hairline-strong)",
+            }}
+          >
+            <h3 className="text-sm font-bold mb-2 text-[var(--koro-on-primary)]">
+              Delete Organization
+            </h3>
+            <p className="text-[11px] leading-relaxed mb-6 text-[var(--koro-ash)]">
+              Are you sure you want to delete this organization? All projects, features, and repositories will be permanently deleted. This action cannot be undone.
+            </p>
+            <div className="flex justify-end gap-3">
+              <button
+                onClick={() => setShowDeleteConfirm(false)}
+                className="px-3 py-1.5 rounded-lg text-[11px] font-semibold transition-opacity hover:opacity-80"
+                style={{
+                  backgroundColor: "var(--koro-surface-dark)",
+                  border: "1px solid var(--koro-hairline-strong)",
+                  color: "var(--koro-on-primary)",
+                }}
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => {
+                  setShowDeleteConfirm(false);
+                  executeDelete();
+                }}
+                className="px-3 py-1.5 rounded-lg text-[11px] font-bold transition-opacity hover:opacity-90 text-white"
+                style={{ backgroundColor: "var(--koro-danger)" }}
+              >
+                Delete Organization
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

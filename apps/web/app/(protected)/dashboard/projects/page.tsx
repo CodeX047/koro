@@ -6,6 +6,7 @@ import { FolderKanban, Plus, Loader2, MoreVertical, Pencil, Trash } from "lucide
 import { trpc } from "~/trpc/client";
 import { NewProjectDialog } from "./_components/new-project-dialog";
 import { EditProjectDialog } from "./_components/edit-project-dialog";
+import { toast } from "sonner";
 
 function ProjectCard({
   project,
@@ -101,6 +102,7 @@ function ProjectCard({
 
 export default function ProjectsPage() {
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [deletingProjectId, setDeletingProjectId] = useState<string | null>(null);
   const [editingProject, setEditingProject] = useState<{
     id: string;
     name: string;
@@ -113,21 +115,16 @@ export default function ProjectsPage() {
   const deleteProject = trpc.project.delete.useMutation({
     onSuccess: () => {
       utils.project.list.invalidate();
+      toast.success("Project deleted successfully");
     },
     onError: (err) => {
       console.error("Failed to delete project:", err.message);
-      alert("Failed to delete project. Please try again.");
+      toast.error("Failed to delete project. Please try again.");
     },
   });
 
   const handleDelete = (id: string) => {
-    if (
-      confirm(
-        "Are you sure you want to delete this project? This will also permanently delete all associated features, tasks, and reviews.",
-      )
-    ) {
-      deleteProject.mutate({ id });
-    }
+    setDeletingProjectId(id);
   };
 
   return (
@@ -190,6 +187,52 @@ export default function ProjectsPage() {
       {dialogOpen && <NewProjectDialog onClose={() => setDialogOpen(false)} />}
       {editingProject && (
         <EditProjectDialog project={editingProject} onClose={() => setEditingProject(null)} />
+      )}
+
+      {deletingProjectId && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center p-4"
+          style={{ backgroundColor: "rgba(0,0,0,0.7)" }}
+        >
+          <div
+            className="relative w-full max-w-sm rounded-xl p-6 shadow-2xl animate-in fade-in zoom-in-95 duration-150"
+            style={{
+              backgroundColor: "var(--koro-surface-dark-elevated)",
+              border: "1px solid var(--koro-hairline-strong)",
+            }}
+          >
+            <h3 className="text-sm font-bold mb-2" style={{ color: "var(--koro-on-primary)" }}>
+              Delete Project
+            </h3>
+            <p className="text-[11px] leading-relaxed mb-6" style={{ color: "var(--koro-ash)" }}>
+              Are you sure you want to delete this project? This will also permanently delete all associated features, tasks, and reviews.
+            </p>
+            <div className="flex justify-end gap-3">
+              <button
+                onClick={() => setDeletingProjectId(null)}
+                className="px-3 py-1.5 rounded-lg text-[11px] font-semibold transition-opacity hover:opacity-80"
+                style={{
+                  backgroundColor: "var(--koro-surface-dark)",
+                  border: "1px solid var(--koro-hairline-strong)",
+                  color: "var(--koro-on-primary)",
+                }}
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => {
+                  deleteProject.mutate({ id: deletingProjectId });
+                  setDeletingProjectId(null);
+                }}
+                className="px-3 py-1.5 rounded-lg text-[11px] font-bold transition-opacity hover:opacity-90 text-white flex items-center gap-1.5"
+                style={{ backgroundColor: "var(--koro-danger)" }}
+              >
+                <Trash className="w-3.5 h-3.5" />
+                Delete Project
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );

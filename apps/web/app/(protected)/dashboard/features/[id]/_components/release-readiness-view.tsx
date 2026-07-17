@@ -29,6 +29,7 @@ export function ReleaseReadinessView({
 }) {
   const isEvaluating = evaluateMutation.isPending || status === "RELEASE_PENDING";
   const isReleasing = releaseMutation.isPending || status === "RELEASE_IN_PROGRESS";
+  const [showConfirmDialog, setShowConfirmDialog] = React.useState(false);
 
   // Score color logic
   let scoreColor = "var(--koro-danger)";
@@ -91,11 +92,7 @@ export function ReleaseReadinessView({
             releaseRun &&
             (releaseRun.verdict === "READY" || releaseRun.verdict === "READY_WITH_WARNINGS") && (
               <button
-                onClick={() => {
-                  if (confirm("Are you sure you want to release this feature to production?")) {
-                    releaseMutation.mutate({ featureId });
-                  }
-                }}
+                onClick={() => setShowConfirmDialog(true)}
                 disabled={isReleasing}
                 className="px-3.5 py-1.5 rounded-lg text-[11px] font-bold transition-opacity hover:opacity-90 disabled:opacity-50 flex items-center gap-1.5"
                 style={{ backgroundColor: "var(--koro-accent)", color: "#fff" }}
@@ -442,6 +439,52 @@ export function ReleaseReadinessView({
                 </div>
               </div>
             )}
+          </div>
+        </div>
+      )}
+      {/* Confirmation Dialog Overlay */}
+      {showConfirmDialog && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center p-4"
+          style={{ backgroundColor: "rgba(0,0,0,0.7)" }}
+        >
+          <div
+            className="relative w-full max-w-sm rounded-xl p-6 shadow-2xl animate-in fade-in zoom-in-95 duration-150"
+            style={{
+              backgroundColor: "var(--koro-surface-dark-elevated)",
+              border: "1px solid var(--koro-hairline-strong)",
+            }}
+          >
+            <h3 className="text-sm font-bold mb-2" style={{ color: "var(--koro-on-primary)" }}>
+              Confirm Production Release
+            </h3>
+            <p className="text-[11px] leading-relaxed mb-6" style={{ color: "var(--koro-ash)" }}>
+              Are you sure you want to deploy this feature to production? This will update the feature status and trigger the production release pipeline.
+            </p>
+            <div className="flex justify-end gap-3">
+              <button
+                onClick={() => setShowConfirmDialog(false)}
+                className="px-3 py-1.5 rounded-lg text-[11px] font-semibold transition-opacity hover:opacity-80"
+                style={{
+                  backgroundColor: "var(--koro-surface-dark)",
+                  border: "1px solid var(--koro-hairline-strong)",
+                  color: "var(--koro-on-primary)",
+                }}
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => {
+                  setShowConfirmDialog(false);
+                  releaseMutation.mutate({ featureId });
+                }}
+                className="px-3 py-1.5 rounded-lg text-[11px] font-bold transition-opacity hover:opacity-90 flex items-center gap-1.5"
+                style={{ backgroundColor: "var(--koro-accent)", color: "#fff" }}
+              >
+                <Rocket className="w-3 h-3" />
+                Confirm Release
+              </button>
+            </div>
           </div>
         </div>
       )}
