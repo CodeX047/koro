@@ -34,13 +34,16 @@ export const processPullRequest = inngest.createFunction(
     }
 
     // 2. Process PR and fetch files/commits
-    const pr = await step.run("process-pr", async () => {
+    const result = await step.run("process-pr", async () => {
       return await githubPullRequestService.processPullRequestEvent(
         installationId,
         repo.id,
         payload,
       );
     });
+
+    const pr = result?.pr;
+    const statusChanges = result?.statusChanges ?? [];
 
     // 3. Log development event if featureId exists
     if (pr?.featureId) {
@@ -55,6 +58,9 @@ export const processPullRequest = inngest.createFunction(
         await db.insert(developmentEventsTable).values({
           featureId: pr.featureId,
           eventType,
+          actor: payload.pull_request?.user?.login ?? payload.sender?.login ?? null,
+          resourceType: "pull_request",
+          resourceId: String(pr.prNumber),
           metadata: {
             prId: pr.id,
             prNumber: pr.prNumber,
@@ -64,7 +70,19 @@ export const processPullRequest = inngest.createFunction(
       });
     }
 
-    // 4. Dispatch AI Review Workflow
+    // 4. Emit domain events for task status changes (progress recalculation)
+    if (statusChanges.length > 0) {
+      await step.run("emit-status-changes", async () => {
+        for (const change of statusChanges) {
+          await inngest.send({
+            name: "github/task.status.changed",
+            data: change,
+          });
+        }
+      });
+    }
+
+    // 5. Dispatch AI Review Workflow
     if (pr && payload.action === "opened") {
       await step.sendEvent("trigger-review", {
         name: "review/pr.requested",

@@ -56,18 +56,30 @@ export class GithubPullRequestService {
     }
 
     // 1c. Update task statuses based on PR state
+    const statusChanges: Array<{
+      taskId: string;
+      featureId: string;
+      newStatus: string;
+      previousStatus: string;
+      source: "pr_merged" | "pr_closed";
+    }> = [];
+
     if (matchedTasks.length > 0) {
       let newTaskStatus: "TODO" | "IN_PROGRESS" | "REVIEW" | "DONE" | "BLOCKED" | null = null;
+      let newGithubState: string | null = null;
       let newIssueState: "open" | "closed" | null = null;
 
       if (pr.state === "closed" && pr.merged) {
         newTaskStatus = "DONE";
+        newGithubState = "CLOSED";
         newIssueState = "closed";
       } else if (pr.state === "closed" && !pr.merged) {
         newTaskStatus = "IN_PROGRESS";
-        newIssueState = "open"; // PR closed unmerged, issue is still open
+        newGithubState = "OPEN";
+        newIssueState = "open";
       } else if (pr.state === "open") {
         newTaskStatus = "REVIEW";
+        newGithubState = "REVIEW";
         newIssueState = "open";
       }
 
@@ -75,14 +87,38 @@ export class GithubPullRequestService {
         const taskIdsToUpdate = matchedTasks.map((t) => t.id);
         await db
           .update(tasksTable)
-          .set({ status: newTaskStatus, updatedAt: new Date() })
+          .set({
+            status: newTaskStatus,
+            githubState: newGithubState,
+            githubUpdatedAt: new Date(),
+            completedAt: newTaskStatus === "DONE" ? new Date() : null,
+            updatedAt: new Date(),
+          })
           .where(inArray(tasksTable.id, taskIdsToUpdate));
 
         if (newIssueState) {
           await db
             .update(githubIssuesTable)
-            .set({ state: newIssueState, updatedAt: new Date() })
+            .set({
+              state: newIssueState,
+              closedAt: newIssueState === "closed" ? new Date() : null,
+              updatedAt: new Date(),
+            })
             .where(inArray(githubIssuesTable.taskId, taskIdsToUpdate));
+        }
+
+        // Collect status changes for the caller to emit domain events
+        const source = pr.merged ? "pr_merged" : "pr_closed";
+        for (const t of matchedTasks) {
+          if (t.featureId) {
+            statusChanges.push({
+              taskId: t.id,
+              featureId: t.featureId,
+              newStatus: newTaskStatus,
+              previousStatus: t.status,
+              source: source as "pr_merged" | "pr_closed",
+            });
+          }
         }
       }
     }
@@ -112,7 +148,10 @@ export class GithubPullRequestService {
         .set({
           status,
           merged: pr.merged,
+          mergedBy: pr.merged ? pr.merged_by?.login ?? null : null,
+          mergedAt: pr.merged ? new Date() : null,
           headSha: pr.head.sha,
+          lastCommitSha: pr.head.sha,
           title: pr.title,
           updatedAt: new Date(),
         })
@@ -145,7 +184,7 @@ export class GithubPullRequestService {
       await this.syncPullRequestDetails(installationId, existingPr.id, repoFullName, pr.number);
     }
 
-    return existingPr;
+    return { pr: existingPr, statusChanges };
   }
 
   private async syncPullRequestDetails(

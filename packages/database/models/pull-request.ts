@@ -35,6 +35,11 @@ export const pullRequestsTable = pgTable(
     baseBranch: varchar("base_branch", { length: 255 }).notNull(),
     status: varchar("status", { length: 50 }).default("OPENED").notNull(), // OPENED, READY_FOR_REVIEW, CHANGES_REQUESTED, APPROVED, MERGED, CLOSED
     merged: boolean("merged").default(false).notNull(),
+    mergedBy: varchar("merged_by", { length: 255 }),
+    mergedAt: timestamp("merged_at"),
+    reviewDecision: varchar("review_decision", { length: 50 }), // APPROVED, CHANGES_REQUESTED, REVIEW_REQUIRED
+    reviewCount: integer("review_count").default(0),
+    lastCommitSha: varchar("last_commit_sha", { length: 255 }),
     reviewStatus: varchar("review_status", { length: 50 }), // PENDING, RUNNING, COMPLETED, FAILED
     reviewVersion: integer("review_version").default(0).notNull(),
     reviewComment: text("review_comment"),

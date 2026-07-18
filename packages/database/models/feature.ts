@@ -1,4 +1,4 @@
-import { pgTable, uuid, varchar, text, timestamp, index } from "drizzle-orm/pg-core";
+import { pgTable, uuid, varchar, text, timestamp, index, integer } from "drizzle-orm/pg-core";
 import { projectsTable } from "./project";
 
 export type FeatureStatus =
@@ -26,6 +26,7 @@ export const featuresTable = pgTable(
     projectId: uuid("project_id")
       .references(() => projectsTable.id)
       .notNull(),
+    progress: integer("progress").default(0).notNull(), // 0-100 development completion percentage
     createdAt: timestamp("created_at").defaultNow(),
     updatedAt: timestamp("updated_at").$onUpdate(() => new Date()),
   },

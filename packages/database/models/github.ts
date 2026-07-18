@@ -8,6 +8,7 @@ import {
   boolean,
   bigint,
   index,
+  jsonb,
 } from "drizzle-orm/pg-core";
 import { organizationTable } from "./auth";
 import { usersTable } from "./user";
@@ -63,6 +64,10 @@ export const githubIssuesTable = pgTable("github_issues", {
   url: varchar("url", { length: 1024 }).notNull(),
   nodeId: varchar("node_id", { length: 255 }),
   state: varchar("state", { length: 50 }).notNull(),
+  assignee: varchar("assignee", { length: 255 }),
+  labels: jsonb("labels").$type<string[]>(),
+  milestone: varchar("milestone", { length: 255 }),
+  closedAt: timestamp("closed_at"),
   lastSyncedAt: timestamp("last_synced_at"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at")

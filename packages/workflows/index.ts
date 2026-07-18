@@ -9,6 +9,10 @@ import { releaseReadiness } from "./release/readiness";
 import { githubSync } from "./github/sync";
 import { syncIssues } from "./github/issues";
 import { processPullRequest } from "./github/pull-request";
+import { processIssueEvent } from "./github/issue-sync";
+import { processPushEvent } from "./github/push-sync";
+import { processPrReview } from "./github/pr-review-sync";
+import { recalculateProgress } from "./github/feature-progress";
 import { reviewCompleteNotification } from "./notification/review-complete";
 import { dodoWebhookReceived } from "./billing/dodo-webhook";
 
@@ -22,6 +26,10 @@ export * from "./release/readiness";
 export * from "./github/sync";
 export * from "./github/issues";
 export * from "./github/pull-request";
+export * from "./github/issue-sync";
+export * from "./github/push-sync";
+export * from "./github/pr-review-sync";
+export * from "./github/feature-progress";
 export * from "./notification/review-complete";
 export * from "./billing/dodo-webhook";
 
@@ -36,6 +44,10 @@ export const functions = [
   githubSync,
   syncIssues,
   processPullRequest,
+  processIssueEvent,
+  processPushEvent,
+  processPrReview,
+  recalculateProgress,
   reviewCompleteNotification,
   dodoWebhookReceived,
 ];

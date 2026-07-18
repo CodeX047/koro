@@ -6,7 +6,9 @@
   "types": "index.ts",
   "exports": {
     ".": "./index.ts",
-    "./client": "./client.ts"
+    "./client": "./client.ts",
+    "./github/types": "./github/types.ts",
+    "./github/events": "./github/events.ts"
   },
   "devDependencies": {
     "@repo/typescript-config": "workspace:*",

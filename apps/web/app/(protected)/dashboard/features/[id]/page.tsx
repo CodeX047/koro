@@ -10,6 +10,7 @@ import { ClarificationForm } from "./_components/clarification-form";
 import { PrdView } from "./_components/prd-view";
 import { KanbanBoard } from "./_components/kanban-board";
 import { ReleaseReadinessView } from "./_components/release-readiness-view";
+import { GithubTimeline } from "./_components/github-timeline";
 
 const POLL_STATUSES = new Set([
   "DRAFT",
@@ -172,7 +173,25 @@ export default function FeatureDetailPage() {
 
         {/* Feature header */}
         <div>
-          <h1 className="text-xl font-bold">{feature.title}</h1>
+          <div className="flex items-center justify-between">
+            <h1 className="text-xl font-bold">{feature.title}</h1>
+            {feature.progress !== undefined && (
+              <div className="flex items-center gap-2">
+                <div className="text-xs font-semibold" style={{ color: "var(--koro-accent)" }}>
+                  {feature.progress}%
+                </div>
+                <div className="w-24 h-2 bg-slate-800 rounded-full overflow-hidden">
+                  <div 
+                    className="h-full rounded-full transition-all duration-500"
+                    style={{ 
+                      width: `${feature.progress}%`,
+                      backgroundColor: "var(--koro-accent)" 
+                    }}
+                  />
+                </div>
+              </div>
+            )}
+          </div>
           {feature.description && (
             <p className="text-sm mt-2 leading-relaxed" style={{ color: "var(--koro-ash)" }}>
               {feature.description}
@@ -456,44 +475,7 @@ export default function FeatureDetailPage() {
           {status === "PLANNING_COMPLETE" && (
             <div className="mt-12 space-y-4 max-w-3xl mx-auto">
               <h2 className="text-lg font-bold">Development Timeline</h2>
-              <div className="border border-slate-800 rounded-xl bg-slate-950 p-6">
-                {devTimeline?.length === 0 ? (
-                  <p className="text-sm text-slate-400 text-center py-4">
-                    No development activity yet. Sync tasks to GitHub to get started.
-                  </p>
-                ) : (
-                  <div className="space-y-6 relative before:absolute before:inset-0 before:ml-5 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-slate-800 before:to-transparent">
-                    {devTimeline?.map((event: any) => (
-                      <div
-                        key={event.id}
-                        className="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active"
-                      >
-                        <div className="flex items-center justify-center w-10 h-10 rounded-full border border-slate-800 bg-slate-900 shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 shadow">
-                          <Clock className="w-4 h-4 text-indigo-400" />
-                        </div>
-                        <div className="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] p-4 rounded-xl border border-slate-800 bg-slate-900 shadow">
-                          <div className="flex items-center justify-between mb-1">
-                            <h3 className="font-bold text-slate-200 text-sm">{event.eventType}</h3>
-                            <time className="text-xs text-slate-400">
-                              {new Date(event.createdAt).toLocaleDateString()}
-                            </time>
-                          </div>
-                          <div className="text-sm text-slate-400 mt-1">
-                            {event.metadata.title && (
-                              <Link
-                                href={`/dashboard/prs/${event.metadata.prId}`}
-                                className="text-indigo-400 hover:underline"
-                              >
-                                #{event.metadata.prNumber} {event.metadata.title}
-                              </Link>
-                            )}
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
+              <GithubTimeline events={devTimeline} />
             </div>
           )}
         </div>

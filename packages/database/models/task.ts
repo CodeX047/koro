@@ -47,6 +47,10 @@ export const tasksTable = pgTable("tasks", {
   assigneeId: varchar("assignee_id", { length: 255 }), // Can link to auth users table later
   syncStatus: varchar("sync_status", { length: 50 }).default("PENDING").notNull(), // PENDING, SYNCED, FAILED
   order: integer("order").default(0).notNull(), // Position in the Kanban column
+  githubState: varchar("github_state", { length: 50 }), // OPEN, IN_PROGRESS, REVIEW, DONE, BLOCKED, CLOSED
+  githubUpdatedAt: timestamp("github_updated_at"),
+  branchName: varchar("branch_name", { length: 255 }),
+  completedAt: timestamp("completed_at"),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").$onUpdate(() => new Date()),
 });
