@@ -14,7 +14,7 @@ import {
 } from "@repo/services/task";
 import { updateFeatureStatus } from "@repo/services/feature";
 import { db, eq } from "@repo/database";
-import { featuresTable, githubIssuesTable } from "@repo/database/schema";
+import { featuresTable, githubIssuesTable, tasksTable } from "@repo/database/schema";
 import { githubService } from "@repo/services/github";
 
 export const taskRouter = router({
@@ -74,7 +74,22 @@ export const taskRouter = router({
       }),
     )
     .mutation(async ({ input }) => {
-      return updateTaskStatus(input.taskId, input.status);
+      const [oldTask] = await db.select().from(tasksTable).where(eq(tasksTable.id, input.taskId));
+      const updated = await updateTaskStatus(input.taskId, input.status);
+
+      if (oldTask && oldTask.status !== input.status && oldTask.featureId) {
+        await inngest.send({
+          name: "github/task.status.changed",
+          data: {
+            taskId: input.taskId,
+            featureId: oldTask.featureId,
+            newStatus: input.status,
+            previousStatus: oldTask.status,
+            source: "manual",
+          },
+        });
+      }
+      return updated;
     }),
 
   move: taskProcedure
@@ -86,7 +101,22 @@ export const taskRouter = router({
       }),
     )
     .mutation(async ({ input }) => {
-      return moveTask(input.taskId, input.status, input.order);
+      const [oldTask] = await db.select().from(tasksTable).where(eq(tasksTable.id, input.taskId));
+      const updated = await moveTask(input.taskId, input.status, input.order);
+
+      if (oldTask && oldTask.status !== input.status && oldTask.featureId) {
+        await inngest.send({
+          name: "github/task.status.changed",
+          data: {
+            taskId: input.taskId,
+            featureId: oldTask.featureId,
+            newStatus: input.status,
+            previousStatus: oldTask.status,
+            source: "manual",
+          },
+        });
+      }
+      return updated;
     }),
 
   update: taskProcedure

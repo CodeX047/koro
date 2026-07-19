@@ -117,11 +117,6 @@ const createResourceProcedure = (
       organizationId: activeOrganizationId,
     });
 
-    console.log(
-      `[TRPC Auth Debug] resource: ${resource}, idKey: ${idKey}, id: ${id}, activeOrg: ${activeOrganizationId}, isAuthorized: ${isAuthorized}, input:`,
-      input,
-    );
-
     if (!isAuthorized) {
       throw new TRPCError({ code: "NOT_FOUND", message: "Resource not found" });
     }

@@ -11,7 +11,7 @@ const pool =
   globalThis._postgresPool ||
   new Pool({
     connectionString: env.DATABASE_URL,
-    max: 10, // default max 10
+    max: 30,
   });
 
 if (process.env.NODE_ENV !== "production") {

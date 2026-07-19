@@ -29,12 +29,6 @@ export async function checkAuthorization({
         .where(and(eq(projectsTable.id, id)))
         .limit(1);
 
-      console.log("[authorize.ts] Project lookup:", {
-        queryId: id,
-        orgId: organizationId,
-        foundProject: project,
-      });
-
       if (!project) return false;
       return project.orgId === organizationId;
     }

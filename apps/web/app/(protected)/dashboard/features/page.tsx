@@ -44,6 +44,42 @@ const STATUS_STYLES: Record<string, { label: string; bg: string; text: string; b
     text: "text-red-500",
     border: "border-red-500/20",
   },
+  TASKS_DRAFT: {
+    label: "Plan Review",
+    bg: "bg-blue-500/10",
+    text: "text-blue-400",
+    border: "border-blue-500/20",
+  },
+  PLANNING_COMPLETE: {
+    label: "In Progress",
+    bg: "bg-indigo-500/10",
+    text: "text-indigo-400",
+    border: "border-indigo-500/20",
+  },
+  READY_FOR_RELEASE: {
+    label: "Ready for Release",
+    bg: "bg-emerald-500/10",
+    text: "text-emerald-400",
+    border: "border-emerald-500/20",
+  },
+  RELEASE_PENDING: {
+    label: "Release Pending",
+    bg: "bg-amber-500/10",
+    text: "text-amber-400",
+    border: "border-amber-500/20",
+  },
+  RELEASE_IN_PROGRESS: {
+    label: "Releasing…",
+    bg: "bg-purple-500/10",
+    text: "text-purple-400",
+    border: "border-purple-500/20",
+  },
+  RELEASED: {
+    label: "Released",
+    bg: "bg-green-500/10",
+    text: "text-green-500",
+    border: "border-green-500/20",
+  },
 };
 
 function StatusBadge({ status }: { status: string }) {

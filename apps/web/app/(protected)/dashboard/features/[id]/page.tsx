@@ -181,11 +181,11 @@ export default function FeatureDetailPage() {
                   {feature.progress}%
                 </div>
                 <div className="w-24 h-2 bg-slate-800 rounded-full overflow-hidden">
-                  <div 
+                  <div
                     className="h-full rounded-full transition-all duration-500"
-                    style={{ 
+                    style={{
                       width: `${feature.progress}%`,
-                      backgroundColor: "var(--koro-accent)" 
+                      backgroundColor: "var(--koro-accent)",
                     }}
                   />
                 </div>
@@ -475,7 +475,7 @@ export default function FeatureDetailPage() {
           {status === "PLANNING_COMPLETE" && (
             <div className="mt-12 space-y-4 max-w-3xl mx-auto">
               <h2 className="text-lg font-bold">Development Timeline</h2>
-              <GithubTimeline events={devTimeline} />
+              <GithubTimeline events={(devTimeline as any) ?? []} />
             </div>
           )}
         </div>
