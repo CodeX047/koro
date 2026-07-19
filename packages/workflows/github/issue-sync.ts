@@ -280,6 +280,13 @@ export const processIssueEvent = inngest.createFunction(
         break;
     }
 
+    if (task.featureId) {
+      await step.sendEvent("development-event-created", {
+        name: "development/event.created",
+        data: { featureId: task.featureId, source: "github_issue" },
+      });
+    }
+
     return { processed: true, action: data.action, issueNumber: data.issueNumber };
   },
 );

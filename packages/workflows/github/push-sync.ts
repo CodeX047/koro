@@ -99,6 +99,11 @@ export const processPushEvent = inngest.createFunction(
             },
           });
         });
+
+        await step.sendEvent("development-event-created", {
+          name: "development/event.created",
+          data: { featureId: pr.featureId, source: "github_push" },
+        });
       }
 
       if (pr.reviewStatus === "COMPLETED") {

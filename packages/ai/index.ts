@@ -3,6 +3,7 @@ export * from "./agents/prd";
 export * from "./agents/task";
 export * from "./agents/review";
 export * from "./agents/release";
+export * from "./agents/delivery-insights";
 export * from "./prompts";
 export * from "./utils";
 

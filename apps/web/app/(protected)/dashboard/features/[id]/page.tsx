@@ -1,16 +1,18 @@
 "use client";
 
-import React, { useEffect, useRef } from "react";
-import { useParams, useRouter } from "next/navigation";
+import React from "react";
+import { useParams } from "next/navigation";
 import Link from "next/link";
-import { ArrowLeft, Loader2, AlertCircle, Clock } from "lucide-react";
+import { ArrowLeft, Loader2, AlertCircle } from "lucide-react";
 import { trpc } from "~/trpc/client";
 import { FeatureStepper } from "./_components/feature-stepper";
 import { ClarificationForm } from "./_components/clarification-form";
 import { PrdView } from "./_components/prd-view";
 import { KanbanBoard } from "./_components/kanban-board";
 import { ReleaseReadinessView } from "./_components/release-readiness-view";
-import { GithubTimeline } from "./_components/github-timeline";
+import { AnalyticsCards, type FeatureMetrics } from "./_components/analytics-cards";
+import { DeliveryTimeline, type TimelineItem } from "./_components/delivery-timeline";
+import { HealthIndicators, type HealthItem } from "./_components/health-indicators";
 
 const POLL_STATUSES = new Set([
   "DRAFT",
@@ -25,7 +27,6 @@ const POLL_STATUSES = new Set([
 
 export default function FeatureDetailPage() {
   const { id } = useParams<{ id: string }>();
-  const router = useRouter();
   const utils = trpc.useUtils();
 
   // ── Feature query (polled while pipeline is running) ──────────────────
@@ -79,9 +80,26 @@ export default function FeatureDetailPage() {
     },
   });
 
-  const { data: devTimeline } = trpc.pullRequest.timeline.useQuery(
+  const analyticsEnabled =
+    feature?.status === "PLANNING_COMPLETE" ||
+    feature?.status === "READY_FOR_RELEASE" ||
+    feature?.status === "RELEASE_PENDING" ||
+    feature?.status === "RELEASE_IN_PROGRESS" ||
+    feature?.status === "RELEASED";
+
+  const { data: deliveryTimeline } = trpc.analytics.timeline.useQuery(
     { featureId: id },
-    { enabled: feature?.status === "PLANNING_COMPLETE" },
+    { enabled: analyticsEnabled },
+  );
+
+  const { data: featureMetrics } = trpc.analytics.featureMetrics.useQuery(
+    { featureId: id },
+    { enabled: analyticsEnabled },
+  );
+
+  const { data: deliveryHealth } = trpc.analytics.deliveryHealth.useQuery(
+    { featureId: id },
+    { enabled: analyticsEnabled },
   );
 
   const approvePlanMutation = trpc.task.approvePlan.useMutation({
@@ -471,16 +489,39 @@ export default function FeatureDetailPage() {
 
           <KanbanBoard featureId={id} projectId={feature.projectId} />
 
-          {/* Development Timeline */}
+          {/* Delivery Analytics */}
           {status === "PLANNING_COMPLETE" && (
-            <div className="mt-12 space-y-4 max-w-3xl mx-auto">
-              <h2 className="text-lg font-bold">Development Timeline</h2>
-              <GithubTimeline events={(devTimeline as any) ?? []} />
+            <div className="mt-12 space-y-5 max-w-5xl mx-auto">
+              <div>
+                <h2 className="text-lg font-bold">Delivery Analytics</h2>
+                <p className="text-[11px] mt-1" style={{ color: "var(--koro-ash)" }}>
+                  Delivery timing, health, and timeline are derived from GitHub, review, task, and
+                  release activity.
+                </p>
+              </div>
+              <AnalyticsCards metrics={featureMetrics as FeatureMetrics | undefined} />
+              <HealthIndicators items={(deliveryHealth as HealthItem[] | undefined) ?? []} />
+              <DeliveryTimeline events={(deliveryTimeline as TimelineItem[] | undefined) ?? []} />
             </div>
           )}
         </div>
       )}
       {/* ── Stage: RELEASE READINESS ──────────────────────────────────── */}
+      {analyticsEnabled && status !== "PLANNING_COMPLETE" && (
+        <div className="mt-12 space-y-5 max-w-5xl mx-auto">
+          <div>
+            <h2 className="text-lg font-bold">Delivery Analytics</h2>
+            <p className="text-[11px] mt-1" style={{ color: "var(--koro-ash)" }}>
+              Delivery timing, health, and timeline are derived from GitHub, review, task, and
+              release activity.
+            </p>
+          </div>
+          <AnalyticsCards metrics={featureMetrics as FeatureMetrics | undefined} />
+          <HealthIndicators items={(deliveryHealth as HealthItem[] | undefined) ?? []} />
+          <DeliveryTimeline events={(deliveryTimeline as TimelineItem[] | undefined) ?? []} />
+        </div>
+      )}
+
       {(status === "READY_FOR_RELEASE" ||
         status === "RELEASE_PENDING" ||
         status === "RELEASE_IN_PROGRESS" ||

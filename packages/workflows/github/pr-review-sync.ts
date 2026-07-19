@@ -96,6 +96,11 @@ export const processPrReview = inngest.createFunction(
           },
         });
       });
+
+      await step.sendEvent("development-event-created", {
+        name: "development/event.created",
+        data: { featureId: pr.featureId, source: "github_pr_review" },
+      });
     }
 
     return { processed: true, prNumber: data.prNumber, reviewState: data.state };

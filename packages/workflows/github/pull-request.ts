@@ -68,6 +68,11 @@ export const processPullRequest = inngest.createFunction(
           },
         });
       });
+
+      await step.sendEvent("development-event-created", {
+        name: "development/event.created",
+        data: { featureId: pr.featureId, source: "github_pr" },
+      });
     }
 
     // 4. Emit domain events for task status changes (progress recalculation)

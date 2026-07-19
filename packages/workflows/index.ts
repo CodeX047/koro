@@ -15,6 +15,7 @@ import { processPrReview } from "./github/pr-review-sync";
 import { recalculateProgress } from "./github/feature-progress";
 import { reviewCompleteNotification } from "./notification/review-complete";
 import { dodoWebhookReceived } from "./billing/dodo-webhook";
+import { recalculateAnalytics } from "./analytics/recalculate";
 
 export * from "./prd/clarify";
 export * from "./prd/complete-clarification";
@@ -32,6 +33,7 @@ export * from "./github/pr-review-sync";
 export * from "./github/feature-progress";
 export * from "./notification/review-complete";
 export * from "./billing/dodo-webhook";
+export * from "./analytics/recalculate";
 
 export const functions = [
   clarifyFeature,
@@ -50,4 +52,5 @@ export const functions = [
   recalculateProgress,
   reviewCompleteNotification,
   dodoWebhookReceived,
+  recalculateAnalytics,
 ];

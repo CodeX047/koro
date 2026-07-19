@@ -16,3 +16,4 @@ export * from "./models/usage";
 export * from "./models/invoice";
 export * from "./models/development-event";
 export * from "./models/release-run";
+export * from "./models/delivery-metric";

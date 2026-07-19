@@ -73,6 +73,11 @@ export const syncIssues = inngest.createFunction(
       data: { featureId, count: created.length },
     });
 
+    await step.sendEvent("development-event-created", {
+      name: "development/event.created",
+      data: { featureId, source: "github_issues_sync" },
+    });
+
     return { created: created.length };
   },
 );

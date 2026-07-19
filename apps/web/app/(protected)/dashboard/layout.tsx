@@ -6,7 +6,7 @@ import { usePathname } from "next/navigation";
 import { UserMenu } from "./_components/user-menu";
 import { OrgSelector } from "./_components/org-selector";
 import { SystemStatus } from "./_components/system-status";
-import { Home, FolderKanban, FileCheck, BookMarked, Github, Settings, Search } from "lucide-react";
+import { Home, FolderKanban, FileCheck, BookMarked, Github, Settings, Search, Activity, Users } from "lucide-react";
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -40,6 +40,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     features: "Features",
     reviews: "Reviews",
     workspace: "Workspace",
+    analytics: "Analytics",
+    developers: "Developers",
   };
 
   const formatSegment = (segment: string) => {
@@ -48,6 +50,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
   const navItems = [
     { href: "/dashboard", label: "Dashboard", icon: Home },
+    { href: "/dashboard/analytics", label: "Analytics", icon: Activity },
+    { href: "/dashboard/developers", label: "Developers", icon: Users },
     { href: "/dashboard/projects", label: "Projects", icon: FolderKanban },
     { href: "/dashboard/features", label: "Features", icon: FileCheck },
     { href: "/dashboard/repos", label: "Repositories", icon: BookMarked },

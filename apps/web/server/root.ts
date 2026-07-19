@@ -11,6 +11,7 @@ import { billingRouter } from "./routers/billing";
 import { githubRouter } from "./routers/github";
 import { pullRequestRouter } from "./routers/pull-request";
 import { releaseRouter } from "./routers/release";
+import { analyticsRouter } from "./routers/analytics";
 
 export const appRouter = router({
   health: healthRouter,
@@ -25,6 +26,7 @@ export const appRouter = router({
   github: githubRouter,
   pullRequest: pullRequestRouter,
   release: releaseRouter,
+  analytics: analyticsRouter,
 });
 
 export type AppRouter = typeof appRouter;
