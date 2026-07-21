@@ -75,9 +75,9 @@ The JSON must strictly adhere to the following structure:
 
       // Clean potential markdown blocks or conversational text if the model ignored instructions
       let cleanJson = result.text.trim();
-      const firstBrace = cleanJson.indexOf('{');
-      const lastBrace = cleanJson.lastIndexOf('}');
-      
+      const firstBrace = cleanJson.indexOf("{");
+      const lastBrace = cleanJson.lastIndexOf("}");
+
       if (firstBrace !== -1 && lastBrace !== -1 && lastBrace >= firstBrace) {
         cleanJson = cleanJson.substring(firstBrace, lastBrace + 1);
       }

@@ -18,7 +18,10 @@ import { getOrganizationVelocity } from "./velocity";
 import { average } from "./utils";
 
 export async function getAnalyticsDashboard(organizationId: string) {
-  const projects = await db.select().from(projectsTable).where(eq(projectsTable.organizationId, organizationId));
+  const projects = await db
+    .select()
+    .from(projectsTable)
+    .where(eq(projectsTable.organizationId, organizationId));
   const projectIds = projects.map((project) => project.id);
   const features = (await db.select().from(featuresTable)).filter((feature) =>
     projectIds.includes(feature.projectId),
@@ -42,8 +45,12 @@ export async function getAnalyticsDashboard(organizationId: string) {
   const successfulReviews = reviewRuns.filter((run) => run.verdict === "APPROVE").length;
 
   return {
-    averageLeadTimeMs: average(latestMetrics.filter((m) => m.metricType === "LEAD_TIME").map((m) => m.metricValue)),
-    averageCycleTimeMs: average(latestMetrics.filter((m) => m.metricType === "CYCLE_TIME").map((m) => m.metricValue)),
+    averageLeadTimeMs: average(
+      latestMetrics.filter((m) => m.metricType === "LEAD_TIME").map((m) => m.metricValue),
+    ),
+    averageCycleTimeMs: average(
+      latestMetrics.filter((m) => m.metricType === "CYCLE_TIME").map((m) => m.metricValue),
+    ),
     featuresReleased: features.filter((feature) => feature.status === "RELEASED").length,
     featuresInProgress: features.filter(
       (feature) => feature.status !== "RELEASED" && feature.status !== "FAILED",
@@ -75,9 +82,23 @@ export async function getDeveloperMetrics(organizationId: string, developerId: s
   return {
     developerId,
     mergedPrs: metrics.filter((metric) => metric.metricType === "MERGE_TIME").length,
-    averageCycleTimeMs: average(metrics.filter((metric) => metric.metricType === "CYCLE_TIME").map((metric) => metric.metricValue)),
-    averageReviewTimeMs: average(metrics.filter((metric) => metric.metricType === "REVIEW_TIME").map((metric) => metric.metricValue)),
-    averageMergeTimeMs: average(metrics.filter((metric) => metric.metricType === "MERGE_TIME").map((metric) => metric.metricValue)),
-    recentMetrics: metrics.sort((a, b) => b.calculatedAt.getTime() - a.calculatedAt.getTime()).slice(0, 20),
+    averageCycleTimeMs: average(
+      metrics
+        .filter((metric) => metric.metricType === "CYCLE_TIME")
+        .map((metric) => metric.metricValue),
+    ),
+    averageReviewTimeMs: average(
+      metrics
+        .filter((metric) => metric.metricType === "REVIEW_TIME")
+        .map((metric) => metric.metricValue),
+    ),
+    averageMergeTimeMs: average(
+      metrics
+        .filter((metric) => metric.metricType === "MERGE_TIME")
+        .map((metric) => metric.metricValue),
+    ),
+    recentMetrics: metrics
+      .sort((a, b) => b.calculatedAt.getTime() - a.calculatedAt.getTime())
+      .slice(0, 20),
   };
 }

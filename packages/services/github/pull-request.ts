@@ -148,7 +148,7 @@ export class GithubPullRequestService {
         .set({
           status,
           merged: pr.merged,
-          mergedBy: pr.merged ? pr.merged_by?.login ?? null : null,
+          mergedBy: pr.merged ? (pr.merged_by?.login ?? null) : null,
           mergedAt: pr.merged ? new Date() : null,
           headSha: pr.head.sha,
           lastCommitSha: pr.head.sha,

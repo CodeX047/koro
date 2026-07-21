@@ -56,8 +56,12 @@ export const analyticsRouter = router({
   insights: organizationProcedure.query(async ({ ctx }) => {
     const dashboardData = await getAnalyticsDashboard(ctx.activeOrganizationId);
     const healthItems = dashboardData.health;
-    const status = healthItems.some((h: any) => h.level === "critical") ? "critical" : healthItems.some((h: any) => h.level === "warning") ? "warning" : "healthy";
-    
+    const status = healthItems.some((h: any) => h.level === "critical")
+      ? "critical"
+      : healthItems.some((h: any) => h.level === "warning")
+        ? "warning"
+        : "healthy";
+
     const input = {
       averageLeadTimeMs: dashboardData.averageLeadTimeMs ?? 0,
       averageCycleTimeMs: dashboardData.averageCycleTimeMs ?? 0,
@@ -71,8 +75,8 @@ export const analyticsRouter = router({
       throughput: dashboardData.throughput,
       health: {
         status: status as "healthy" | "warning" | "critical",
-        issues: healthItems.map((h: any) => h.description)
-      }
+        issues: healthItems.map((h: any) => h.description),
+      },
     };
     const agent = new DeliveryInsightsAgent();
     return agent.evaluate(input);
@@ -83,9 +87,9 @@ export const analyticsRouter = router({
       .select({ developerId: deliveryMetricsTable.developerId })
       .from(deliveryMetricsTable)
       .where(eq(deliveryMetricsTable.organizationId, ctx.activeOrganizationId));
-    
+
     // Get unique non-null developer IDs
-    const devIds = new Set(records.map(r => r.developerId).filter(Boolean));
+    const devIds = new Set(records.map((r) => r.developerId).filter(Boolean));
     return Array.from(devIds) as string[];
   }),
 });

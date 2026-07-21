@@ -39,7 +39,9 @@ export function AnalyticsCards({ metrics }: { metrics: FeatureMetrics | undefine
             <span className="text-[11px] text-slate-400">{label}</span>
             <Icon className="w-3.5 h-3.5 text-slate-500" />
           </div>
-          <div className="mt-2 text-lg font-bold text-slate-100">{formatDuration(metrics[key])}</div>
+          <div className="mt-2 text-lg font-bold text-slate-100">
+            {formatDuration(metrics[key])}
+          </div>
         </div>
       ))}
       <div className="rounded-xl border border-slate-800 bg-slate-950 p-4">

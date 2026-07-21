@@ -29,14 +29,16 @@ export function HealthIndicators({ items }: { items: HealthItem[] | undefined })
           <div
             key={item.id}
             className={`rounded-xl border p-4 flex items-start gap-3 ${
-              critical
-                ? "border-red-900/70 bg-red-950/20"
-                : "border-yellow-900/70 bg-yellow-950/20"
+              critical ? "border-red-900/70 bg-red-950/20" : "border-yellow-900/70 bg-yellow-950/20"
             }`}
           >
-            <Icon className={`w-4 h-4 mt-0.5 shrink-0 ${critical ? "text-red-400" : "text-yellow-400"}`} />
+            <Icon
+              className={`w-4 h-4 mt-0.5 shrink-0 ${critical ? "text-red-400" : "text-yellow-400"}`}
+            />
             <div>
-              <div className={`text-sm font-semibold ${critical ? "text-red-100" : "text-yellow-100"}`}>
+              <div
+                className={`text-sm font-semibold ${critical ? "text-red-100" : "text-yellow-100"}`}
+              >
                 {item.title}
               </div>
               <div className={`text-xs ${critical ? "text-red-200/70" : "text-yellow-200/70"}`}>

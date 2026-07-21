@@ -43,17 +43,21 @@ export function GithubTimeline({ events }: GithubTimelineProps) {
 
   // Sort events chronologically (oldest first for timeline flow)
   const sortedEvents = [...events].sort(
-    (a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+    (a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime(),
   );
 
   const getEventIcon = (eventType: string) => {
     if (eventType.includes("Issue")) return <AlertCircle className="w-4 h-4 text-emerald-400" />;
-    if (eventType.includes("PR Opened")) return <GitPullRequest className="w-4 h-4 text-emerald-400" />;
+    if (eventType.includes("PR Opened"))
+      return <GitPullRequest className="w-4 h-4 text-emerald-400" />;
     if (eventType.includes("PR Merged")) return <GitMerge className="w-4 h-4 text-purple-400" />;
     if (eventType.includes("PR Closed")) return <XCircle className="w-4 h-4 text-red-400" />;
-    if (eventType.includes("PR Updated")) return <GitPullRequest className="w-4 h-4 text-indigo-400" />;
-    if (eventType.includes("Commits Pushed")) return <GitCommit className="w-4 h-4 text-slate-400" />;
-    if (eventType.includes("Review Approved")) return <CheckCircle2 className="w-4 h-4 text-emerald-400" />;
+    if (eventType.includes("PR Updated"))
+      return <GitPullRequest className="w-4 h-4 text-indigo-400" />;
+    if (eventType.includes("Commits Pushed"))
+      return <GitCommit className="w-4 h-4 text-slate-400" />;
+    if (eventType.includes("Review Approved"))
+      return <CheckCircle2 className="w-4 h-4 text-emerald-400" />;
     if (eventType.includes("Review Changes")) return <XCircle className="w-4 h-4 text-red-400" />;
     if (eventType.includes("Review")) return <MessageSquare className="w-4 h-4 text-yellow-400" />;
     if (eventType.includes("Branch")) return <GitBranch className="w-4 h-4 text-indigo-400" />;
@@ -86,7 +90,10 @@ export function GithubTimeline({ events }: GithubTimelineProps) {
             {meta.labels && meta.labels.length > 0 && (
               <div className="flex gap-1 mt-2 flex-wrap">
                 {meta.labels.map((l: string) => (
-                  <span key={l} className="px-1.5 py-0.5 rounded text-[10px] bg-slate-800 text-slate-300">
+                  <span
+                    key={l}
+                    className="px-1.5 py-0.5 rounded text-[10px] bg-slate-800 text-slate-300"
+                  >
                     {l}
                   </span>
                 ))}
@@ -109,9 +116,7 @@ export function GithubTimeline({ events }: GithubTimelineProps) {
             >
               #{event.resourceId}
             </Link>
-            {meta.title && (
-              <div className="mt-1 font-medium text-slate-200">{meta.title}</div>
-            )}
+            {meta.title && <div className="mt-1 font-medium text-slate-200">{meta.title}</div>}
           </div>
         );
 
@@ -143,8 +148,8 @@ export function GithubTimeline({ events }: GithubTimelineProps) {
             {event.eventType.includes("Approved")
               ? "approved"
               : event.eventType.includes("Changes")
-              ? "requested changes on"
-              : "reviewed"}{" "}
+                ? "requested changes on"
+                : "reviewed"}{" "}
             pull request <span className="font-mono text-slate-400">#{event.resourceId}</span>
             {meta.body && (
               <div className="mt-2 text-xs text-slate-400 bg-slate-800/50 p-2 rounded border border-slate-800">

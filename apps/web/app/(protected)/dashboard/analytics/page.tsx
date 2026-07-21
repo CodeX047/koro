@@ -2,11 +2,25 @@
 
 import React from "react";
 import Link from "next/link";
-import { 
-  BarChart, Bar, XAxis, YAxis, Tooltip as RechartsTooltip, ResponsiveContainer, CartesianGrid, LineChart, Line 
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  Tooltip as RechartsTooltip,
+  ResponsiveContainer,
+  CartesianGrid,
+  LineChart,
+  Line,
 } from "recharts";
-import { 
-  Activity, Clock, CheckCircle, AlertTriangle, Lightbulb, Users, ArrowRight 
+import {
+  Activity,
+  Clock,
+  CheckCircle,
+  AlertTriangle,
+  Lightbulb,
+  Users,
+  ArrowRight,
 } from "lucide-react";
 import { trpc } from "~/trpc/client";
 
@@ -33,17 +47,21 @@ export default function AnalyticsDashboardPage() {
   }
 
   const velocityData = Object.entries(dashboard.velocity || {}).map(([key, value]) => ({
-    metric: key.replace(/([A-Z])/g, ' $1').toLowerCase(),
-    count: typeof value === 'number' ? value : 0,
+    metric: key.replace(/([A-Z])/g, " $1").toLowerCase(),
+    count: typeof value === "number" ? value : 0,
   }));
 
   const throughputData = Object.entries(dashboard.throughput || {}).map(([key, value]) => ({
-    metric: key.replace(/([A-Z])/g, ' $1').toLowerCase(),
-    count: typeof value === 'number' ? value : 0,
+    metric: key.replace(/([A-Z])/g, " $1").toLowerCase(),
+    count: typeof value === "number" ? value : 0,
   }));
 
   const healthItems = (dashboard.health || []) as any[];
-  const healthStatus = healthItems.some(h => h.level === "critical") ? "critical" : healthItems.some(h => h.level === "warning") ? "warning" : "healthy";
+  const healthStatus = healthItems.some((h) => h.level === "critical")
+    ? "critical"
+    : healthItems.some((h) => h.level === "warning")
+      ? "warning"
+      : "healthy";
 
   return (
     <div className="p-6 md:p-10 max-w-6xl mx-auto space-y-10">
@@ -58,12 +76,20 @@ export default function AnalyticsDashboardPage() {
           </p>
         </div>
         {dashboard.health && (
-          <div className={`px-4 py-2 rounded-full border text-sm font-semibold flex items-center gap-2 ${
-            healthStatus === "healthy" ? "bg-green-500/10 border-green-500/20 text-green-500" :
-            healthStatus === "warning" ? "bg-yellow-500/10 border-yellow-500/20 text-yellow-500" :
-            "bg-red-500/10 border-red-500/20 text-red-500"
-          }`}>
-            {healthStatus === "healthy" ? <CheckCircle className="w-4 h-4" /> : <AlertTriangle className="w-4 h-4" />}
+          <div
+            className={`px-4 py-2 rounded-full border text-sm font-semibold flex items-center gap-2 ${
+              healthStatus === "healthy"
+                ? "bg-green-500/10 border-green-500/20 text-green-500"
+                : healthStatus === "warning"
+                  ? "bg-yellow-500/10 border-yellow-500/20 text-yellow-500"
+                  : "bg-red-500/10 border-red-500/20 text-red-500"
+            }`}
+          >
+            {healthStatus === "healthy" ? (
+              <CheckCircle className="w-4 h-4" />
+            ) : (
+              <AlertTriangle className="w-4 h-4" />
+            )}
             System {healthStatus.toUpperCase()}
           </div>
         )}
@@ -120,18 +146,39 @@ export default function AnalyticsDashboardPage() {
               {velocityData.length > 0 ? (
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart data={velocityData}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="var(--koro-hairline-strong)" vertical={false} />
-                    <XAxis dataKey="metric" stroke="var(--koro-ash)" fontSize={12} tickLine={false} />
-                    <YAxis stroke="var(--koro-ash)" fontSize={12} tickLine={false} axisLine={false} />
-                    <RechartsTooltip 
-                      cursor={{fill: 'var(--koro-surface-dark)'}}
-                      contentStyle={{backgroundColor: 'var(--koro-surface-dark)', border: '1px solid var(--koro-hairline-strong)', borderRadius: '8px', textTransform: 'capitalize'}} 
+                    <CartesianGrid
+                      strokeDasharray="3 3"
+                      stroke="var(--koro-hairline-strong)"
+                      vertical={false}
+                    />
+                    <XAxis
+                      dataKey="metric"
+                      stroke="var(--koro-ash)"
+                      fontSize={12}
+                      tickLine={false}
+                    />
+                    <YAxis
+                      stroke="var(--koro-ash)"
+                      fontSize={12}
+                      tickLine={false}
+                      axisLine={false}
+                    />
+                    <RechartsTooltip
+                      cursor={{ fill: "var(--koro-surface-dark)" }}
+                      contentStyle={{
+                        backgroundColor: "var(--koro-surface-dark)",
+                        border: "1px solid var(--koro-hairline-strong)",
+                        borderRadius: "8px",
+                        textTransform: "capitalize",
+                      }}
                     />
                     <Bar dataKey="count" fill="var(--koro-accent)" radius={[4, 4, 0, 0]} />
                   </BarChart>
                 </ResponsiveContainer>
               ) : (
-                <div className="flex h-full items-center justify-center text-sm text-[var(--koro-ash)]">No velocity data available yet.</div>
+                <div className="flex h-full items-center justify-center text-sm text-[var(--koro-ash)]">
+                  No velocity data available yet.
+                </div>
               )}
             </div>
           </div>
@@ -144,17 +191,45 @@ export default function AnalyticsDashboardPage() {
               {throughputData.length > 0 ? (
                 <ResponsiveContainer width="100%" height="100%">
                   <LineChart data={throughputData}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="var(--koro-hairline-strong)" vertical={false} />
-                    <XAxis dataKey="metric" stroke="var(--koro-ash)" fontSize={12} tickLine={false} />
-                    <YAxis stroke="var(--koro-ash)" fontSize={12} tickLine={false} axisLine={false} />
-                    <RechartsTooltip 
-                      contentStyle={{backgroundColor: 'var(--koro-surface-dark)', border: '1px solid var(--koro-hairline-strong)', borderRadius: '8px', textTransform: 'capitalize'}} 
+                    <CartesianGrid
+                      strokeDasharray="3 3"
+                      stroke="var(--koro-hairline-strong)"
+                      vertical={false}
                     />
-                    <Line type="monotone" dataKey="count" stroke="#a78bfa" strokeWidth={3} dot={{ fill: '#a78bfa', strokeWidth: 2, r: 4 }} activeDot={{ r: 6 }} />
+                    <XAxis
+                      dataKey="metric"
+                      stroke="var(--koro-ash)"
+                      fontSize={12}
+                      tickLine={false}
+                    />
+                    <YAxis
+                      stroke="var(--koro-ash)"
+                      fontSize={12}
+                      tickLine={false}
+                      axisLine={false}
+                    />
+                    <RechartsTooltip
+                      contentStyle={{
+                        backgroundColor: "var(--koro-surface-dark)",
+                        border: "1px solid var(--koro-hairline-strong)",
+                        borderRadius: "8px",
+                        textTransform: "capitalize",
+                      }}
+                    />
+                    <Line
+                      type="monotone"
+                      dataKey="count"
+                      stroke="#a78bfa"
+                      strokeWidth={3}
+                      dot={{ fill: "#a78bfa", strokeWidth: 2, r: 4 }}
+                      activeDot={{ r: 6 }}
+                    />
                   </LineChart>
                 </ResponsiveContainer>
               ) : (
-                <div className="flex h-full items-center justify-center text-sm text-[var(--koro-ash)]">No throughput data available yet.</div>
+                <div className="flex h-full items-center justify-center text-sm text-[var(--koro-ash)]">
+                  No throughput data available yet.
+                </div>
               )}
             </div>
           </div>
@@ -168,7 +243,7 @@ export default function AnalyticsDashboardPage() {
               <Lightbulb className="w-4 h-4 text-yellow-500" />
               Delivery Insights Agent
             </h3>
-            
+
             {insightsLoading ? (
               <div className="flex flex-col gap-3 py-4">
                 <div className="h-4 bg-[var(--koro-hairline-strong)] rounded animate-pulse w-3/4" />
@@ -178,27 +253,35 @@ export default function AnalyticsDashboardPage() {
             ) : insights ? (
               <div className="space-y-4 relative z-10 text-sm">
                 <p className="text-[var(--koro-on-primary)] leading-relaxed">{insights.summary}</p>
-                
+
                 {insights.bottlenecks && insights.bottlenecks.length > 0 && (
                   <div>
                     <h4 className="text-xs font-bold uppercase text-red-400 mb-1">Bottlenecks</h4>
                     <ul className="list-disc pl-4 text-[var(--koro-ash)] space-y-1">
-                      {insights.bottlenecks.map((b, i) => <li key={i}>{b}</li>)}
+                      {insights.bottlenecks.map((b, i) => (
+                        <li key={i}>{b}</li>
+                      ))}
                     </ul>
                   </div>
                 )}
-                
+
                 {insights.recommendations && insights.recommendations.length > 0 && (
                   <div>
-                    <h4 className="text-xs font-bold uppercase text-blue-400 mb-1">Recommendations</h4>
+                    <h4 className="text-xs font-bold uppercase text-blue-400 mb-1">
+                      Recommendations
+                    </h4>
                     <ul className="list-disc pl-4 text-[var(--koro-ash)] space-y-1">
-                      {insights.recommendations.map((r, i) => <li key={i}>{r}</li>)}
+                      {insights.recommendations.map((r, i) => (
+                        <li key={i}>{r}</li>
+                      ))}
                     </ul>
                   </div>
                 )}
               </div>
             ) : (
-              <div className="text-sm text-[var(--koro-ash)] py-4">Insights could not be generated.</div>
+              <div className="text-sm text-[var(--koro-ash)] py-4">
+                Insights could not be generated.
+              </div>
             )}
           </div>
 
@@ -212,9 +295,9 @@ export default function AnalyticsDashboardPage() {
               <div className="text-sm text-[var(--koro-ash)]">Loading developers...</div>
             ) : developers && developers.length > 0 ? (
               <div className="flex flex-col gap-2">
-                {developers.map(dev => (
-                  <Link 
-                    href={`/dashboard/developers/${dev}`} 
+                {developers.map((dev) => (
+                  <Link
+                    href={`/dashboard/developers/${dev}`}
                     key={dev}
                     className="flex items-center justify-between p-3 rounded-lg border border-[var(--koro-hairline)] hover:border-[var(--koro-accent)] hover:bg-[var(--koro-accent)]/5 transition-colors group"
                   >
@@ -224,7 +307,9 @@ export default function AnalyticsDashboardPage() {
                 ))}
               </div>
             ) : (
-              <div className="text-sm text-[var(--koro-ash)]">No developer activity recorded yet.</div>
+              <div className="text-sm text-[var(--koro-ash)]">
+                No developer activity recorded yet.
+              </div>
             )}
           </div>
         </div>

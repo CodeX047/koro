@@ -552,7 +552,6 @@ export default function FeatureDetailPage() {
           <DeliveryTimeline events={(deliveryTimeline as TimelineItem[] | undefined) ?? []} />
         </div>
       )}
-
       {(status === "READY_FOR_RELEASE" ||
         status === "RELEASE_PENDING" ||
         status === "RELEASE_IN_PROGRESS" ||

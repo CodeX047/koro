@@ -19,16 +19,16 @@ export default function DevelopersDirectoryPage() {
           Select a developer to view their delivery metrics and performance profile.
         </p>
       </div>
-      
+
       {isLoading ? (
         <div className="flex justify-center p-12">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[var(--koro-accent)]" />
         </div>
       ) : developers && developers.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {developers.map(dev => (
-            <Link 
-              href={`/dashboard/developers/${encodeURIComponent(dev)}`} 
+          {developers.map((dev) => (
+            <Link
+              href={`/dashboard/developers/${encodeURIComponent(dev)}`}
               key={dev}
               className="flex items-center justify-between p-5 rounded-xl border border-[var(--koro-hairline-strong)] hover:border-[var(--koro-accent)] hover:bg-[var(--koro-accent)]/5 transition-all bg-[var(--koro-surface-dark-elevated)] group"
             >

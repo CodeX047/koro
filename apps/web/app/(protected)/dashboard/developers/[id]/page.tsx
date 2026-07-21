@@ -4,9 +4,7 @@ import React from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
 import { trpc } from "~/trpc/client";
-import { 
-  ArrowLeft, Clock, GitMerge, CheckCircle, User, Activity 
-} from "lucide-react";
+import { ArrowLeft, Clock, GitMerge, CheckCircle, User, Activity } from "lucide-react";
 
 function formatMsToDays(ms: number) {
   if (!ms) return "0d";
@@ -47,8 +45,8 @@ export default function DeveloperProfilePage() {
   return (
     <div className="p-6 md:p-10 max-w-5xl mx-auto space-y-8">
       <div>
-        <Link 
-          href="/dashboard/analytics" 
+        <Link
+          href="/dashboard/analytics"
           className="inline-flex items-center gap-1 text-sm text-[var(--koro-ash)] hover:text-[var(--koro-on-primary)] transition-colors mb-4"
         >
           <ArrowLeft className="w-4 h-4" /> Back to Analytics
@@ -111,7 +109,10 @@ export default function DeveloperProfilePage() {
         <div className="divide-y divide-[var(--koro-hairline-strong)]">
           {metrics.recentMetrics.length > 0 ? (
             metrics.recentMetrics.map((metric: any) => (
-              <div key={metric.id} className="p-4 flex items-center justify-between hover:bg-[var(--koro-surface-dark)] transition-colors">
+              <div
+                key={metric.id}
+                className="p-4 flex items-center justify-between hover:bg-[var(--koro-surface-dark)] transition-colors"
+              >
                 <div className="flex flex-col gap-1">
                   <span className="text-sm font-medium text-[var(--koro-on-primary)]">
                     {metric.metricType.replace(/_/g, " ")}

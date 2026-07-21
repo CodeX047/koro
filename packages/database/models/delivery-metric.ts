@@ -1,4 +1,13 @@
-import { pgTable, uuid, varchar, timestamp, integer, jsonb, index, text } from "drizzle-orm/pg-core";
+import {
+  pgTable,
+  uuid,
+  varchar,
+  timestamp,
+  integer,
+  jsonb,
+  index,
+  text,
+} from "drizzle-orm/pg-core";
 import { organizationTable } from "./auth";
 import { repositoriesTable } from "./github";
 import { featuresTable } from "./feature";

@@ -493,7 +493,8 @@ export function ReleaseReadinessView({
               Confirm Production Release
             </h3>
             <p className="text-[11px] leading-relaxed mb-6" style={{ color: "var(--koro-ash)" }}>
-              Are you sure you want to deploy this feature to production? This will update the feature status and trigger the production release pipeline.
+              Are you sure you want to deploy this feature to production? This will update the
+              feature status and trigger the production release pipeline.
             </p>
             <div className="flex justify-end gap-3">
               <button

@@ -18,7 +18,10 @@ export type DeliveryHealthItem = {
 };
 
 export async function getOrganizationHealth(organizationId: string): Promise<DeliveryHealthItem[]> {
-  const projects = await db.select().from(projectsTable).where(eq(projectsTable.organizationId, organizationId));
+  const projects = await db
+    .select()
+    .from(projectsTable)
+    .where(eq(projectsTable.organizationId, organizationId));
   const projectIds = projects.map((project) => project.id);
   const features = (await db.select().from(featuresTable)).filter((feature) =>
     projectIds.includes(feature.projectId),
@@ -65,12 +68,7 @@ export async function getOrganizationHealth(organizationId: string): Promise<Del
 
   for (const feature of features) {
     const age = daysBetween(feature.createdAt);
-    if (
-      feature.status !== "RELEASED" &&
-      feature.status !== "FAILED" &&
-      age !== null &&
-      age > 30
-    ) {
+    if (feature.status !== "RELEASED" && feature.status !== "FAILED" && age !== null && age > 30) {
       items.push({
         id: `blocked-feature-${feature.id}`,
         level: age > 45 ? "critical" : "warning",
@@ -127,7 +125,10 @@ export async function getFeatureHealth(featureId: string) {
   const [feature] = await db.select().from(featuresTable).where(eq(featuresTable.id, featureId));
   if (!feature) return [];
 
-  const [project] = await db.select().from(projectsTable).where(eq(projectsTable.id, feature.projectId));
+  const [project] = await db
+    .select()
+    .from(projectsTable)
+    .where(eq(projectsTable.id, feature.projectId));
   if (!project) return [];
 
   const items = await getOrganizationHealth(project.organizationId);

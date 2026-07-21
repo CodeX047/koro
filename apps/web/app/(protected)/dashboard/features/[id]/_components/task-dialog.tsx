@@ -217,16 +217,21 @@ export function TaskDialog({ task, onClose, onUpdated }: TaskDialogProps) {
                   Issue #{task.githubIssueNumber}
                   <ExternalLink className="w-3 h-3" />
                 </a>
-                
+
                 {task.githubState && (
                   <div className="flex items-center gap-2 text-xs">
                     <span className="text-slate-400">Status:</span>
-                    <span className={`px-2 py-0.5 rounded-full font-medium ${
-                      task.githubState === 'OPEN' ? 'bg-emerald-400/10 text-emerald-400' :
-                      task.githubState === 'CLOSED' ? 'bg-purple-400/10 text-purple-400' :
-                      task.githubState === 'REVIEW' ? 'bg-yellow-400/10 text-yellow-400' :
-                      'bg-slate-800 text-slate-300'
-                    }`}>
+                    <span
+                      className={`px-2 py-0.5 rounded-full font-medium ${
+                        task.githubState === "OPEN"
+                          ? "bg-emerald-400/10 text-emerald-400"
+                          : task.githubState === "CLOSED"
+                            ? "bg-purple-400/10 text-purple-400"
+                            : task.githubState === "REVIEW"
+                              ? "bg-yellow-400/10 text-yellow-400"
+                              : "bg-slate-800 text-slate-300"
+                      }`}
+                    >
                       {task.githubState}
                     </span>
                   </div>
@@ -237,13 +242,16 @@ export function TaskDialog({ task, onClose, onUpdated }: TaskDialogProps) {
                 <div className="flex flex-col gap-1 text-xs">
                   <span className="text-slate-400">Branch Name</span>
                   <span className="font-mono text-slate-200">
-                    {task.branchName || `feature/${task.id.slice(0, 8)}-${task.title.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`}
+                    {task.branchName ||
+                      `feature/${task.id.slice(0, 8)}-${task.title.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`}
                   </span>
                 </div>
                 <button
                   type="button"
                   onClick={() => {
-                    const branchName = task.branchName || `feature/${task.id.slice(0, 8)}-${task.title.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`;
+                    const branchName =
+                      task.branchName ||
+                      `feature/${task.id.slice(0, 8)}-${task.title.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`;
                     navigator.clipboard.writeText(branchName);
                     setCopied(true);
                     setTimeout(() => setCopied(false), 2000);
@@ -258,7 +266,7 @@ export function TaskDialog({ task, onClose, onUpdated }: TaskDialogProps) {
                   Copy
                 </button>
               </div>
-              
+
               {task.githubUpdatedAt && (
                 <div className="text-[10px] text-slate-500 text-right">
                   Last synced: {new Date(task.githubUpdatedAt).toLocaleString()}

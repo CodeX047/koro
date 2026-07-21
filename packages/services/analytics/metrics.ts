@@ -53,7 +53,10 @@ export async function calculateFeatureMetrics(featureId: string): Promise<Featur
   if (!feature) throw new Error(`Feature ${featureId} not found`);
 
   const tasks = await db.select().from(tasksTable).where(eq(tasksTable.featureId, featureId));
-  const prs = await db.select().from(pullRequestsTable).where(eq(pullRequestsTable.featureId, featureId));
+  const prs = await db
+    .select()
+    .from(pullRequestsTable)
+    .where(eq(pullRequestsTable.featureId, featureId));
   const releases = await db
     .select()
     .from(releaseRunsTable)
@@ -82,13 +85,16 @@ export async function calculateFeatureMetrics(featureId: string): Promise<Featur
   );
   const reviewTimeMs = average(prs.map((pr) => durationMs(pr.createdAt, pr.reviewedAt)));
   const mergeTimeMs = average(prs.map((pr) => durationMs(pr.createdAt, pr.mergedAt)));
-  const taskCompletionTimeMs = average(tasks.map((task) => durationMs(task.createdAt, task.completedAt)));
+  const taskCompletionTimeMs = average(
+    tasks.map((task) => durationMs(task.createdAt, task.completedAt)),
+  );
   const featureCompletionTimeMs = durationMs(feature.createdAt, lastCompletedTask?.completedAt);
   const aiReviewDurationMs = average(reviews.map((review) => review.durationMs ?? null));
   const latestRelease = releases[0] ?? null;
   const releaseDurationMs = durationMs(latestRelease?.createdAt, releasedAt);
   const completedTasks = tasks.filter((task) => task.status === "DONE").length;
-  const completionPercent = tasks.length > 0 ? Math.round((completedTasks / tasks.length) * 100) : 0;
+  const completionPercent =
+    tasks.length > 0 ? Math.round((completedTasks / tasks.length) * 100) : 0;
 
   return {
     leadTimeMs,
@@ -107,18 +113,52 @@ export async function recalculateFeatureMetrics(featureId: string) {
   const [feature] = await db.select().from(featuresTable).where(eq(featuresTable.id, featureId));
   if (!feature) throw new Error(`Feature ${featureId} not found`);
 
-  const [project] = await db.select().from(projectsTable).where(eq(projectsTable.id, feature.projectId));
+  const [project] = await db
+    .select()
+    .from(projectsTable)
+    .where(eq(projectsTable.id, feature.projectId));
   if (!project) throw new Error(`Project ${feature.projectId} not found`);
 
-  const prs = await db.select().from(pullRequestsTable).where(eq(pullRequestsTable.featureId, featureId));
+  const prs = await db
+    .select()
+    .from(pullRequestsTable)
+    .where(eq(pullRequestsTable.featureId, featureId));
   const summary = await calculateFeatureMetrics(featureId);
   const repositoryId = prs.find((pr) => pr.repositoryId)?.repositoryId ?? null;
 
   const rows = [
-    metric(project.organizationId, "LEAD_TIME", summary.leadTimeMs, { unit: "ms" }, featureId, repositoryId),
-    metric(project.organizationId, "CYCLE_TIME", summary.cycleTimeMs, { unit: "ms" }, featureId, repositoryId),
-    metric(project.organizationId, "REVIEW_TIME", summary.reviewTimeMs, { unit: "ms" }, featureId, repositoryId),
-    metric(project.organizationId, "MERGE_TIME", summary.mergeTimeMs, { unit: "ms" }, featureId, repositoryId),
+    metric(
+      project.organizationId,
+      "LEAD_TIME",
+      summary.leadTimeMs,
+      { unit: "ms" },
+      featureId,
+      repositoryId,
+    ),
+    metric(
+      project.organizationId,
+      "CYCLE_TIME",
+      summary.cycleTimeMs,
+      { unit: "ms" },
+      featureId,
+      repositoryId,
+    ),
+    metric(
+      project.organizationId,
+      "REVIEW_TIME",
+      summary.reviewTimeMs,
+      { unit: "ms" },
+      featureId,
+      repositoryId,
+    ),
+    metric(
+      project.organizationId,
+      "MERGE_TIME",
+      summary.mergeTimeMs,
+      { unit: "ms" },
+      featureId,
+      repositoryId,
+    ),
     metric(
       project.organizationId,
       "TASK_COMPLETION_TIME",
@@ -168,7 +208,12 @@ export async function recalculateFeatureMetrics(featureId: string) {
 
   await db
     .delete(deliveryMetricsTable)
-    .where(and(eq(deliveryMetricsTable.featureId, featureId), eq(deliveryMetricsTable.organizationId, project.organizationId)));
+    .where(
+      and(
+        eq(deliveryMetricsTable.featureId, featureId),
+        eq(deliveryMetricsTable.organizationId, project.organizationId),
+      ),
+    );
 
   if (rows.length > 0) {
     await db.insert(deliveryMetricsTable).values(rows);

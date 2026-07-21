@@ -220,7 +220,8 @@ export default function OrganizationSettingsPage() {
               Delete Organization
             </h3>
             <p className="text-[11px] leading-relaxed mb-6 text-[var(--koro-ash)]">
-              Are you sure you want to delete this organization? All projects, features, and repositories will be permanently deleted. This action cannot be undone.
+              Are you sure you want to delete this organization? All projects, features, and
+              repositories will be permanently deleted. This action cannot be undone.
             </p>
             <div className="flex justify-end gap-3">
               <button

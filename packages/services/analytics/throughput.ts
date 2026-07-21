@@ -18,16 +18,25 @@ export async function getOrganizationThroughput(
   organizationId: string,
   since = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000),
 ) {
-  const projects = await db.select().from(projectsTable).where(eq(projectsTable.organizationId, organizationId));
+  const projects = await db
+    .select()
+    .from(projectsTable)
+    .where(eq(projectsTable.organizationId, organizationId));
   const projectIds = projects.map((project) => project.id);
   const features = await db.select().from(featuresTable).where(gte(featuresTable.createdAt, since));
   const orgFeatures = features.filter((feature) => projectIds.includes(feature.projectId));
   const featureIds = orgFeatures.map((feature) => feature.id);
   const tasks = await db.select().from(tasksTable).where(gte(tasksTable.createdAt, since));
   const orgTasks = tasks.filter((task) => task.featureId && featureIds.includes(task.featureId));
-  const prs = await db.select().from(pullRequestsTable).where(gte(pullRequestsTable.createdAt, since));
+  const prs = await db
+    .select()
+    .from(pullRequestsTable)
+    .where(gte(pullRequestsTable.createdAt, since));
   const orgPrs = prs.filter((pr) => pr.featureId && featureIds.includes(pr.featureId));
-  const reviews = await db.select().from(reviewRunsTable).where(gte(reviewRunsTable.createdAt, since));
+  const reviews = await db
+    .select()
+    .from(reviewRunsTable)
+    .where(gte(reviewRunsTable.createdAt, since));
   const prIds = orgPrs.map((pr) => pr.id);
 
   return {

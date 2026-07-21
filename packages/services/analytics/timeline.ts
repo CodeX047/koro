@@ -90,7 +90,10 @@ export async function getFeatureTimeline(featureId: string): Promise<DeliveryTim
     .from(developmentEventsTable)
     .where(eq(developmentEventsTable.featureId, featureId))
     .orderBy(asc(developmentEventsTable.createdAt));
-  const prs = await db.select().from(pullRequestsTable).where(eq(pullRequestsTable.featureId, featureId));
+  const prs = await db
+    .select()
+    .from(pullRequestsTable)
+    .where(eq(pullRequestsTable.featureId, featureId));
   const releases = await db
     .select()
     .from(releaseRunsTable)

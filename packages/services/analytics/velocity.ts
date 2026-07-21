@@ -1,9 +1,20 @@
 import { and, db, eq, gte } from "@repo/database";
 import { average } from "./utils";
-import { deliveryMetricsTable, featuresTable, projectsTable, tasksTable } from "@repo/database/schema";
+import {
+  deliveryMetricsTable,
+  featuresTable,
+  projectsTable,
+  tasksTable,
+} from "@repo/database/schema";
 
-export async function getOrganizationVelocity(organizationId: string, since = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)) {
-  const projects = await db.select().from(projectsTable).where(eq(projectsTable.organizationId, organizationId));
+export async function getOrganizationVelocity(
+  organizationId: string,
+  since = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000),
+) {
+  const projects = await db
+    .select()
+    .from(projectsTable)
+    .where(eq(projectsTable.organizationId, organizationId));
   const projectIds = projects.map((project) => project.id);
   if (projectIds.length === 0) {
     return {
@@ -23,14 +34,29 @@ export async function getOrganizationVelocity(organizationId: string, since = ne
   const metrics = await db
     .select()
     .from(deliveryMetricsTable)
-    .where(and(eq(deliveryMetricsTable.organizationId, organizationId), gte(deliveryMetricsTable.calculatedAt, since)));
+    .where(
+      and(
+        eq(deliveryMetricsTable.organizationId, organizationId),
+        gte(deliveryMetricsTable.calculatedAt, since),
+      ),
+    );
 
   return {
     completedFeatures: orgFeatures.filter((feature) => feature.status === "RELEASED").length,
-    completedTasks: tasks.filter((task) => task.featureId && featureIds.includes(task.featureId) && task.status === "DONE").length,
-    averageCycleTimeMs: average(metrics.filter((m) => m.metricType === "CYCLE_TIME").map((m) => m.metricValue)),
-    averageReviewTimeMs: average(metrics.filter((m) => m.metricType === "REVIEW_TIME").map((m) => m.metricValue)),
-    averageLeadTimeMs: average(metrics.filter((m) => m.metricType === "LEAD_TIME").map((m) => m.metricValue)),
-    averageDeliveryTimeMs: average(metrics.filter((m) => m.metricType === "FEATURE_COMPLETION_TIME").map((m) => m.metricValue)),
+    completedTasks: tasks.filter(
+      (task) => task.featureId && featureIds.includes(task.featureId) && task.status === "DONE",
+    ).length,
+    averageCycleTimeMs: average(
+      metrics.filter((m) => m.metricType === "CYCLE_TIME").map((m) => m.metricValue),
+    ),
+    averageReviewTimeMs: average(
+      metrics.filter((m) => m.metricType === "REVIEW_TIME").map((m) => m.metricValue),
+    ),
+    averageLeadTimeMs: average(
+      metrics.filter((m) => m.metricType === "LEAD_TIME").map((m) => m.metricValue),
+    ),
+    averageDeliveryTimeMs: average(
+      metrics.filter((m) => m.metricType === "FEATURE_COMPLETION_TIME").map((m) => m.metricValue),
+    ),
   };
 }

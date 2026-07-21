@@ -228,7 +228,8 @@ export default function ProjectsPage() {
               Delete Project
             </h3>
             <p className="text-[11px] leading-relaxed mb-6" style={{ color: "var(--koro-ash)" }}>
-              Are you sure you want to delete this project? This will also permanently delete all associated features, tasks, and reviews.
+              Are you sure you want to delete this project? This will also permanently delete all
+              associated features, tasks, and reviews.
             </p>
             <div className="flex justify-end gap-3">
               <button

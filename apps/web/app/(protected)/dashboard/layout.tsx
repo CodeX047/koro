@@ -6,7 +6,17 @@ import { usePathname } from "next/navigation";
 import { UserMenu } from "./_components/user-menu";
 import { OrgSelector } from "./_components/org-selector";
 import { SystemStatus } from "./_components/system-status";
-import { Home, FolderKanban, FileCheck, BookMarked, Github, Settings, Search, Activity, Users } from "lucide-react";
+import {
+  Home,
+  FolderKanban,
+  FileCheck,
+  BookMarked,
+  Github,
+  Settings,
+  Search,
+  Activity,
+  Users,
+} from "lucide-react";
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
