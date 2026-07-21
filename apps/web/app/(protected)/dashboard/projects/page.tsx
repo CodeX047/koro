@@ -8,6 +8,8 @@ import { NewProjectDialog } from "./_components/new-project-dialog";
 import { EditProjectDialog } from "./_components/edit-project-dialog";
 import { toast } from "sonner";
 
+import { executeToastPromise } from "~/lib/toast-helpers";
+
 function ProjectCard({
   project,
   onEdit,
@@ -51,6 +53,7 @@ function ProjectCard({
                 e.stopPropagation();
                 setMenuOpen(!menuOpen);
               }}
+              aria-label={`Project options for ${project.name}`}
               className="p-1 rounded-md transition-colors hover:bg-[var(--koro-surface-dark)] text-[var(--koro-ash)] hover:text-[var(--koro-on-primary)]"
             >
               <MoreVertical className="w-4 h-4" />
@@ -112,14 +115,27 @@ export default function ProjectsPage() {
   const utils = trpc.useUtils();
   const { data: projects, isLoading } = trpc.project.list.useQuery();
 
+  // Escape key handler & Focus restoration for delete confirmation dialog
+  useEffect(() => {
+    if (!deletingProjectId) return;
+    const previousFocus = document.activeElement as HTMLElement | null;
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setDeletingProjectId(null);
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+      previousFocus?.focus();
+    };
+  }, [deletingProjectId]);
+
   const deleteProject = trpc.project.delete.useMutation({
     onSuccess: () => {
       utils.project.list.invalidate();
-      toast.success("Project deleted successfully");
-    },
-    onError: (err) => {
-      console.error("Failed to delete project:", err.message);
-      toast.error("Failed to delete project. Please try again.");
     },
   });
 
@@ -191,6 +207,9 @@ export default function ProjectsPage() {
 
       {deletingProjectId && (
         <div
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="delete-project-dialog-title"
           className="fixed inset-0 z-50 flex items-center justify-center p-4"
           style={{ backgroundColor: "rgba(0,0,0,0.7)" }}
         >
@@ -201,7 +220,11 @@ export default function ProjectsPage() {
               border: "1px solid var(--koro-hairline-strong)",
             }}
           >
-            <h3 className="text-sm font-bold mb-2" style={{ color: "var(--koro-on-primary)" }}>
+            <h3
+              id="delete-project-dialog-title"
+              className="text-sm font-bold mb-2"
+              style={{ color: "var(--koro-on-primary)" }}
+            >
               Delete Project
             </h3>
             <p className="text-[11px] leading-relaxed mb-6" style={{ color: "var(--koro-ash)" }}>
@@ -220,11 +243,18 @@ export default function ProjectsPage() {
                 Cancel
               </button>
               <button
+                disabled={deleteProject.isPending}
                 onClick={() => {
-                  deleteProject.mutate({ id: deletingProjectId });
+                  if (deleteProject.isPending || !deletingProjectId) return;
+                  const targetId = deletingProjectId;
                   setDeletingProjectId(null);
+                  executeToastPromise({
+                    promise: deleteProject.mutateAsync({ id: targetId }),
+                    loading: "Deleting project...",
+                    success: "Project deleted successfully.",
+                  });
                 }}
-                className="px-3 py-1.5 rounded-lg text-[11px] font-bold transition-opacity hover:opacity-90 text-white flex items-center gap-1.5"
+                className="px-3 py-1.5 rounded-lg text-[11px] font-bold transition-opacity hover:opacity-90 disabled:opacity-50 text-white flex items-center gap-1.5"
                 style={{ backgroundColor: "var(--koro-danger)" }}
               >
                 <Trash className="w-3.5 h-3.5" />

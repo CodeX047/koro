@@ -1,8 +1,9 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { X, Loader2, Github, Copy, ExternalLink, Check } from "lucide-react";
 import { trpc } from "~/trpc/client";
+import { executeToastPromise } from "~/lib/toast-helpers";
 
 interface TaskDialogProps {
   task: any;
@@ -19,6 +20,23 @@ export function TaskDialog({ task, onClose, onUpdated }: TaskDialogProps) {
   const [assigneeId, setAssigneeId] = useState(task.assigneeId || "");
   const [error, setError] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
+
+  // Focus restoration & Escape key listener
+  useEffect(() => {
+    const previousFocus = document.activeElement as HTMLElement | null;
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        onClose();
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+      previousFocus?.focus();
+    };
+  }, [onClose]);
 
   const updateTask = trpc.task.update.useMutation({
     onSuccess: () => {
@@ -40,38 +58,52 @@ export function TaskDialog({ task, onClose, onUpdated }: TaskDialogProps) {
     },
   });
 
+  const isPending = createTask.isPending || updateTask.isPending;
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    if (isPending) return;
     setError(null);
     if (task.isNew) {
-      createTask.mutate({
-        projectId: task.projectId,
-        featureId: task.featureId,
-        title,
-        description,
-        priority,
-        complexity,
-        estimatedHours: estimatedHours === "" ? null : Number(estimatedHours),
-        assigneeId: assigneeId === "" ? null : assigneeId,
-        status: "TODO",
-      });
-    } else {
-      updateTask.mutate({
-        taskId: task.id,
-        data: {
+      executeToastPromise({
+        promise: createTask.mutateAsync({
+          projectId: task.projectId,
+          featureId: task.featureId,
           title,
           description,
           priority,
           complexity,
           estimatedHours: estimatedHours === "" ? null : Number(estimatedHours),
           assigneeId: assigneeId === "" ? null : assigneeId,
-        },
+          status: "TODO",
+        }),
+        loading: "Creating task...",
+        success: "Task created successfully.",
+      });
+    } else {
+      executeToastPromise({
+        promise: updateTask.mutateAsync({
+          taskId: task.id,
+          data: {
+            title,
+            description,
+            priority,
+            complexity,
+            estimatedHours: estimatedHours === "" ? null : Number(estimatedHours),
+            assigneeId: assigneeId === "" ? null : assigneeId,
+          },
+        }),
+        loading: "Saving task changes...",
+        success: "Task updated successfully.",
       });
     }
   };
 
   return (
     <div
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="task-dialog-title"
       className="fixed inset-0 z-50 flex items-center justify-center p-4"
       style={{ backgroundColor: "rgba(0,0,0,0.7)" }}
     >
@@ -83,11 +115,16 @@ export function TaskDialog({ task, onClose, onUpdated }: TaskDialogProps) {
         }}
       >
         <div className="flex items-center justify-between mb-5">
-          <h2 className="text-sm font-bold" style={{ color: "var(--koro-on-primary)" }}>
-            Edit Task
+          <h2
+            id="task-dialog-title"
+            className="text-sm font-bold"
+            style={{ color: "var(--koro-on-primary)" }}
+          >
+            {task.isNew ? "Create Task" : "Edit Task"}
           </h2>
           <button
             onClick={onClose}
+            aria-label="Close task dialog"
             className="p-1.5 rounded-lg transition-colors hover:opacity-70"
             style={{ color: "var(--koro-ash)" }}
           >

@@ -14,6 +14,8 @@ import {
   AlertCircle,
 } from "lucide-react";
 
+import { executeToastPromise } from "~/lib/toast-helpers";
+
 export function ReleaseReadinessView({
   featureId,
   status,
@@ -30,6 +32,24 @@ export function ReleaseReadinessView({
   const isEvaluating = evaluateMutation.isPending || status === "RELEASE_PENDING";
   const isReleasing = releaseMutation.isPending || status === "RELEASE_IN_PROGRESS";
   const [showConfirmDialog, setShowConfirmDialog] = React.useState(false);
+
+  // Focus restoration & Escape key listener for release confirmation dialog
+  React.useEffect(() => {
+    if (!showConfirmDialog) return;
+    const previousFocus = document.activeElement as HTMLElement | null;
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setShowConfirmDialog(false);
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+      previousFocus?.focus();
+    };
+  }, [showConfirmDialog]);
 
   // Score color logic
   let scoreColor = "var(--koro-danger)";
@@ -69,7 +89,14 @@ export function ReleaseReadinessView({
           {/* Evaluate Button */}
           {status !== "RELEASED" && status !== "RELEASE_IN_PROGRESS" && (
             <button
-              onClick={() => evaluateMutation.mutate({ featureId })}
+              onClick={() => {
+                if (isEvaluating) return;
+                executeToastPromise({
+                  promise: evaluateMutation.mutateAsync({ featureId }),
+                  loading: "Evaluating release readiness...",
+                  success: "Release evaluation completed.",
+                });
+              }}
               disabled={isEvaluating}
               className="px-3.5 py-1.5 rounded-lg text-[11px] font-bold transition-all flex items-center gap-1.5"
               style={{
@@ -445,6 +472,9 @@ export function ReleaseReadinessView({
       {/* Confirmation Dialog Overlay */}
       {showConfirmDialog && (
         <div
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="confirm-release-dialog-title"
           className="fixed inset-0 z-50 flex items-center justify-center p-4"
           style={{ backgroundColor: "rgba(0,0,0,0.7)" }}
         >
@@ -455,7 +485,11 @@ export function ReleaseReadinessView({
               border: "1px solid var(--koro-hairline-strong)",
             }}
           >
-            <h3 className="text-sm font-bold mb-2" style={{ color: "var(--koro-on-primary)" }}>
+            <h3
+              id="confirm-release-dialog-title"
+              className="text-sm font-bold mb-2"
+              style={{ color: "var(--koro-on-primary)" }}
+            >
               Confirm Production Release
             </h3>
             <p className="text-[11px] leading-relaxed mb-6" style={{ color: "var(--koro-ash)" }}>
@@ -474,11 +508,17 @@ export function ReleaseReadinessView({
                 Cancel
               </button>
               <button
+                disabled={isReleasing}
                 onClick={() => {
+                  if (isReleasing) return;
                   setShowConfirmDialog(false);
-                  releaseMutation.mutate({ featureId });
+                  executeToastPromise({
+                    promise: releaseMutation.mutateAsync({ featureId }),
+                    loading: "Releasing feature to production...",
+                    success: "Feature marked as RELEASED!",
+                  });
                 }}
-                className="px-3 py-1.5 rounded-lg text-[11px] font-bold transition-opacity hover:opacity-90 flex items-center gap-1.5"
+                className="px-3 py-1.5 rounded-lg text-[11px] font-bold transition-opacity hover:opacity-90 disabled:opacity-50 flex items-center gap-1.5"
                 style={{ backgroundColor: "var(--koro-accent)", color: "#fff" }}
               >
                 <Rocket className="w-3 h-3" />

@@ -1,9 +1,10 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { X, Loader2, Sparkles } from "lucide-react";
 import { trpc } from "~/trpc/client";
+import { executeToastPromise } from "~/lib/toast-helpers";
 
 interface NewFeatureDialogProps {
   projects: { id: string; name: string; repoName?: string | null }[];
@@ -17,6 +18,23 @@ export function NewFeatureDialog({ projects, onClose }: NewFeatureDialogProps) {
   const [description, setDescription] = useState("");
   const [error, setError] = useState<string | null>(null);
 
+  // Focus restoration & Escape key handler
+  useEffect(() => {
+    const previousFocus = document.activeElement as HTMLElement | null;
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        onClose();
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+      previousFocus?.focus();
+    };
+  }, [onClose]);
+
   const createFeature = trpc.feature.create.useMutation({
     onSuccess: (feature) => {
       router.push(`/dashboard/features/${feature!.id}`);
@@ -28,16 +46,27 @@ export function NewFeatureDialog({ projects, onClose }: NewFeatureDialogProps) {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    if (createFeature.isPending) return;
     setError(null);
     if (!projectId) {
       setError("Please select a project");
       return;
     }
-    createFeature.mutate({ projectId, title, description });
+
+    executeToastPromise({
+      promise: createFeature.mutateAsync({ projectId, title, description }),
+      loading: "Creating feature request & starting AI discovery...",
+      success: "Feature request created! Redirecting to discovery...",
+    });
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
+    <div
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="new-feature-dialog-title"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm"
+    >
       <div className="relative w-full max-w-xl rounded-2xl p-6 md:p-8 bg-[var(--koro-surface-dark-elevated)] border border-[var(--koro-hairline-strong)] shadow-2xl overflow-hidden">
         {/* Subtle decorative glow */}
         <div className="absolute top-0 right-0 w-64 h-64 bg-[var(--koro-accent)]/10 rounded-full blur-3xl pointer-events-none -translate-y-1/2 translate-x-1/2" />
@@ -45,7 +74,10 @@ export function NewFeatureDialog({ projects, onClose }: NewFeatureDialogProps) {
         {/* Header */}
         <div className="relative flex items-center justify-between mb-8">
           <div>
-            <h2 className="text-xl font-semibold text-[var(--koro-on-primary)] flex items-center gap-2">
+            <h2
+              id="new-feature-dialog-title"
+              className="text-xl font-semibold text-[var(--koro-on-primary)] flex items-center gap-2"
+            >
               <Sparkles className="w-5 h-5 text-[var(--koro-accent)]" />
               New Feature Request
             </h2>
@@ -55,6 +87,7 @@ export function NewFeatureDialog({ projects, onClose }: NewFeatureDialogProps) {
           </div>
           <button
             onClick={onClose}
+            aria-label="Close feature request dialog"
             className="p-2 rounded-lg bg-[var(--koro-surface-dark)] border border-[var(--koro-hairline-strong)] text-[var(--koro-ash)] hover:text-[var(--koro-on-primary)] transition-colors hover:border-[var(--koro-hairline-stronger)]"
           >
             <X className="w-4 h-4" />

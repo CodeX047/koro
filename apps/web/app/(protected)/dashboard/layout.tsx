@@ -132,6 +132,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               ref={searchInputRef}
               type="text"
               placeholder="Search..."
+              aria-label="Search navigation items"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="w-full bg-[var(--koro-surface-dark-elevated)] border border-[var(--koro-hairline-strong)] rounded-lg pl-9 pr-8 py-2 text-sm text-[var(--koro-on-primary)] placeholder:text-[var(--koro-ash)] focus:outline-none focus:border-[var(--koro-accent)] transition-all"

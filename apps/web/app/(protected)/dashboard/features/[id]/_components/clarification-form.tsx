@@ -4,6 +4,8 @@ import React, { useState } from "react";
 import { Loader2, MessageSquare, SkipForward } from "lucide-react";
 import { trpc } from "~/trpc/client";
 
+import { executeToastPromise } from "~/lib/toast-helpers";
+
 interface Clarification {
   id: string;
   question: string;
@@ -47,6 +49,7 @@ export function ClarificationForm({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    if (submitAnswers.isPending) return;
     setError(null);
 
     const answersPayload = pending
@@ -58,7 +61,11 @@ export function ClarificationForm({
       return;
     }
 
-    submitAnswers.mutate({ featureId, answers: answersPayload });
+    executeToastPromise({
+      promise: submitAnswers.mutateAsync({ featureId, answers: answersPayload }),
+      loading: "Saving discovery answers & starting PRD generation...",
+      success: "Discovery answers saved!",
+    });
   };
 
   return (

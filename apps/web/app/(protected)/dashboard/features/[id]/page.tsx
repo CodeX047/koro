@@ -14,6 +14,8 @@ import { AnalyticsCards, type FeatureMetrics } from "./_components/analytics-car
 import { DeliveryTimeline, type TimelineItem } from "./_components/delivery-timeline";
 import { HealthIndicators, type HealthItem } from "./_components/health-indicators";
 
+import { executeToastPromise } from "~/lib/toast-helpers";
+
 const POLL_STATUSES = new Set([
   "DRAFT",
   "CLARIFICATION_PENDING",
@@ -76,7 +78,6 @@ export default function FeatureDetailPage() {
   const syncTasksMutation = trpc.task.syncToGithub.useMutation({
     onSuccess: () => {
       utils.feature.get.invalidate({ featureId: id });
-      // We could add a toast here
     },
   });
 
@@ -198,7 +199,14 @@ export default function FeatureDetailPage() {
                 <div className="text-xs font-semibold" style={{ color: "var(--koro-accent)" }}>
                   {feature.progress}%
                 </div>
-                <div className="w-24 h-2 bg-slate-800 rounded-full overflow-hidden">
+                <div
+                  role="progressbar"
+                  aria-valuenow={feature.progress}
+                  aria-valuemin={0}
+                  aria-valuemax={100}
+                  aria-label="Feature completion progress"
+                  className="w-24 h-2 bg-slate-800 rounded-full overflow-hidden"
+                >
                   <div
                     className="h-full rounded-full transition-all duration-500"
                     style={{
@@ -390,8 +398,15 @@ export default function FeatureDetailPage() {
               <div className="flex items-center justify-between mb-3">
                 <h2 className="text-sm font-bold">Generated PRD</h2>
                 <button
-                  onClick={() => generateTasksMutation.mutate({ featureId: id, prdId: prd.id })}
                   disabled={generateTasksMutation.isPending}
+                  onClick={() => {
+                    if (generateTasksMutation.isPending) return;
+                    executeToastPromise({
+                      promise: generateTasksMutation.mutateAsync({ featureId: id, prdId: prd.id }),
+                      loading: "Generating engineering plan...",
+                      success: "Engineering plan generated successfully.",
+                    });
+                  }}
                   className="px-4 py-2 rounded-lg text-xs font-bold transition-opacity hover:opacity-90 disabled:opacity-50 flex items-center gap-2"
                   style={{ backgroundColor: "var(--koro-accent)", color: "#fff" }}
                 >
@@ -458,8 +473,15 @@ export default function FeatureDetailPage() {
             </div>
             {status === "TASKS_DRAFT" && (
               <button
-                onClick={() => approvePlanMutation.mutate({ featureId: id })}
                 disabled={approvePlanMutation.isPending}
+                onClick={() => {
+                  if (approvePlanMutation.isPending) return;
+                  executeToastPromise({
+                    promise: approvePlanMutation.mutateAsync({ featureId: id }),
+                    loading: "Approving engineering plan...",
+                    success: "Plan approved and ready for execution.",
+                  });
+                }}
                 className="px-4 py-2 rounded-lg text-xs font-bold transition-opacity hover:opacity-90 disabled:opacity-50 flex items-center gap-2"
                 style={{ backgroundColor: "var(--koro-success)", color: "#fff" }}
               >
@@ -469,14 +491,23 @@ export default function FeatureDetailPage() {
             )}
             {status === "PLANNING_COMPLETE" && (
               <button
+                disabled={syncTasksMutation.isPending || fetchUpdatesMutation.isPending}
                 onClick={() => {
+                  if (syncTasksMutation.isPending || fetchUpdatesMutation.isPending) return;
                   if (isSynced) {
-                    fetchUpdatesMutation.mutate({ featureId: id });
+                    executeToastPromise({
+                      promise: fetchUpdatesMutation.mutateAsync({ featureId: id }),
+                      loading: "Fetching GitHub updates...",
+                      success: "GitHub updates synced successfully.",
+                    });
                   } else {
-                    syncTasksMutation.mutate({ featureId: id });
+                    executeToastPromise({
+                      promise: syncTasksMutation.mutateAsync({ featureId: id }),
+                      loading: "Syncing tasks to GitHub issues...",
+                      success: "Tasks synced to GitHub issues.",
+                    });
                   }
                 }}
-                disabled={syncTasksMutation.isPending || fetchUpdatesMutation.isPending}
                 className="px-4 py-2 rounded-lg text-xs font-bold transition-opacity hover:opacity-90 disabled:opacity-50 flex items-center gap-2 border border-slate-700 bg-slate-900 text-slate-200"
               >
                 {(syncTasksMutation.isPending || fetchUpdatesMutation.isPending) && (
@@ -553,8 +584,15 @@ export default function FeatureDetailPage() {
               Something went wrong. Check the Inngest dashboard for details.
             </p>
             <button
-              onClick={() => retryMutation.mutate({ featureId: id })}
               disabled={retryMutation.isPending}
+              onClick={() => {
+                if (retryMutation.isPending) return;
+                executeToastPromise({
+                  promise: retryMutation.mutateAsync({ featureId: id }),
+                  loading: "Retrying feature pipeline...",
+                  success: "Pipeline restart initiated.",
+                });
+              }}
               className="px-4 py-2 rounded-lg text-xs font-bold transition-opacity hover:opacity-90 disabled:opacity-50 inline-flex items-center gap-2"
               style={{ backgroundColor: "var(--koro-accent)", color: "#fff" }}
             >
