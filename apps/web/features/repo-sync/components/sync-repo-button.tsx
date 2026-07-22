@@ -58,10 +58,10 @@ export default function SyncRepoButton({
   return (
     <Button
       size="sm"
-      variant={status === "synced" ? "outline" : "default"}
+      variant={syncStatus === "synced" ? "outline" : "default"}
       className={
-        status === "synced"
-          ? "bg-[var(--koro-surface-dark)] border-[var(--koro-hairline-strong)] text-[var(--koro-ash)] hover:text-[var(--koro-on-primary)] hover:bg-[var(--koro-surface-dark-elevated)]"
+        syncStatus === "synced"
+          ? "bg-[var(--koro-surface-dark)] border-[var(--koro-hairline-strong)] text-[var(--koro-on-primary)] hover:text-[var(--koro-accent)] hover:border-[var(--koro-accent)] hover:bg-[var(--koro-surface-dark-elevated)]"
           : "bg-[var(--koro-accent)] text-black hover:bg-[var(--koro-accent)] hover:opacity-90"
       }
       disabled={disabled}

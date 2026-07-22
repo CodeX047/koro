@@ -1,7 +1,7 @@
 import React from "react";
 import Link from "next/link";
 import { requireAuth } from "~/features/auth/utils/auth";
-import { db, eq, and, desc, inArray, count } from "@repo/database";
+import { db, eq, and, desc, inArray, count, sql } from "@repo/database";
 import {
   projectsTable,
   featuresTable,
@@ -42,7 +42,7 @@ export default async function DashboardPage() {
 
   const currentMonth = new Date().toISOString().slice(0, 7);
 
-  const [githubConnection, usageResult, projects] = await Promise.all([
+  const [githubConnection, usageResult, projects, plan] = await Promise.all([
     db
       .select()
       .from(githubInstallationsTable)
@@ -59,6 +59,7 @@ export default async function DashboardPage() {
       .where(eq(projectsTable.organizationId, orgId))
       .orderBy(desc(projectsTable.createdAt))
       .limit(4),
+    getActivePlan(orgId),
   ]);
 
   const isGithubConnected = githubConnection.length > 0;
@@ -68,12 +69,11 @@ export default async function DashboardPage() {
 
   const [
     syncedRepoResult,
-    plan,
     featureCountsRaw,
     reviewCountsRaw,
     recentFeatures,
     recentReviews,
-    allReviews,
+    readinessResult,
   ] = await Promise.all([
     isGithubConnected && installationId
       ? db
@@ -82,7 +82,6 @@ export default async function DashboardPage() {
           .where(eq(repoSyncTable.installationId, installationId))
           .limit(1)
       : Promise.resolve([]),
-    getActivePlan(orgId),
     projectIds.length > 0
       ? db
           .select({ projectId: featuresTable.projectId, count: count() })
@@ -126,7 +125,20 @@ export default async function DashboardPage() {
       : Promise.resolve([]),
     projectIds.length > 0
       ? db
-          .select({ verdict: reviewRunsTable.verdict })
+          .select({
+            readinessScore: sql<number>`
+              ROUND(
+                100.0 * 
+                SUM(
+                  CASE 
+                    WHEN ${reviewRunsTable.verdict} = 'APPROVE' THEN 1 
+                    ELSE 0 
+                  END
+                ) 
+                / NULLIF(COUNT(*), 0)
+              )
+            `.mapWith(Number),
+          })
           .from(reviewRunsTable)
           .innerJoin(pullRequestsTable, eq(reviewRunsTable.prId, pullRequestsTable.id))
           .innerJoin(repositoriesTable, eq(pullRequestsTable.repositoryId, repositoriesTable.id))
@@ -160,9 +172,11 @@ export default async function DashboardPage() {
   })[];
 
   let readinessScore = 100;
-  if ((allReviews as any[]).length > 0) {
-    const passingCount = (allReviews as any[]).filter((r) => r.verdict === "APPROVE").length;
-    readinessScore = Math.round((passingCount / (allReviews as any[]).length) * 100);
+  if (
+    (readinessResult as any[])[0]?.readinessScore !== undefined &&
+    (readinessResult as any[])[0]?.readinessScore !== null
+  ) {
+    readinessScore = (readinessResult as any[])[0].readinessScore;
   }
 
   return (

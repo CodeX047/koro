@@ -48,7 +48,24 @@ export default async function ReposPage() {
 
   const queryClient = new QueryClient();
 
-  await queryClient.prefetchInfiniteQuery(githubReposInfiniteQuery);
+  await queryClient.prefetchInfiniteQuery({
+    ...githubReposInfiniteQuery,
+    queryFn: async () => {
+      const { getInstallationReposPage } = await import("~/features/github/server/repos");
+      const { getRepoSyncStatuses } = await import("~/features/repo-sync/server/repo-sync");
+
+      const data = await getInstallationReposPage(installationId, 1);
+      const repoFullNames = data.repos.map((repo: any) => repo.fullName);
+      const syncStatuses = await getRepoSyncStatuses(repoFullNames);
+
+      const repos = data.repos.map((repo: any) => ({
+        ...repo,
+        syncStatus: syncStatuses[repo.fullName] ?? null,
+      }));
+
+      return { ...data, repos } as any;
+    },
+  });
 
   return (
     <div className="p-6 md:p-10 max-w-5xl mx-auto space-y-8">
